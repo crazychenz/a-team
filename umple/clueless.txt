@@ -1,0 +1,126 @@
+// This is syntax that can be used in Umple at:
+// https://cruise.eecs.uottawa.ca/umpleonline/
+
+enum RoomEnum
+{
+  DIR_NORTH, 
+  DIR_SOUTH, 
+  DIR_EAST, 
+  DIR_WEST, 
+  DIR_OTHER
+}
+
+enum SuspectEnum
+{
+  SUSPECT_SCARLET, 
+  SUSPECT_MUSTARD, 
+  SUSPECT_WHITE, 
+  SUSPECT_GREEN, 
+  SUSPECT_PEACOCK,
+  SUSPECT_PLUM
+}
+
+enum WeaponEnum
+{
+  WEAPON_PIPE,
+  WEAPON_REVOLVER,
+  WEAPON_ROPE,
+  WEAPON_CANDLE,
+  WEAPON_KNIFE,
+  WEAPON_WRENCH
+}
+
+enum GameModeEnum
+{
+  MODE_NORMAL,
+  MODE_DISPROVE,
+  MODE_CHARSEL
+}
+
+class Location  
+{  
+  // Each room has a type
+  RoomEnum id;
+
+  // Each location has 5 potential directions
+  0..1 -- 0..5 Location directions;
+
+  // Each location can have up to 6 suspects
+  1 -- 0..6 Suspect inside;
+} 
+
+class Suspect
+{
+  //public
+  // Each suspect has a type
+  immutable SuspectEnum id;
+  
+  // Each player gets a notebook
+  Notebook notebook;
+  
+  // The next player's turn
+  Suspect next_player;
+  
+  void move_to(Location location)
+  {
+    return ();
+  }
+  
+  //private
+  // The location that the first turn will be made to.
+  internal Location start_location;
+  
+  // The current location of the suspect
+  internal Location current_location;
+  
+  // Indicates if the suspect is being played
+  internal boolean claimed;
+}
+
+class Envelope
+{
+  SuspectEnum suspect;
+  WeaponEnum weapon;
+  RoomEnum room;
+}
+
+class Card
+{
+  Integer id;
+}
+
+class CardDeck
+{
+  Envelope envelope;
+
+  void deal(Suspect [] players) {}
+  
+  void shuffle_in(Card [] full_deck, Card []  partial_deck) {}
+}
+
+class Notebook
+{
+  Card [] cards;
+}
+  
+class GameState
+{
+  // The state of the game
+  ModeEnum mode;
+  
+  // The state of all the cards
+  CardDeck deck;
+  
+  // Player turn linked list
+  Suspect player_listhead;
+  
+  // Is the game started
+  boolean started;
+  
+  void start() {}
+  void reset() {}
+}
+
+
+
+ 
