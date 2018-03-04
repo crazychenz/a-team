@@ -1,5 +1,5 @@
 package clueless;
-
+//This file is meant to represent the cards from the board game and nothing else
 public enum CardsEnum {
 	LOCATION_KITCHEN(0x01, "Kitchen", CardType.CARD_TYPE_LOCATION),
 	LOCATION_BATHROOM(0x02, "Bathroom", CardType.CARD_TYPE_LOCATION),
