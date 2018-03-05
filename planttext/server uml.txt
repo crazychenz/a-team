@@ -1,0 +1,112 @@
+@startuml
+
+title Classes - Class Diagram for Server
+class Card {
+  +CardsEnum card
+  +Card()
+  +CardType getCardType()
+}
+
+class CardDeck {
+  +Envelope envelope
+  +Card[] faceUpCards
+  +Card[] allSuspectCards
+  +Card[] allLocationCards
+  +Card[] allWeaponCards
+  +Random randomNumberGenerator
+  
+  +CardDeck()
+  +void add(Card add)
+  +void setupCardDeckAndDealCards(Player[] players)
+  +void populateEnvelope()
+}
+
+class Envelope {
+  +Card suspect
+  +Card location
+  +Card weapon
+  
+  +Envelope(Card suspect, Card location, Card weapon)
+}
+
+class Game { 
+  +Location[] locations
+  +Weapon[] weapons
+  +Suspect[] suspects
+  +Player[] activePlayers
+  +CardDeck cards
+  
+  +void setupWeapons()
+  +void setupLocations()
+  +void setupSuspects()
+  +void sendMessageToAllPlayers()
+  +void processMessage()
+  +void startGame()
+  +void addPlayer()
+  +void sendAvailableSuspects
+}
+
+class Heartbeat {
+  +boolean gameStarted
+  +int playersConnected
+  +CardsEnum activePlayer
+  
+  +Heartbeat()
+}
+
+class Helper {
+  +CardsEnum GetStartingLocationOfSuspect(CardsEnum suspect)
+  +int GetNumberOfFaceUpCardsForNumberOfUsers(int numUsers, boolean classicClue)
+}
+
+class Location {
+  +CardsEnum location
+  +Suspect[] suspectsInside
+  +Hashtable<DirectionsEnum, Location> adjacentRooms
+  +Weapon[] weaponsInside
+}
+
+class Message {
+  +MessagesEnum messageID
+  +Object messageData
+}
+
+class Player {
+  +Client client
+  +CardsEnum suspect
+  
+}
+
+class Server {
+  +ServerSocket socket
+  +ClientThread[] connectedClients
+  
+  +void listenForConnections()
+}
+
+class Suspect {
+  +CardsEnum suspect
+  +CardsEnum start_location
+  +CardsEnum current_location
+  +boolean active
+}
+
+class Weapon {
+  +CardsEnum weapon
+  +CardsEnum current_location
+}
+
+
+@enduml
+
+Message <|-down- Serializable: Inheritance
+Game "1" *-down- "1" Server: Communication
+CardDeck "1" *-up- "1" Game
+CardDeck "1" *-left- "many" Card
+CardDeck "1" *-down- "1" Envelope
+Game "1" *-right- "many" Location
+Game "1" *-up- "many" Suspect
+Game "1" *-left- "many" Weapon
+Game "1" *-up- "many" Player
+Game "1" *-left- "many" Heartbeat
+Game "1" *-right- "many" Message

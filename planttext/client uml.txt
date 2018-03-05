@@ -1,0 +1,63 @@
+@startuml
+
+title Classes - Class Diagram for Client
+
+
+class Card {
+  +CardsEnum card
+  +Card()
+  +CardType getCardType()
+}
+
+class Client {
+  +Socket socket
+  +boolean connected
+  
+  +void SendData(Object data)
+  +void connectToServer()
+}
+
+class Message {
+  +MessagesEnum messageID
+  +Object messageData
+}
+
+class Notebook {
+
+}
+
+class User {
+  +Card[] myCards
+  +Notebook notebook
+  +CardsEnum suspect
+  
+  +void askAQuestion(CardsEnum location, CardsEnum weapon, CardsEnum suspect)
+  +void accuse(CardsEnum location, CardsEnum weapon, CardsEnum suspect)
+  +Card showSingleCard()
+  +void pickASuspect(CardsEnum[] suspects)
+  +void sendUserConfiguration(CardsEnum suspect)
+  +void sendUserChat(String chat)
+  +void startGame()
+  +void processHeartbeat()
+  +void processChoice(int input)
+  +void processMessage(Object message)
+  +void addCard(Card card)
+}
+
+class Heartbeat {
+  +boolean gameStarted
+  +int playersConnected
+  +CardsEnum activePlayer
+  
+  +Heartbeat()
+}
+
+
+@enduml
+
+
+Message <|-down- Serializable: Inheritance
+User "1" *-left- "1" Client: Communication
+User "1" *-up- "many" Card
+User "1" *-up- "1" Notebook
+User "1" *-right- "1" Message
