@@ -7,9 +7,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.net.ServerSocket;
 
 /**
  * @author tombo
@@ -26,15 +26,16 @@ public class Server {
 		gameState = new Game(this);
 	}
 	
-	public void listenForConnections() {
-		try {
-			serverSocket = new ServerSocket(2323);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Couldn't open port 2323");
-			System.exit(-1);
+	public void listenForConnections(
+	    CluelessServerSocket cluelessServerSocket) throws Exception {
+        
+        try {
+		    serverSocket = cluelessServerSocket.getServerSocket();
+		} catch (Exception e) {
+		    System.out.println("Failed to get server socket.");
+		    throw e;
 		}
+		
 		while(true) {
 			ClientThread w;
 			try {

@@ -31,6 +31,17 @@ If you want to run the server or client from the jar:
     java -cp dist/clueless.jar ServerRun
     java -cp dist/clueless.jar ClientRun
 
+### Run Code With Arguments
+You can use argument to control the network config. The synopsis:
+
+    java -cp dist/clueless.jar ServerRun [--port PORT] [--backlog BACKLOG] [--address IP_ADDRESS]
+
+Example usage assuming you want to listen on 192.168.1.5:6543:
+
+    java -cp dist/clueless.jar ServerRun --port 6543 --address 192.168.1.5
+
+No arguments will default to backlog of 6, port of 2323, and address of 0.0.0.0 (any address).
+
 ## Python
 ### Start Service
 From a console, goto the py-src/clueless directory and run the following:
