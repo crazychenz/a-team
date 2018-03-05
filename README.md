@@ -1,4 +1,21 @@
 # Getting Started
+
+## Java
+### Build With Apache Ant
+From a console, goto the java directory and run the following:
+
+    ant
+
+If you want to clean the project files, run:
+
+    ant clean
+
+### Run The Code From A Jar
+If you want to run the server or client from the jar:
+
+    java -cp dist/clueless.jar ServerRun
+    java -cp dist/clueless.jar ClientRun
+
 ## Python
 ### Start Service
 From a console, goto the py-src/clueless directory and run the following:
