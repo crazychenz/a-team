@@ -1,6 +1,21 @@
 # Getting Started
 
 ## Java
+### Get Apache Ant
+If you don't already have Apache Ant, you can find a download for 
+Apache Ant at <http://ant.apache.org/bindownload.cgi>.
+
+On Mac OSX you should be able to run:
+
+    brew install ant
+
+Note: You may have to try the install a couple times and install XCode extras.
+
+On linux, the usual package management methods should work,
+whether its yum, dnf, or apt installations.
+
+On Windows, there is the Apache manual at <http://ant.apache.org/manual/install.html#installing> and an unofficial tutorial at <https://www.mkyong.com/ant/how-to-install-apache-ant-on-windows/>
+
 ### Build With Apache Ant
 From a console, goto the java directory and run the following:
 
