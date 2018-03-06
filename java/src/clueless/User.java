@@ -13,6 +13,11 @@ import java.util.ArrayList;
 
 //This is on client side
 
+//I've noticed that messages the server sends get queued on the client side.  The best example is the heartbeat.
+//We need a way for messages not to get queued up while the user is making selections, OR remove the heartbeat
+//and only send out a message when something happens/in response to another message
+
+
 public class User {
 	private String userName;
 	private ArrayList<Card> myCards;
@@ -31,15 +36,18 @@ public class User {
 		myCards = new ArrayList<Card>();
 	}
 	
-	private void askAQuestion(CardsEnum location, CardsEnum weapon, CardsEnum suspect) {
-
-	}
+	private void suggest() {
+        
+        //need to allow the user to pick a suspect and weapon.  location is FIXED for suggestions to the room where the user is currently
+   	}
 	
 	private void accuse(CardsEnum location, CardsEnum weapon, CardsEnum suspect) {
 
+		//need to allow the user to pick a suspect, location, and weapon. location is NOT tied to the user's location
 	}
 	
-	private Card showSingleCard() {
+	private Card disprove() {
+		//need to allow the user to pick a card in order to disprove another player's suggestion
 		return myCards.get(0);
 	}
 	
@@ -66,7 +74,7 @@ public class User {
             try {
             	choice = Integer.parseInt(line);
             	choice -=1;
-            	console.printf("You have selected %s", suspects.get(choice).getLabel());
+            	console.printf("You have selected %s\n", suspects.get(choice).getLabel());
             	suspect = suspects.get(choice);
             	suspectSelected = true;
             }
@@ -87,7 +95,7 @@ public class User {
 	}
 	
 	private void startGame() {
-		System.out.println("Game is starting!");
+		System.out.println("\nGame is starting!");
 		//UserInputThread uit = new UserInputThread(this);
 		//uit.start();
 	}
@@ -119,12 +127,13 @@ public class User {
 //        }
 		if(heartbeat.isGameStarted()) {
 			if(heartbeat.getActivePlayer() == suspect) {
+				myTurn = true;
 				Console console = System.console();
 		        if (console == null) {
 		            System.out.println("Unable to fetch console");
 		            return;
 		        }
-		        console.printf("Your turn!\n\t1)Move\n\t2)Ask a question\n\t3)Accuse");
+		        console.printf("Your turn!\n\t1)Move\n\t2)Make a suggestion\n\t3)Accuse");
 		        int choice = 0;
 		        String line = console.readLine();
 	            try {
@@ -135,6 +144,7 @@ public class User {
 	            catch (NumberFormatException e) {
 	            	console.printf("\nThere is an issue with your selection.  Please try again.\n");
 	            }
+	            myTurn = false;
 			}
 		}
 	}
@@ -142,15 +152,15 @@ public class User {
 	private void processChoice(int input) {
 		switch(input) {
 		case 1:
-			//Todo - where to move?
+			//Todo - where to move
 			client.SendData(new Message(MessagesEnum.MESSAGE_CLIENT_MOVE,""));
 			break;
 		case 2:
-			//Todo - what to ask
-			client.SendData(new Message(MessagesEnum.MESSAGE_CLIENT_QUESTION,""));
+			//Todo - what to suggest
+			client.SendData(new Message(MessagesEnum.MESSAGE_CLIENT_SUGGESTION,""));
 			break;
 		case 3:
-			//Todo - what to accuse?
+			//Todo - what to accuse
 			client.SendData(new Message(MessagesEnum.MESSAGE_CLIENT_ACCUSE,""));
 			break;
 		default:
@@ -169,7 +179,6 @@ public class User {
 				System.out.println("Chat from server: " + m.getMessageData());
 				break;
 			case MESSAGE_SERVER_HEARTBEAT:
-				//System.out.println("processing hb");
 				processHeartbeat((Heartbeat)m.getMessageData());
 				break;
 			case MESSAGE_SERVER_AVAILABLE_SUSPECTS:

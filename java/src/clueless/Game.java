@@ -17,7 +17,7 @@ public class Game {
 	private ArrayList<Suspect> suspects;
 	private boolean gameStarted = false;
 	private Server server;
-	private CardsEnum activePlayer;
+	private Player activePlayer;
 	
 	public Game(Server server) {
 		locations = new ArrayList<Location>();
@@ -110,10 +110,15 @@ public class Game {
 				addPlayer(pickedSuspect, thread);
 				break;
 			case MESSAGE_CLIENT_MOVE:
+				//handle the move
+				setNextPlayer();
 				break;
-			case MESSAGE_CLIENT_QUESTION:
+			case MESSAGE_CLIENT_SUGGESTION:
+				//handle the 
 				break;
 			case MESSAGE_CLIENT_ACCUSE:
+				//handle the accuse
+				setNextPlayer();
 				break;
 			default:
 				break;
@@ -124,7 +129,7 @@ public class Game {
 		if(activePlayers.size() >= 3) {
 			cards.setupCardDeckAndDealCards(activePlayers,classicMode);
 			gameStarted = true;
-			setPlayOrder();
+			shufflePlayersAndSetActivePlayer();
 			sendMessageToAllPlayers(new Message(MessagesEnum.MESSAGE_SERVER_START_GAME,""));			
 		}
 		else {
@@ -133,8 +138,16 @@ public class Game {
 		}
 	}
 	
-	private void setPlayOrder() {
+	private void shufflePlayersAndSetActivePlayer() {
 		//randomly set activePlayer linked list and set activePlayer variable
+		Collections.shuffle(activePlayers, Helper.GetRandom());
+		setNextPlayer();
+	}
+	
+	
+	private void setNextPlayer() {
+		activePlayer = activePlayers.element();
+		activePlayers.add(activePlayers.pop());
 	}
 	
 	private void addPlayer(CardsEnum suspect, ClientThread thread) {
@@ -144,7 +157,14 @@ public class Game {
 	}
 	
 	public Message getGameState() {
-		Heartbeat hb = new Heartbeat(activePlayers.size(), gameStarted, activePlayer);
+		CardsEnum activeSuspect;
+		if(activePlayer != null) {
+			activeSuspect =  activePlayer.getSuspect();
+		}
+		else {
+			activeSuspect = activePlayers.element().getSuspect();
+		}
+		Heartbeat hb = new Heartbeat(activePlayers.size(), gameStarted, activeSuspect);
 		System.out.println("game state is " + hb);
 		return new Message(MessagesEnum.MESSAGE_SERVER_HEARTBEAT,hb);
 	}

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import java.net.ServerSocket;
-import java.util.ArrayList;
 import java.net.InetAddress;
 
 public class CluelessServerSocket {

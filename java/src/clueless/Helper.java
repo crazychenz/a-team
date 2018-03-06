@@ -1,5 +1,6 @@
 package clueless;
 
+import java.util.Random;
 
 public class Helper {
 
@@ -55,5 +56,9 @@ public class Helper {
 			}
 		}
 		return 0;
+	}
+	
+	static public Random GetRandom() {
+		return new Random();
 	}
 }
