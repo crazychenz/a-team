@@ -1,0 +1,20 @@
+@startuml
+title Clue-Less Diagram
+
+rectangle Server {
+    (Setup) as Installation
+    (Run)
+}
+rectangle Client {
+    (Play)
+}
+
+:Administrator: 
+:User:
+Administrator -down-> (Run) : Start the Clue-Less Server
+Administrator -down-> Installation: Setup the Clue-Less Server
+User -down-> (Play) : Play a game of Clue-Less
+Server -up-> Client : Traffic between the Client and Server
+Client -down-> Server
+
+@enduml

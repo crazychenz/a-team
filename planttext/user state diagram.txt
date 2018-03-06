@@ -1,0 +1,25 @@
+@startuml
+title User's state diagram
+state UserTurn
+state "User's turn" as UserTurn {
+  state Choice
+  state Move
+  state Suggest
+  state Accuse
+  Choice --> Move
+  Choice --> Suggest
+  Choice --> Accuse
+  Suggest --> Accuse
+}
+state NotUserTurn
+state "Not User's turn" as NotUserTurn {
+  state Disprove
+}
+state UserSits
+state "User sits" as UserSits {
+  state "Disprove" as Disprove1
+}
+UserTurn -Right-> NotUserTurn : Turn ends
+UserTurn -Left-> UserSits : User sits
+NotUserTurn -Left-> UserTurn :Turn begins
+@enduml

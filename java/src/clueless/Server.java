@@ -21,7 +21,6 @@ public class Server {
 	private ArrayList<ClientThread> connectedClients;
 	
 	public Server() {
-		System.out.println("default construtor");
 		connectedClients = new ArrayList<ClientThread>();
 		gameState = new Game(this);
 	}

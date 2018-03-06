@@ -20,4 +20,5 @@ public class Weapon {
 	public void SetLocation(CardsEnum location) {
 		current_location = location;
 	}
+
 }
