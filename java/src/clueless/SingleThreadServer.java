@@ -18,26 +18,31 @@ import java.nio.channels.SocketChannel;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Iterator;
+import java.io.OutputStream;
 
-/**
- * @author tombo
- *
- */
 public class SingleThreadServer {
     ServerSocketChannel ssc;
     ServerSocket ss;
     //Game gameState;
     private Hashtable<SocketChannel, ClientConnection> clients;
     
-    // Define some shorthand aliases
-    private final int OP_ACCEPT = SelectionKey.OP_ACCEPT;
-    private final int OP_READ = SelectionKey.OP_READ;
-    private final int OP_WRITE = SelectionKey.OP_WRITE;
-    
     public SingleThreadServer() {
         System.out.println("default construtor");
         clients = new Hashtable<SocketChannel, ClientConnection>();
         //gameState = new Game(this);
+    }
+    
+    public void disconnect(SocketChannel sc) {
+        ClientConnection conn = clients.get(sc);
+        conn.cancelSelection();
+        clients.remove(sc);
+        try {
+            sc.close();
+            System.out.println("Socket closed.");
+        } catch (IOException se) {
+            System.out.println("Failed to close socket.");
+        } 
+        return;
     }
     
     public void listenForConnections(
@@ -54,7 +59,7 @@ public class SingleThreadServer {
         Selector selector = Selector.open();
         
         // Register the ServerSocket with selector for new connections.
-        ssc.register(selector, OP_ACCEPT);
+        ssc.register(selector, SelectionKey.OP_ACCEPT);
         
         while(true) {
             int ret;
@@ -73,22 +78,22 @@ public class SingleThreadServer {
             Iterator it = keys.iterator();
             while (it.hasNext()) {
                 SelectionKey key = (SelectionKey)it.next();
-                if ((key.readyOps() & OP_ACCEPT) == OP_ACCEPT) {
+                if (key.isValid() && key.isAcceptable()) {
                     ClientConnection conn;
                     Socket s;
                     SocketChannel sc;
+                    SelectionKey selectionKey;
                     
                     // Handle incoming connection
                     System.out.println("Got a connection.");
                     s = ss.accept();
                     sc = s.getChannel();
                     sc.configureBlocking(false);
-                    sc.register(selector, SelectionKey.OP_READ);
-                    conn = new ClientConnection(s, this);
-                    //connectedClients.add(conn);
+                    selectionKey = sc.register(selector, SelectionKey.OP_READ);
+                    conn = new ClientConnection(s, selectionKey, this);
                     clients.put(sc, conn);
                 }
-                else if ((key.readyOps() & OP_READ) == OP_READ) {
+                else if (key.isValid() && key.isReadable()) {
                     
                     // Handle incoming data
                     SocketChannel sc = null;
@@ -104,17 +109,7 @@ public class SingleThreadServer {
                         conn.handleRequest();
                         
                     } catch (Exception e) {
-                        // Remove the key from selector on error.
-                        key.cancel();
-                        
-                    //    try {
-                    //        sc.close();
-                    //        System.out.println("Socket closed.");
-                    //    } catch (IOException se) {
-                    //        System.out.println("Failed to close socket.");
-                    //        throw se;
-                    //    }
-                        
+                        disconnect(sc);
                         System.out.println("Failed to handleRequest");
                         throw e;
                     }
@@ -133,9 +128,13 @@ class ClientConnection {
     private Socket socket;
     private SocketChannel sc;
     private SingleThreadServer server;
+    private SelectionKey selectionKey;
+    OutputStream out_stream;
     private boolean running = false;
 
-    public ClientConnection(Socket socket, SingleThreadServer server) {
+    public ClientConnection(Socket socket, SelectionKey key, SingleThreadServer server)
+    {
+        selectionKey = key;
         this.socket = socket;
         sc = socket.getChannel();
         this.server = server;
@@ -146,22 +145,49 @@ class ClientConnection {
         System.out.println("Client created");
     }
     
+    public void cancelSelection() {
+        try {
+            selectionKey.cancel();
+        } catch (Exception e) {
+            System.out.println("Failed to cancel selector key.");
+        }
+    }
+    
     public void handleRequest() throws Exception {
     
+        // -- Read the request --
         // reset buffer
         in_buffer.clear();
-        
         try {
             // read data into buffer
             sc.read(in_buffer);
         } catch (IOException e) {
-            System.out.println("Failed to read buf in handleRequest.");
+            e.printStackTrace();
+            System.out.println("Failed to read buf");
             throw e;
         }
         // flip buffer for reading
         in_buffer.flip();
         
-        System.out.format("Received %d bytes.", in_buffer.limit());
+        if (in_buffer.limit() == 0)
+        {
+            System.out.println("Connection closed remotely.");
+            server.disconnect(sc);
+            return;
+        }
+        
+        // -- Analyze Request --
+        System.out.format("Received %d bytes.\n", in_buffer.limit());
+        
+        // -- Send Response --
+        byte [] response = {0x05, 0x04, 0x03};
+        try {
+            int bytes = sc.write(ByteBuffer.wrap(response));
+            System.out.format("Sent %d bytes.\n", bytes);
+        } catch (IOException e) {
+            System.out.println("Failed to write buf");
+            throw e;
+        }
     }
 
 }
