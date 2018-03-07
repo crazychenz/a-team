@@ -4,10 +4,16 @@
  */
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AvailableSuspects implements Serializable {
+    private static final Logger logger =
+        LogManager.getLogger(AvailableSuspects.class);
+        
     public ArrayList<CardsEnum> list;
     
     public AvailableSuspects() {

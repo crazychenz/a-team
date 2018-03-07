@@ -3,12 +3,18 @@
  */
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * @author tombo
  *
  */
 public class Suspect {
+
+    private static final Logger logger =
+        LogManager.getLogger(Suspect.class);
+
 	private CardsEnum suspect;
 	private CardsEnum start_location;
 	private CardsEnum current_location;
@@ -18,7 +24,7 @@ public class Suspect {
 	public Suspect(CardsEnum suspect, CardsEnum start_location) {
 		this.suspect = suspect;
 		this.start_location = start_location;
-		System.out.println("Creating suspect " + suspect.toString() + " in location " + start_location.toString());
+		logger.debug("Creating suspect " + suspect.toString() + " in location " + start_location.toString());
 	}
 	
 	public void move(CardsEnum location) {

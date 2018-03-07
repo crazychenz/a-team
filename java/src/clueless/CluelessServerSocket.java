@@ -1,12 +1,21 @@
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 
 import java.net.ServerSocket;
 import java.net.InetAddress;
+import java.nio.channels.ServerSocketChannel;
+import java.net.InetSocketAddress;
 
 public class CluelessServerSocket {
+
+    private static final Logger logger =
+        LogManager.getLogger(CluelessServerSocket.class);
+
     ServerSocket svcSocket;
 
     // Default values for ServerSocket options
@@ -25,7 +34,7 @@ public class CluelessServerSocket {
         try {
             this.svcBindAddr = InetAddress.getByAddress(defBindAddr);
         } catch (UnknownHostException e) {
-            System.out.println("Couldn't get any inet address.");
+            logger.error("Couldn't get any inet address.");
             throw e;
         }
     }
@@ -51,9 +60,19 @@ public class CluelessServerSocket {
             this.svcSocket = new ServerSocket(
                 this.svcPort, this.svcBacklog, this.svcBindAddr);
         } catch (IOException e) {
-            System.out.format("Couldn't open port %d\n", this.svcPort);
+            logger.error("Couldn't open port %d\n", this.svcPort);
             throw e;
         }
         return this.svcSocket;
+    }
+    
+    public ServerSocketChannel getServerSocketChannel() throws Exception
+    {
+        ServerSocketChannel ssc = ServerSocketChannel.open();
+        ssc.configureBlocking(false);
+        InetSocketAddress sockaddr = 
+            new InetSocketAddress(this.svcBindAddr, this.svcPort);
+        ssc.socket().bind(sockaddr, this.svcBacklog);
+        return ssc;
     }
 }

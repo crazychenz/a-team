@@ -1,5 +1,5 @@
 /**
- * 
+ * Note: Superceded by SimpleClient
  */
 package clueless;
 

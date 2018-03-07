@@ -1,8 +1,14 @@
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.io.Serializable;
 
 public class Heartbeat implements Serializable{
+
+    private static final Logger logger =
+        LogManager.getLogger(Heartbeat.class);
 
 	/**
 	 * 

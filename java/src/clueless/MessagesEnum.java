@@ -3,6 +3,9 @@
  */
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  * @author tombo
  *

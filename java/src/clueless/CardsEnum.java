@@ -1,4 +1,7 @@
 package clueless;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 //This file is meant to represent the cards from the board game and nothing else
 public enum CardsEnum {
 	LOCATION_KITCHEN(0x01, "Kitchen", CardType.CARD_TYPE_LOCATION),

@@ -3,10 +3,14 @@
  */
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -23,18 +27,51 @@ import java.net.InetSocketAddress;
 
 
 public class SimpleClient {
+
+    private static final Logger logger =
+        LogManager.getLogger(SimpleClient.class);
+    
     Selector selector;
     private Socket socket;
     SocketChannel sc;
     
     private ByteBuffer in_buffer;
     private ByteBuffer out_buffer;
-    public User user;
+    //public User user;
     private boolean connected = false;
     
     public SimpleClient() {
         in_buffer = ByteBuffer.allocate(4096);
         out_buffer = ByteBuffer.allocate(4096);
+    }
+    
+    public void connectToGame() {
+        ByteBufferBackedOutputStream bbos;
+        ByteBufferBackedInputStream bbis;
+        ObjectOutputStream oos;
+        ObjectInputStream ois;
+        Message msg;
+        
+        try {
+            // Send the message object
+            out_buffer.clear();
+            msg = new Message(MessagesEnum.MESSAGE_CLIENT_CONNECTED, "");
+            bbos = new ByteBufferBackedOutputStream(out_buffer);
+            oos = new ObjectOutputStream(bbos);
+            oos.writeObject(msg);
+            out_buffer.flip();
+            sendRequest();
+            
+            // Read in the response message object
+            readResponse();
+            logger.info(String.format("Received %d bytes.", in_buffer.limit()));
+            bbis = new ByteBufferBackedInputStream(in_buffer);
+            ois = new ObjectInputStream(bbis);
+            msg = (Message) ois.readObject();
+            logger.info("resp msg id " + msg.getMessageID());
+        } catch (Exception e) {
+            logger.error("Failure in connectToGame");
+        }
     }
     
     public void connectToServer() throws Exception
@@ -53,15 +90,15 @@ public class SimpleClient {
             // Wait for connection or timeout.
             handleComms();
             if (connected) {
-                System.out.println("Connected.");
+                logger.info("Connected.");
             }
             else {
-                System.out.println("Not connected.");
+                logger.warn("Not connected.");
             }
             // Grab underlying socket
             socket = sc.socket();
         } catch (UnknownHostException e) {
-            System.out.println("Unknown host while connecting client.");
+            logger.error("Unknown host while connecting client.");
             throw e;
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,13 +139,13 @@ public class SimpleClient {
                         // read data into buffer
                         sc.read(in_buffer);
                     } catch (IOException e) {
-                        System.out.println("Failed to read buf.");
+                        logger.error("Failed to read buf.");
                         throw e;
                     }
                     // flip buffer for reading
                     in_buffer.flip();
-                    System.out.format("Received %d bytes.\n", 
-                        in_buffer.limit());
+                    logger.debug(String.format("Received %d bytes.\n", 
+                        in_buffer.limit()));
                 }
                 if (key.isValid() && key.isWritable()) {
                     // Handle outgoing data
@@ -117,28 +154,37 @@ public class SimpleClient {
                         // write buffer to socket
                         sc.write(out_buffer);
                     } catch (IOException e) {
-                        System.out.println("Failed to write buf.");
+                        logger.error("Failed to write buf.");
                         throw e;
                     }
-                    System.out.format("Sent %d bytes.\n", out_buffer.position());
+                    logger.debug(String.format("Sent %d bytes.\n", 
+                        out_buffer.position()));
                     return;
                 }
             }
         } catch (IOException e) {
-            System.out.println("Failed handleComms");
+            logger.error("Failed handleComms");
             throw e;
         }
     }
     
-    public void reqResp() throws Exception
-    {
-        byte[] req = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
-        
+    public void readResponse() throws Exception
+    {   
         try {
-            out_buffer.clear();
-            out_buffer.put(req);
-            out_buffer.flip();
-            
+            in_buffer.clear();
+            sc.register(selector, SelectionKey.OP_READ);
+            handleComms();
+            logger.warn("in_buffer is " + in_buffer.limit());
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }        
+    }
+    
+    public void sendRequest() throws Exception
+    {   
+        try {
             // Do the write
             while (out_buffer.remaining() > 0) {
                 // Add socket to write queue
@@ -146,9 +192,11 @@ public class SimpleClient {
                 handleComms();
             }
             
-            sc.register(selector, SelectionKey.OP_READ);
-            in_buffer.clear();
-            handleComms();
+            //sc.register(selector, SelectionKey.OP_READ);
+            //in_buffer.clear();
+            // TODO: Make this a timed loop.
+            //handleComms();
+            //in_buffer.flip();
         
         } catch (Exception e) {
             e.printStackTrace();

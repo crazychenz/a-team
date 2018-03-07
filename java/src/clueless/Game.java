@@ -1,5 +1,8 @@
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -9,6 +12,9 @@ import clueless.Helper;
 
 public class Game {
 
+    private static final Logger logger =
+        LogManager.getLogger(Game.class);
+
 	private CardDeck cards;
 	private LinkedList<Player> activePlayers;
 	public boolean classicMode = false;
@@ -16,10 +22,10 @@ public class Game {
 	private ArrayList<Weapon> weapons;
 	private ArrayList<Suspect> suspects;
 	private boolean gameStarted = false;
-	private Server server;
+	private SingleThreadServer server;
 	private Player activePlayer;
 	
-	public Game(Server server) {
+	public Game(SingleThreadServer server) {
 		locations = new ArrayList<Location>();
 		weapons = new ArrayList<Weapon>();
 		suspects = new ArrayList<Suspect>();
@@ -29,9 +35,16 @@ public class Game {
 		setupLocations();
 		setupSuspects();
 		this.server = server;
-		HeartbeatThread gt = new HeartbeatThread(activePlayers,this);
-		gt.start();
+		//HeartbeatThread gt = new HeartbeatThread(activePlayers,this);
+		//gt.start();
 	}
+	
+	/*private void sendMessageToAllPlayers(Message message) {
+        Iterator<Player> iter = activePlayers.iterator();
+        while(iter.hasNext()) {
+            iter.next().getThread().send(message);
+        }
+    }*/
 	
 	private void setupWeapons() {
 		for(CardsEnum weapon : CardsEnum.values()) {
@@ -40,13 +53,6 @@ public class Game {
 				weapons.add(t);
 				cards.add(new Card(weapon));
 			}
-		}
-	}
-	
-	private void sendMessageToAllPlayers(Message message) {
-		Iterator<Player> iter = activePlayers.iterator();
-		while(iter.hasNext()) {
-			iter.next().getThread().send(message);
 		}
 	}
 	
@@ -76,10 +82,10 @@ public class Game {
 		}
 	}
 	
-	public void processMessage(Object message, ClientThread thread) {
-		System.out.println("Processing the message");
-		System.out.println(message);
-		Message newMessage = (Message)message;
+	public Message processMessage(Message message) {
+		logger.debug("Processing the message");
+		logger.debug(message);
+		Message newMessage = message;
 		
 		switch(newMessage.getMessageID()) {
 			case MESSAGE_CLIENT_START_GAME:
@@ -89,8 +95,7 @@ public class Game {
 				break;
 			case MESSAGE_CLIENT_CONNECTED:
 				//Client just connected, let them pick a suspect
-				sendAvailableSuspects(thread);
-				break;
+				return sendAvailableSuspects();
 			case MESSAGE_CHAT_FROM_CLIENT:
 				//Chat from client
 				System.out.println("Chat from client: " + newMessage.getMessageData());
@@ -107,7 +112,8 @@ public class Game {
 						s.setActive(true);
 					}
 				}
-				addPlayer(pickedSuspect, thread);
+				addPlayer(pickedSuspect);
+				// TODO: Develop acknowledgement
 				break;
 			case MESSAGE_CLIENT_MOVE:
 				//handle the move
@@ -123,6 +129,8 @@ public class Game {
 			default:
 				break;
 		}
+		
+		return null;
 	}
 	
 	private void startGame() {
@@ -130,7 +138,7 @@ public class Game {
 			cards.setupCardDeckAndDealCards(activePlayers,classicMode);
 			gameStarted = true;
 			shufflePlayersAndSetActivePlayer();
-			sendMessageToAllPlayers(new Message(MessagesEnum.MESSAGE_SERVER_START_GAME,""));			
+			//sendMessageToAllPlayers(new Message(MessagesEnum.MESSAGE_SERVER_START_GAME,""));			
 		}
 		else {
 			System.out.println("Not enough players to start the game");
@@ -150,9 +158,9 @@ public class Game {
 		activePlayers.add(activePlayers.pop());
 	}
 	
-	private void addPlayer(CardsEnum suspect, ClientThread thread) {
+	private void addPlayer(CardsEnum suspect) {
 		System.out.println("Adding new player");
-		activePlayers.add(new Player(thread, suspect));
+		activePlayers.add(new Player(suspect));
 		startGame();	//For now, try to start the game after every user connects.  We need to let the users pick when to start
 	}
 	
@@ -169,18 +177,21 @@ public class Game {
 		return new Message(MessagesEnum.MESSAGE_SERVER_HEARTBEAT,hb);
 	}
 	
-	private void sendAvailableSuspects(ClientThread thread) {
-		//ArrayList<CardsEnum> availableSuspects = new ArrayList<CardsEnum>();
+	private Message sendAvailableSuspects() {
 		AvailableSuspects availableSuspects = new AvailableSuspects();
 		for (Suspect suspect : suspects) {
 			if(!suspect.getActive()) {
 				availableSuspects.list.add(suspect.getSuspect());
 			}
 		}
-		thread.send(new Message(MessagesEnum.MESSAGE_SERVER_AVAILABLE_SUSPECTS,availableSuspects));
+		
+		return new Message(
+		    MessagesEnum.MESSAGE_SERVER_AVAILABLE_SUSPECTS,
+		    availableSuspects);
 	}
 }
 
+/*
 class HeartbeatThread extends Thread {
 	private LinkedList<Player> activePlayers;
 	private Game game;
@@ -209,3 +220,4 @@ class HeartbeatThread extends Thread {
 		}
 	}
 }
+*/

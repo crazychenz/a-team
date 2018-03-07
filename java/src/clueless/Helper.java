@@ -1,8 +1,14 @@
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.util.Random;
 
 public class Helper {
+
+    private static final Logger logger =
+        LogManager.getLogger(Helper.class);
 
 	static public CardsEnum GetStartingLocationOfSuspect(CardsEnum suspect) {
 		switch(suspect) {

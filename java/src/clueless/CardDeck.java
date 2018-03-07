@@ -3,6 +3,9 @@
  */
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -13,6 +16,10 @@ import java.util.Random;
  *
  */
 public class CardDeck {
+
+    private static final Logger logger =
+        LogManager.getLogger(CardDeck.class);
+        
 	private Envelope envelope;
 	private ArrayList<Card> faceUpCards;
 	private ArrayList<Card> allSuspectCards;
@@ -27,11 +34,11 @@ public class CardDeck {
 		allWeaponCards = new ArrayList<Card>();
 		faceUpCards = new ArrayList<Card>();
 		envelope = new Envelope();
-		System.out.println("Setting up CardDeck");
+		logger.debug("Setting up CardDeck");
 	}
 	
 	public void add(Card add) {
-		System.out.println("Adding new card " + add.toString());
+		logger.debug("Adding new card " + add.toString());
 		if(add.getCardType() == CardType.CARD_TYPE_LOCATION) {
 			allLocationCards.add(add);
 		}
@@ -47,10 +54,13 @@ public class CardDeck {
 		//shuffle all the cards
 	}
 	
-	public void setupCardDeckAndDealCards(LinkedList<Player> users, boolean classicClue) {
+	public void setupCardDeckAndDealCards(
+	    LinkedList<Player> players, 
+	    boolean classicClue)
+	{
 		populateEnvelope();
-		int numUsers = users.size();
-		System.out.println("Dealing to " + numUsers + " players.");
+		int numUsers = players.size();
+		logger.debug("Dealing to " + numUsers + " players.");
 		int numberOfFaceUpCards = Helper.GetNumberOfFaceUpCardsForNumberOfUsers(numUsers, classicClue);
 		ArrayList<Card> allCards = new ArrayList<Card>();
 		allCards.addAll(allLocationCards);
@@ -65,13 +75,17 @@ public class CardDeck {
 		int numberOfCardsPerUser = numberOfRemainingCards/numUsers;
 		
 		for(int i = 0; i < numUsers; i++) {
+		    ArrayList<Card> playerCardList = players.get(i).getCards();
+		    
 			for(int j = 0; j < numberOfCardsPerUser; j++) {
-				Message cardMessage = new Message(MessagesEnum.MESSAGE_CARD_FROM_SERVER, allCards.remove(rngjesus.nextInt(allCards.size())));
-				users.get(i).getThread().send(cardMessage);
+				//Message cardMessage = new Message(MessagesEnum.MESSAGE_CARD_FROM_SERVER, );
+				Card card = allCards.remove(rngjesus.nextInt(allCards.size()));
+				playerCardList.add(card);
+				// TODO: Send the card message to client
 			}
 		}
 		
-		System.out.println("Number of cards left in the CardDeck after dealing all cards " + allCards.size());
+		logger.warn("Number of cards left in the CardDeck after dealing all cards " + allCards.size());
 		//There should be no more Cards in allCards now
 	}
 	

@@ -3,6 +3,9 @@
  */
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import java.io.Serializable;
 
 /**
@@ -10,6 +13,9 @@ import java.io.Serializable;
  *
  */
 public class Card implements Serializable{
+
+    private static final Logger logger =
+        LogManager.getLogger(Card.class);
 
 	/**
 	 * 

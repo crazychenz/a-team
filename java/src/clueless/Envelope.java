@@ -3,11 +3,18 @@
  */
 package clueless;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  * @author tombo
  *
  */
 public class Envelope {
+
+    private static final Logger logger =
+        LogManager.getLogger(Envelope.class);
+
 	private Card suspect;
 	private Card location;
 	private Card weapon;

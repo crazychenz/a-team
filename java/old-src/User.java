@@ -25,7 +25,7 @@ public class User {
 	private CardsEnum suspect;
 	private boolean myTurn;
 	private int ID;
-	Client client;
+	SimpleClient client;
 	static boolean makingSelection = false;
 	
 	public User(Client client)

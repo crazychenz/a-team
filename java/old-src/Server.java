@@ -1,5 +1,5 @@
 /**
- * 
+ * Note: Superceded by SingleThreadServer
  */
 package clueless;
 
@@ -97,7 +97,7 @@ class ClientThread extends Thread {
 	    while(running){
 	    	try{
 	    		Object message = in.readObject();
-	    		server.gameState.processMessage(message, this);
+	    		server.gameState.processMessage(message);
 	    	}
 	    	catch (ClassNotFoundException e) {
 	    		System.out.println("class not found");

@@ -1,7 +1,7 @@
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import clueless.Server;
+import clueless.SingleThreadServer;
 import clueless.CluelessServerSocket;
 
 // required for arg parser
@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 
 class ServerArgumentHandler {
 
-    private static final Logger logger =
+    private static final Logger logger = 
         LogManager.getLogger(ServerArgumentHandler.class);
 
     private Hashtable<String, Boolean> validArguments;
@@ -108,7 +108,7 @@ public class ServerRun {
             
             // Start the server
             logger.info("Starting server");
-            Server svc = new Server();
+            SingleThreadServer svc = new SingleThreadServer();
             
             try {
                 svc.listenForConnections(serverSocket);
