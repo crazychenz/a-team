@@ -1,0 +1,5 @@
+*.log
+dist
+bin
+.project
+.DS_Store
