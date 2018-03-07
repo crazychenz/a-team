@@ -1,3 +1,6 @@
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import clueless.Server;
 import clueless.CluelessServerSocket;
 
@@ -10,6 +13,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 class ServerArgumentHandler {
+
+    private static final Logger logger =
+        LogManager.getLogger(ServerArgumentHandler.class);
+
     private Hashtable<String, Boolean> validArguments;
 
     public ServerArgumentHandler(
@@ -77,6 +84,9 @@ class ServerArgumentHandler {
 
 public class ServerRun {
 
+	private static final Logger logger =
+		LogManager.getLogger(ServerRun.class);
+
 	public static void main(String[] args) {
 		CluelessServerSocket serverSocket;
 		ServerArgumentHandler argHandler;
@@ -92,12 +102,12 @@ public class ServerRun {
                     new ServerArgumentHandler(args, serverSocket);
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("Failed to parse arguments.");
+                logger.error("Failed to parse arguments.");
                 System.exit(-1);
             }
             
             // Start the server
-            System.out.println("Starting server");
+            logger.info("Starting server");
             Server svc = new Server();
             
             try {
@@ -105,12 +115,12 @@ public class ServerRun {
             } catch (Exception e)
             {
                 e.printStackTrace();
-                System.out.println("Failed to listen for connections.");
+                logger.error("Failed to listen for connections.");
                 System.exit(-1);
             }
 
         } catch (Exception e) {
-            System.out.println("Failed to initialize default network config.");
+            logger.error("Failed to initialize default network config.");
             e.printStackTrace();
             System.exit(-1);
         }
