@@ -170,10 +170,11 @@ public class Game {
 	}
 	
 	private void sendAvailableSuspects(ClientThread thread) {
-		ArrayList<CardsEnum> availableSuspects = new ArrayList<CardsEnum>();
+		//ArrayList<CardsEnum> availableSuspects = new ArrayList<CardsEnum>();
+		AvailableSuspects availableSuspects = new AvailableSuspects();
 		for (Suspect suspect : suspects) {
 			if(!suspect.getActive()) {
-				availableSuspects.add(suspect.getSuspect());
+				availableSuspects.list.add(suspect.getSuspect());
 			}
 		}
 		thread.send(new Message(MessagesEnum.MESSAGE_SERVER_AVAILABLE_SUSPECTS,availableSuspects));
@@ -195,10 +196,10 @@ class HeartbeatThread extends Thread {
 		while(true) {
 	    	//We should update all clients at the same time.
 	    	if((System.currentTimeMillis() - lastUpdate) > 1000) {
-	    		LinkedList<Player> copy = (LinkedList<Player>) activePlayers.clone();
-	    		Iterator<Player> iter = copy.iterator();
+	    		LinkedList<?> copy = (LinkedList<?>) activePlayers.clone();
+	    		Iterator<?> iter = copy.iterator();
 	    		while(iter.hasNext()) {
-	    			Player p = iter.next();
+	    			Player p = (Player) iter.next();
 	    			if(!p.getThread().send(game.getGameState())) {
 	    				iter.remove();
 	    			}

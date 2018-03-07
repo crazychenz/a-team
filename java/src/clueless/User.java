@@ -51,7 +51,7 @@ public class User {
 		return myCards.get(0);
 	}
 	
-	private void pickASuspect(ArrayList<CardsEnum> suspects) {
+	private void pickASuspect(AvailableSuspects suspects) {
 		//Put console init stuff in Helper
 		Console console = System.console();
         if (console == null) {
@@ -63,7 +63,7 @@ public class User {
         while(!suspectSelected) {
             console.printf("Please pick a suspect to play as: \n");
             int index = 1;
-            for (CardsEnum suspect : suspects) {
+            for (CardsEnum suspect : suspects.list) {
             	console.printf("\t%d %s\n", index, suspect.getLabel());
             	index++;
             }
@@ -74,8 +74,8 @@ public class User {
             try {
             	choice = Integer.parseInt(line);
             	choice -=1;
-            	console.printf("You have selected %s\n", suspects.get(choice).getLabel());
-            	suspect = suspects.get(choice);
+            	console.printf("You have selected %s\n", suspects.list.get(choice).getLabel());
+            	suspect = suspects.list.get(choice);
             	suspectSelected = true;
             }
             catch (NumberFormatException e) {
@@ -182,7 +182,7 @@ public class User {
 				processHeartbeat((Heartbeat)m.getMessageData());
 				break;
 			case MESSAGE_SERVER_AVAILABLE_SUSPECTS:
-				pickASuspect((ArrayList<CardsEnum>)m.getMessageData());
+			    pickASuspect((AvailableSuspects)m.getMessageData());
 				break;
 			case MESSAGE_SERVER_START_GAME:
 				startGame();
