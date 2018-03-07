@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS}[%level{length=1}][%t] %logger{1}: %msg%throwable%n}"/>
+    </Console>
+    <File name="File" filename="${sys:logFilename}">
+      <PatternLayout pattern="#%sn %d{ISO8601}[%level][%pid:%t] %logger - %msg%n%throwable"/>
+    </File>
+  </Appenders>
+  <Loggers>
+    <!--
+    <Logger name="ServerArgumentHandler" level="error" additivity="false">
+      <AppenderRef ref="Console" />
+    </Logger>
+    -->
+
+    <Root level="trace">
+      <AppenderRef ref="File" />
+      <AppenderRef ref="Console" />
+    </Root>
+  </Loggers>
+</Configuration>

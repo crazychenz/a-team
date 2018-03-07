@@ -6,6 +6,13 @@
     <property name="build.dir" location="bin" />
     <property name="dist.dir" location="dist" />
     <property name="docs.dir" location="docs" />
+    <property name="lib.dir" location="lib" />
+
+    <path id="lib-classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
 
     <!-- Deletes the existing build, docs and dist directory-->
     <target name="clean">
@@ -23,9 +30,10 @@
 
     <!-- Compiles the java code (including the usage of library for JUnit -->
     <target name="compile" depends="clean, makedir">
-        <javac srcdir="${src.dir}" destdir="${build.dir}">
+        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}">
+            <classpath refid="lib-classpath" />
+            <compilerarg value="-Xlint:unchecked" />
         </javac>
-
     </target>
 
     <!-- Creates Javadoc -->
@@ -47,6 +55,28 @@
 
     <target name="main" depends="compile, jar, docs">
         <description>Main target</description>
+    </target>
+
+    <target name="runserver" depends="jar">
+        <java classname="ServerRun">
+            <classpath>
+                <pathelement location="dist/clueless.jar" />
+                <path refid="lib-classpath" />
+            </classpath>
+            <sysproperty key="log4j.configurationFile" value="log4j2.xml" />
+            <sysproperty key="logFilename" value="server.log" />
+        </java>
+    </target>
+
+    <target name="runclient" depends="jar">
+        <java classname="ClientRun">
+            <classpath>
+                <pathelement location="dist/clueless.jar" />
+                <path refid="lib-classpath" />
+            </classpath>
+            <sysproperty key="log4j.configurationFile" value="log4j2.xml" />
+            <sysproperty key="logFilename" value="client.log" />
+        </java>
     </target>
 
 </project>
