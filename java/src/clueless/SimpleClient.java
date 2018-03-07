@@ -52,23 +52,31 @@ public class SimpleClient {
         ObjectInputStream ois;
         Message msg;
         
+        logger.debug("Connecting to Game");
+        
         try {
             // Send the message object
             out_buffer.clear();
+            // Reserve 4 bytes
+            out_buffer.putInt(0);
             msg = new Message(MessagesEnum.MESSAGE_CLIENT_CONNECTED, "");
             bbos = new ByteBufferBackedOutputStream(out_buffer);
             oos = new ObjectOutputStream(bbos);
             oos.writeObject(msg);
+            out_buffer.putInt(0, out_buffer.position());
             out_buffer.flip();
+            
             sendRequest();
             
             // Read in the response message object
+            // expecting a list of suspects
             readResponse();
-            logger.info(String.format("Received %d bytes.", in_buffer.limit()));
+            in_buffer.getInt();
             bbis = new ByteBufferBackedInputStream(in_buffer);
             ois = new ObjectInputStream(bbis);
             msg = (Message) ois.readObject();
             logger.info("resp msg id " + msg.getMessageID());
+            in_buffer.clear();
         } catch (Exception e) {
             logger.error("Failure in connectToGame");
         }
@@ -81,20 +89,15 @@ public class SimpleClient {
         
         try {
             // TODO: Use cli arguments
+            
             // Connect a socket
             sc = SocketChannel.open();
-            sc.configureBlocking(false);
-            conn_key = sc.register(selector, SelectionKey.OP_CONNECT);
+            sc.configureBlocking(true);
+            
             // Start connection
             sc.connect(new InetSocketAddress(InetAddress.getLocalHost(), 2323));
-            // Wait for connection or timeout.
-            handleComms();
-            if (connected) {
-                logger.info("Connected.");
-            }
-            else {
-                logger.warn("Not connected.");
-            }
+            logger.info("Connected.");
+            
             // Grab underlying socket
             socket = sc.socket();
         } catch (UnknownHostException e) {
@@ -107,102 +110,38 @@ public class SimpleClient {
         
     }
     
-    private void handleComms() throws Exception
-    {
+    public void sendRequest() throws Exception
+    {   
         try {
-            int ret;
-            long timeout = 10;
-            
-            // Wait for available data and connections
-            ret = selector.select(timeout);
-            if (ret == 0)
-            {
-                // nothing to do, rinse and repeat
-                return;
-            }
-            
-            // Handle incoming stuff
-            Set<SelectionKey> keys = selector.selectedKeys();
-            Iterator<SelectionKey> it = keys.iterator();
-            while (it.hasNext()) {
-                SelectionKey key = it.next();
-                if (key.isValid() && key.isConnectable()) {
-                    connected = true;
-                    SocketChannel sc = (SocketChannel) key.channel();
-                    sc.finishConnect();
-                }
-                if (key.isValid() && key.isReadable()) {
-                    SocketChannel sc = (SocketChannel) key.channel();
-                    // reset buffer
-                    in_buffer.clear();
-                    try {
-                        // read data into buffer
-                        sc.read(in_buffer);
-                    } catch (IOException e) {
-                        logger.error("Failed to read buf.");
-                        throw e;
-                    }
-                    // flip buffer for reading
-                    in_buffer.flip();
-                    logger.debug(String.format("Received %d bytes.\n", 
-                        in_buffer.limit()));
-                }
-                if (key.isValid() && key.isWritable()) {
-                    // Handle outgoing data
-                    SocketChannel sc = (SocketChannel) key.channel();
-                    try {
-                        // write buffer to socket
-                        sc.write(out_buffer);
-                    } catch (IOException e) {
-                        logger.error("Failed to write buf.");
-                        throw e;
-                    }
-                    logger.debug(String.format("Sent %d bytes.\n", 
-                        out_buffer.position()));
-                    return;
-                }
-            }
-        } catch (IOException e) {
-            logger.error("Failed handleComms");
+            // Add socket to write queue
+            int bytes = sc.write(out_buffer);
+            logger.info("Sent " + bytes + " bytes");
+        } catch (Exception e) {
+            e.printStackTrace();
             throw e;
-        }
+        }        
     }
     
     public void readResponse() throws Exception
     {   
         try {
             in_buffer.clear();
-            sc.register(selector, SelectionKey.OP_READ);
-            handleComms();
-            logger.warn("in_buffer is " + in_buffer.limit());
-        
+            sc.read(in_buffer);
+            logger.info("Read " + in_buffer.position() + " bytes so far");
+            int length = in_buffer.getInt(0);
+            while (in_buffer.position() < length)
+            {
+                sc.read(in_buffer);
+                logger.info("Read " + in_buffer.position() + " bytes so far");
+            }
+            in_buffer.flip();
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }        
     }
     
-    public void sendRequest() throws Exception
-    {   
-        try {
-            // Do the write
-            while (out_buffer.remaining() > 0) {
-                // Add socket to write queue
-                sc.register(selector, SelectionKey.OP_WRITE);
-                handleComms();
-            }
-            
-            //sc.register(selector, SelectionKey.OP_READ);
-            //in_buffer.clear();
-            // TODO: Make this a timed loop.
-            //handleComms();
-            //in_buffer.flip();
-        
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }        
-    }
+    
 
 }
 

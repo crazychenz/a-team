@@ -37,7 +37,6 @@ public class SingleThreadServer {
     private Hashtable<SocketChannel, ClientConnection> clients;
     
     public SingleThreadServer() {
-        logger.trace("default construtor");
         clients = new Hashtable<SocketChannel, ClientConnection>();
         gameState = new Game(this);
     }
@@ -111,12 +110,32 @@ public class SingleThreadServer {
                     
                     try {
                         sc = (SocketChannel)key.channel();
+                        
                         // TODO: if handleRequest detects reset connection,
                         //       we need to clear the connection from
                         //       the ssc and connectedClients.
                         // Fetch the connection related to this request
                         conn = (ClientConnection)clients.get(sc);
-                        conn.handleRequest();
+
+                        // The first 4 bytes are the length of the
+                        // blob, so this client is going to keep trying
+                        // to read until it gets all those bytes.
+                        // TODO: This could be made better if we
+                        // made sure we always had atleast 4 bytes too.
+                        
+                        int bytes = sc.read(conn.in_buffer);
+                        int length = conn.in_buffer.getInt(0);
+                        if (conn.in_buffer.position() != length) {
+                            // TODO: Check out timeout and size violations
+                            logger.info("bytes " + bytes + " length " + length);
+                            continue;
+                        }
+                        else {
+                            conn.in_buffer.flip();
+                            conn.handleRequest();
+                            // Set this ClientConnection for output
+                            sc.register(selector, SelectionKey.OP_WRITE);
+                        }
                         
                     } catch (Exception e) {
                         disconnect(sc);
@@ -137,7 +156,13 @@ public class SingleThreadServer {
                         //       the ssc and connectedClients.
                         // Fetch the connection related to this request
                         conn = (ClientConnection)clients.get(sc);
-                        sc.write(conn.out_buffer);
+                        int bytes = sc.write(conn.out_buffer);
+                        logger.info("Sent " + bytes + " bytes.");
+                        if (conn.out_buffer.position() == conn.out_buffer.limit())
+                        {
+                            // We're done writing, look for more requests
+                            sc.register(selector, SelectionKey.OP_READ);
+                        }
                         
                     } catch (Exception e) {
                         disconnect(sc);
@@ -157,7 +182,7 @@ class ClientConnection {
     private static final Logger logger =
         LogManager.getLogger(ClientConnection.class);
 
-    private ByteBuffer in_buffer;
+    public ByteBuffer in_buffer;
     public ByteBuffer out_buffer;
     private Socket socket;
     private SocketChannel sc;
@@ -195,47 +220,34 @@ class ClientConnection {
         Message req;
         Message resp;
         
-        // Read in the request message object
-        
-        // TODO: This needs flow control
-        in_buffer.clear();
-        sc.read(in_buffer);
-        in_buffer.flip();
-        logger.info(String.format("read %d byte request", in_buffer.limit()));
-        
-        bbis = new ByteBufferBackedInputStream(in_buffer);
-        ois = new ObjectInputStream(bbis);
-        req = (Message) ois.readObject();
-        logger.info("req msg id " + req.getMessageID());
-                
-        resp = server.gameState.processMessage(req);
-
-        // Send the message object
-        out_buffer.clear();
-        bbos = new ByteBufferBackedOutputStream(out_buffer);
-        oos = new ObjectOutputStream(bbos);
-        oos.writeObject(resp);
-        out_buffer.flip();
-        logger.info(String.format("sending %d byte resp", out_buffer.limit()));
-        sendBuffer();
-    
-    }
-    
-    public void sendBuffer() throws Exception
-    {   
-        Selector selector = selectionKey.selector();
         try {
-            // Do the write
-            //while (out_buffer.remaining() > 0) {
-                // Add socket to write queue
-                logger.warn("Add socket to write queue");
-                sc.register(selector, SelectionKey.OP_WRITE);
-            //}
-        
+            // Parse the message.
+            in_buffer.getInt();
+            bbis = new ByteBufferBackedInputStream(in_buffer);
+            ois = new ObjectInputStream(bbis);
+            req = (Message) ois.readObject();
+            logger.info("req msg id " + req.getMessageID());
+            
+            // Process the message
+            resp = server.gameState.processMessage(req);
+    
+            // Serialize outgoing message
+            out_buffer.clear();
+            // Reserve size bytes
+            out_buffer.putInt(0);out_buffer.putInt(0, out_buffer.position());
+            bbos = new ByteBufferBackedOutputStream(out_buffer);
+            oos = new ObjectOutputStream(bbos);
+            oos.writeObject(resp);
+            // Overlay size of blob to front of array
+            out_buffer.putInt(0, out_buffer.position());
+            out_buffer.flip();
+            
+            logger.info(String.format("sending %d byte resp", out_buffer.limit()));
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
-        }        
+        } 
+    
     }
 
 }

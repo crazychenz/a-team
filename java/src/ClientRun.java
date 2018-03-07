@@ -16,6 +16,8 @@ public class ClientRun {
 		try {
         		client.connectToServer();
         		client.connectToGame();
+        		client.connectToGame();
+        		client.connectToGame();
         		TimeUnit.SECONDS.sleep(5);
 		} catch (Exception e) {
 		    logger.error("Client died.");
