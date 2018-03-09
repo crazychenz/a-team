@@ -122,6 +122,9 @@ public class Game {
                 //handle the accuse
                 setNextPlayer();
                 break;
+            case MESSAGE_PULSE:
+                // return echo request
+                return msg;
             default:
                 break;
         }
@@ -165,9 +168,9 @@ public class Game {
         } else {
             activeSuspect = activePlayers.element().getSuspect();
         }
-        Heartbeat hb = new Heartbeat(activePlayers.size(), gameStarted, activeSuspect);
-        System.out.println("game state is " + hb);
-        return new Message(MessagesEnum.MESSAGE_SERVER_HEARTBEAT, hb);
+        //Heartbeat hb = new Heartbeat(activePlayers.size(), gameStarted, activeSuspect);
+        //System.out.println("game state is " + hb);
+        return new Message(MessagesEnum.MESSAGE_SERVER_HEARTBEAT, "");
     }
 
     private Message sendAvailableSuspects() {

@@ -24,20 +24,34 @@ public class Client implements Runnable {
     UUID uuid;
     ConcurrentLinkedQueue<Message> chatMessageQueue;
     Thread thread;
+    // TODO: Make this abstract
+    CLIEventHandler evtHandler;
 
-    public Client() {
+    public Client(CLIEventHandler handler) {
         uuid = UUID.randomUUID();
         // Grab a context object with one I/O thread.
         zmqContext = ZMQ.context(1);
         socket = zmqContext.socket(ZMQ.DEALER);
         socket.setIdentity(uuid.toString().getBytes());
         chatMessageQueue = new ConcurrentLinkedQueue<Message>();
+        evtHandler = handler;
     }
 
-    public void connect() throws Exception {
-        socket.connect("tcp://localhost:2323");
+    public boolean connect(String hostStr, String portStr) throws Exception {
+        String host = "localhost";
+        String port = "2323";
+        if (hostStr != null) {
+            host = hostStr;
+        }
+        if (portStr != null) {
+            port = portStr;
+        }
+        String connectionStr = "tcp://" + host + ":" + port;
+        logger.info("Connecting to " + connectionStr);
+        socket.connect(connectionStr);
         thread = new Thread(this);
-        return;
+        thread.start();
+        return true;
     }
 
     public void sendMessage(Message msg) throws Exception {
@@ -65,7 +79,6 @@ public class Client implements Runnable {
 
                 // On gameSocket Event
                 if (items.pollin(0)) {
-
                     // Delimiter frame is empty
                     String empty = socket.recvStr();
                     assert (empty.length() == 0);
@@ -73,22 +86,9 @@ public class Client implements Runnable {
                     // Get the payload frame
                     ByteBuffer buf = ByteBuffer.wrap(socket.recv());
                     Message msg = Message.fromBuffer(buf);
-                    switch (msg.getMessageID()) {
-                        case MESSAGE_CHAT_FROM_SERVER:
 
-                            logger.info("chat: " + msg);
-                            break;
-                        case MESSAGE_SERVER_AVAILABLE_SUSPECTS:
-                            AvailableSuspects suspects = (AvailableSuspects) msg.getMessageData();
-                            logger.info("Count: " + suspects.list.size());
-                            for (CardsEnum suspect : suspects.list) {
-                                logger.info(suspect);
-                            }
-                            break;
-                        default:
-                            logger.info("Message: " + msg);
-                            break;
-                    }
+                    // Handle the event
+                    evtHandler.onMessageEvent(this, msg);
                 }
 
             } catch (Exception e) {

@@ -32,6 +32,18 @@ public class Server implements Runnable {
         gameState = new Game();
     }
 
+    public void sendMessage(Message msg) throws Exception {
+        ByteBuffer buf;
+        try {
+            buf = Message.toBuffer(msg);
+        } catch (Exception e) {
+            logger.error("Failed to sendMessage.");
+            throw e;
+        }
+        socket.sendMore("");
+        socket.send(buf.array());
+    }
+
     public void run() {
         socket.bind("tcp://*:2323");
 
@@ -40,7 +52,7 @@ public class Server implements Runnable {
 
         //while (!Thread.currentThread().isInterrupted()) {
         while (true) {
-            if (items.poll() < 0) {
+            if (items.poll(2000) < 0) {
                 return; //  Interrupted
             }
 
@@ -78,6 +90,7 @@ public class Server implements Runnable {
                 }
 
             }
+
         }
     }
 

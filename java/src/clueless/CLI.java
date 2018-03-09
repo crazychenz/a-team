@@ -1,7 +1,5 @@
 package clueless;
 
-import clueless.CardsEnum;
-import clueless.Client;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -16,7 +14,6 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.UserInterruptException;
 import org.jline.builtins.Completers.TreeCompleter;
-import org.jline.builtins.Completers.TreeCompleter.Node;
 import static org.jline.builtins.Completers.TreeCompleter.node;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.ParsedLine;
@@ -45,18 +42,76 @@ public class CLI {
         return nodes;
     }
 
+    public static HashMap<String, String> argumentHandler(String[] args) {
+        int index = 0;
+        HashMap<String, String> argMap = new HashMap<String, String>();
+        argMap.put("addess", null);
+        argMap.put("port", null);
+
+        label:
+        while (args.length > index) {
+            switch (args[index]) {
+                case "--address":
+                    index++;
+                    argMap.put("address", args[index]);
+                    index++;
+                    continue;
+                case "--port":
+                    index++;
+                    argMap.put("port", args[index]);
+                    index++;
+                    continue;
+                case "--help":
+                    System.out.println(""
+                            + "--address <server-ip>\n"
+                            + "    The IPv4 address or hostname of the server.\n"
+                            + "--port <server-port>\n"
+                            + "    The TCP port number of the server.\n"
+                            + "--help\n"
+                            + "    This help message.\n");
+                    System.exit(0);
+                default:
+                    index++;
+                    break label;
+            }
+        }
+        return argMap;
+    }
+
     public static void main(String[] args) {
         logger.info("Starting client CLI");
 
-        Client client = new Client();
+        // Parse command line arguments
+        HashMap<String, String> argMap = argumentHandler(args);
+
+        // Where client side state lives
+        ClientState clientState = new ClientState();
+
+        // Initialize watchdog thread
+        Watchdog watchdog = new Watchdog(10000);
+        Thread watchdogThread = new Thread(watchdog);
+        watchdogThread.start();
+
+        // Client side event handler (for CLI user interface)
+        CLIEventHandler evtHandler = new CLIEventHandler(clientState, watchdog);
+
+        // Initialize the Client link.
+        Client client = new Client(evtHandler);
         logger.info("Client UUID: " + client.uuid);
+
         try {
-            client.connect();
+            client.connect(argMap.get("address"), argMap.get("port"));
+
             // Do the initial available suspect fetch
             client.sendMessage(Message.clientConnect());
         } catch (Exception e) {
-            logger.error("Failed to connect client.");
+            logger.error("Exception in connect client.");
         }
+
+        // Init heartbeat thread (duration half length of watchdog timeout)
+        Heartbeat heartbeat = new Heartbeat(client, 5000);
+        Thread heartbeatThread = new Thread(heartbeat);
+        heartbeatThread.start();
 
         HashMap<String, CardsEnum> suspectStrToEnum
                 = new HashMap<String, CardsEnum>();
@@ -109,7 +164,13 @@ public class CLI {
 
             if (line.equalsIgnoreCase("quit")
                     || line.equalsIgnoreCase("exit")) {
-                break;
+                /*try {
+                    client.disconnect();
+                } catch (Exception e) {
+                    logger.error("Failed to disconnect client.");
+                    System.exit(-1);
+                }*/
+                System.exit(0);
             }
 
             if (line.equalsIgnoreCase("help")) {

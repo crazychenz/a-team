@@ -83,17 +83,22 @@ public class Message implements Serializable {
     }
 
     public static Message clientConnect() throws Exception {
-        logger.debug("Connecting to Game");
+        logger.trace("Connecting to Game");
         return new Message(MessagesEnum.MESSAGE_CLIENT_CONNECTED, "");
     }
 
     public static Message clientConfig(CardsEnum suspect) throws Exception {
-        logger.debug("Configuring client");
+        logger.trace("Configuring client");
         return new Message(MessagesEnum.MESSAGE_CLIENT_CONFIG, suspect);
     }
 
     public static Message chatMessage(String chatMessage) throws Exception {
-        logger.debug("Sending chat to others");
+        logger.trace("Sending chat to others");
         return new Message(MessagesEnum.MESSAGE_CHAT_FROM_CLIENT, chatMessage);
+    }
+    
+    public static Message pulse() throws Exception {
+        logger.trace("Sending watchdog pulse");
+        return new Message(MessagesEnum.MESSAGE_PULSE, "");
     }
 }
