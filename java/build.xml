@@ -64,6 +64,7 @@
                 <pathelement location="dist/clueless.jar" />
                 <path refid="lib-classpath" />
             </classpath>
+            <sysproperty key="java.util.logging.manager" value="org.apache.logging.log4j.jul.LogManager" />
             <sysproperty key="log4j.configurationFile" value="log4j2.xml" />
             <sysproperty key="logFilename" value="server.log" />
         </java>
@@ -75,6 +76,7 @@
                 <pathelement location="dist/clueless.jar" />
                 <path refid="lib-classpath" />
             </classpath>
+            <sysproperty key="java.util.logging.manager" value="org.apache.logging.log4j.jul.LogManager" />
             <sysproperty key="log4j.configurationFile" value="log4j2.xml" />
             <sysproperty key="logFilename" value="client.log" />
         </java>
