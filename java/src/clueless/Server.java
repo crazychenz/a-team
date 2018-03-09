@@ -14,36 +14,33 @@ import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
 
 public class Server implements Runnable {
-    
-    private static final Logger logger =
-        LogManager.getLogger(Server.class);
+
+    private static final Logger logger
+            = LogManager.getLogger(Server.class);
 
     Context zmqContext;
     Socket socket;
     Game gameState;
 
     ConcurrentLinkedQueue<Message> chatMessageQueue;
-    
-    public Server()
-    {
+
+    public Server() {
         // Grab a context object with one I/O thread.
         zmqContext = ZMQ.context(1);
         socket = zmqContext.socket(ZMQ.ROUTER);
         chatMessageQueue = new ConcurrentLinkedQueue<Message>();
         gameState = new Game();
     }
-    
-    public void run()
-    {
+
+    public void run() {
         socket.bind("tcp://*:2323");
-        
+
         Poller items = zmqContext.poller(1);
         items.register(socket, Poller.POLLIN);
-        
+
         //while (!Thread.currentThread().isInterrupted()) {
         while (true) {
-            if (items.poll() < 0)
-            {
+            if (items.poll() < 0) {
                 return; //  Interrupted
             }
 
@@ -54,20 +51,19 @@ public class Server implements Runnable {
 
                 // Fetch delimiter (assumed empty)
                 socket.recvStr();
-                
+
                 // Fetch the request
                 try {
                     msg = Message.fromBuffer(ByteBuffer.wrap(socket.recv()));
                 } catch (Exception e) {
                     logger.error("Failed to parse message.");
                 }
-                
+
                 logger.info("Request: " + msg);
-                
+
                 msg = gameState.processMessage(msg);
-                
-                if (msg != null)
-                {
+
+                if (msg != null) {
                     // Send the response
                     socket.sendMore(replyto);
                     socket.sendMore("");
@@ -80,14 +76,12 @@ public class Server implements Runnable {
                         logger.error("Failed to serialize reply.");
                     }
                 }
-                
-                
+
             }
         }
     }
-    
-    public void disconnect() throws Exception
-    {
+
+    public void disconnect() throws Exception {
         socket.close();
         return;
     }
