@@ -98,7 +98,9 @@ public class Message implements Serializable {
     }
     
     public static Message pulse() throws Exception {
-        logger.trace("Sending watchdog pulse");
+        // BUG: log4j is printing \n when trace is disabled.
+        //logger.trace("Sending watchdog pulse");
         return new Message(MessagesEnum.MESSAGE_PULSE, "");
+        
     }
 }

@@ -30,7 +30,8 @@ public class CLIEventHandler {
                 }
                 break;
             case MESSAGE_PULSE:
-                logger.trace("Got a watchdog pulse.");
+                // BUG: log4j is printing \n when trace is disabled.
+                //logger.trace("Got a watchdog pulse.");
                 watchdog.pulse();
                 break;
             default:
