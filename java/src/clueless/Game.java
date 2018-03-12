@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -18,16 +19,18 @@ public class Game {
     private CardDeck cards;
     private LinkedList<Player> activePlayers;
     public boolean classicMode = false;
-    private ArrayList<Location> locations;
-    private ArrayList<Weapon> weapons;
-    private ArrayList<Suspect> suspects;
+    private HashMap<CardsEnum, Location> locations;
+    private HashMap<CardsEnum, Location> hallways;
+    private HashMap<CardsEnum, Weapon> weapons;
+    private HashMap<CardsEnum, Suspect> suspects;
     private boolean gameStarted = false;
     private Player activePlayer;
 
     public Game() {
-        locations = new ArrayList<Location>();
-        weapons = new ArrayList<Weapon>();
-        suspects = new ArrayList<Suspect>();
+        locations = new HashMap<CardsEnum, Location>();
+        weapons = new HashMap<CardsEnum, Weapon>();
+        suspects = new HashMap<CardsEnum, Suspect>();
+        hallways = new HashMap<CardsEnum, Location>();
         activePlayers = new LinkedList<Player>();
         cards = new CardDeck();
         setupWeapons();
@@ -43,11 +46,12 @@ public class Game {
             iter.next().getThread().send(message);
         }
     }*/
+    
     private void setupWeapons() {
         for (CardsEnum weapon : CardsEnum.values()) {
             if (weapon.getCardType() == CardType.CARD_TYPE_WEAPON) {
                 Weapon t = new Weapon(weapon);
-                weapons.add(t);
+                weapons.put(weapon,t);
                 cards.add(new Card(weapon));
             }
         }
@@ -57,23 +61,174 @@ public class Game {
         for (CardsEnum location : CardsEnum.values()) {
             if (location.getCardType() == CardType.CARD_TYPE_LOCATION) {
                 Location t = new Location(location);
-                locations.add(t);
+                locations.put(location, t);
                 cards.add(new Card(location));
             }
         }
-
-        //ToDo
-        //Now connect all of the locations with a hallway and the other locations
-        for (Location loc : locations) {
-
+        
+        for (CardsEnum hall : CardsEnum.values()) {
+            if (hall.getCardType() == CardType.CARD_TYPE_HALLWAY) {
+                Location t = new Location(hall);
+                hallways.put(hall, t);
+            }
         }
+        
+        for (Location location: locations.values()) {
+        	addHallways(location);
+        }
+        
+        for (Location location: locations.values()) {
+        	System.out.println(location);
+        }
+        
+        for (Location hall: hallways.values()) {
+        	logger.info(hall);
+        }
+    }
+    
+    private void addHallways(Location location) {
+    	Location tempLocation;
+    	switch(location.getLocation()) {
+    	case LOCATION_STUDY:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_STUDY_HALL);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_STUDY_LIBRARY);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, tempLocation);
+    		
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SECRET, locations.get(CardsEnum.LOCATION_KITCHEN));
+    		
+    		break;
+    	case LOCATION_HALL:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_STUDY_HALL);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_HALL_LOUNGE);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_HALL_BILLIARD);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, tempLocation);
+    		
+    		break;
+    		
+    	case LOCATION_LOUNGE:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_HALL_LOUNGE);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_LOUNGE_DINING);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, tempLocation);
+    		
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SECRET, locations.get(CardsEnum.LOCATION_CONSERVATORY));
+    		
+    		break;
+    		
+    	case LOCATION_DININGROOM:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_LOUNGE_DINING);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_DINING_BILLIARD);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_DINING_KITCHEN);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, tempLocation);
+    		
+    		break;
+    		
+    	case LOCATION_KITCHEN:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_DINING_KITCHEN);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_KITCHEN_BALL);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, tempLocation);
+    		
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SECRET, locations.get(CardsEnum.LOCATION_STUDY));
+    		
+    		break;
+    		
+    	case LOCATION_BALLROOM:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_KITCHEN_BALL);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_BALL_BILLIARD);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_BALL_CONSERVATORY);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, tempLocation);
+    		
+    		break;
+    		
+    	case LOCATION_CONSERVATORY:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_BALL_CONSERVATORY);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_CONSERVATORY_LIBRARY);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, tempLocation);
+    		
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SECRET, locations.get(CardsEnum.LOCATION_LOUNGE));
+    		
+    		break;
+    		
+    		
+    	case LOCATION_LIBRARY:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_STUDY_LIBRARY);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_LIBRARY_BILLIARD);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_CONSERVATORY_LIBRARY);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, tempLocation);
+    		
+    		break;
+    		
+    	case LOCATION_BILLIARDROOM:
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_HALL_BILLIARD);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_DINING_BILLIARD);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_BALL_BILLIARD);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, tempLocation);
+    		
+    		tempLocation = hallways.get(CardsEnum.HALLWAY_LIBRARY_BILLIARD);
+    		tempLocation.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, location);
+    		location.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, tempLocation);
+    		break;
+		default:
+			break;
+    		
+    	}
     }
 
     private void setupSuspects() {
         for (CardsEnum suspect : CardsEnum.values()) {
             if (suspect.getCardType() == CardType.CARD_TYPE_SUSPECT) {
                 Suspect t = new Suspect(suspect, Helper.GetStartingLocationOfSuspect(suspect));
-                suspects.add(t);
+                suspects.put(suspect, t);
                 cards.add(new Card(suspect));
             }
         }
@@ -103,7 +258,7 @@ public class Game {
             case MESSAGE_CLIENT_CONFIG:
                 //Client picked a suspect (and username, any other configurables, etc)
                 CardsEnum pickedSuspect = (CardsEnum) msg.getMessageData();
-                for (Suspect s : suspects) {
+                for (Suspect s : suspects.values()) {
                     if (s.getSuspect() == pickedSuspect) {
                         s.setActive(true);
                     }
@@ -116,7 +271,7 @@ public class Game {
                 setNextPlayer();
                 break;
             case MESSAGE_CLIENT_SUGGESTION:
-                //handle the 
+                //handle the suggestion
                 break;
             case MESSAGE_CLIENT_ACCUSE:
                 //handle the accuse
@@ -168,14 +323,12 @@ public class Game {
         } else {
             activeSuspect = activePlayers.element().getSuspect();
         }
-        //Heartbeat hb = new Heartbeat(activePlayers.size(), gameStarted, activeSuspect);
-        //System.out.println("game state is " + hb);
         return new Message(MessagesEnum.MESSAGE_SERVER_HEARTBEAT, "");
     }
 
     private Message sendAvailableSuspects() {
         AvailableSuspects availableSuspects = new AvailableSuspects();
-        for (Suspect suspect : suspects) {
+        for (Suspect suspect : suspects.values()) {
             if (!suspect.getActive()) {
                 availableSuspects.list.add(suspect.getSuspect());
             }
@@ -187,33 +340,31 @@ public class Game {
     }
 }
 
-/*
-class HeartbeatThread extends Thread {
-	private LinkedList<Player> activePlayers;
-	private Game game;
-    static long lastUpdate = 0;
-    
-    
-    public HeartbeatThread(LinkedList<Player> activePlayers, Game game) {
-		this.activePlayers = activePlayers;
-		this.game=game;
-	}
-	
-	public void run() {
-		while(true) {
-	    	//We should update all clients at the same time.
-	    	if((System.currentTimeMillis() - lastUpdate) > 1000) {
-	    		LinkedList<?> copy = (LinkedList<?>) activePlayers.clone();
-	    		Iterator<?> iter = copy.iterator();
-	    		while(iter.hasNext()) {
-	    			Player p = (Player) iter.next();
-	    			if(!p.getThread().send(game.getGameState())) {
-	    				iter.remove();
-	    			}
-	    		}
-		    	lastUpdate = System.currentTimeMillis();
-	    	}
-		}
-	}
-}
- */
+//class HeartbeatThread extends Thread {
+//	private LinkedList<Player> activePlayers;
+//	private Game game;
+//    static long lastUpdate = 0;
+//    
+//    public HeartbeatThread(LinkedList<Player> activePlayers, Game game) {
+//		this.activePlayers = activePlayers;
+//		this.game=game;
+//	}
+//	
+//	public void run() {
+//		while(true) {
+//	    	//We should update all clients at the same time.
+//	    	if((System.currentTimeMillis() - lastUpdate) > 1000) {
+//	    		LinkedList<?> copy = (LinkedList<?>) activePlayers.clone();
+//	    		Iterator<?> iter = copy.iterator();
+//	    		while(iter.hasNext()) {
+//	    			Player p = (Player) iter.next();
+//	    			if(!p.getThread().send(game.getGameState())) {
+//	    				iter.remove();
+//	    			}
+//	    		}
+//		    	lastUpdate = System.currentTimeMillis();
+//	    	}
+//		}
+//	}
+//}
+

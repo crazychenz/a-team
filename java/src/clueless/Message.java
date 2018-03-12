@@ -60,31 +60,46 @@ public class Message implements Serializable {
             oos = new ObjectOutputStream(bbos);
         } catch (IOException e) {
             logger.error(e);
+            bbos.close();
             throw e;
         }
         oos.writeObject(msg);
         buf.flip();
-
+        oos.close();
         return buf;
     }
 
     public static Message fromBuffer(ByteBuffer buf) throws Exception {
         ByteBufferBackedInputStream bbis;
         ObjectInputStream ois;
+        Message message;
 
         bbis = new ByteBufferBackedInputStream(buf);
         try {
             ois = new ObjectInputStream(bbis);
         } catch (IOException e) {
             logger.error(e);
+            bbis.close();
             throw e;
         }
-        return (Message) ois.readObject();
+        message = (Message)ois.readObject();
+        ois.close();
+        return message;
     }
 
     public static Message clientConnect() throws Exception {
         logger.trace("Connecting to Game");
         return new Message(MessagesEnum.MESSAGE_CLIENT_CONNECTED, "");
+    }
+    
+    public static Message startGame() throws Exception {
+        logger.trace("Client wants to start the game");
+        return new Message(MessagesEnum.MESSAGE_CLIENT_START_GAME, "");
+    }
+    
+    public static Message moveClient(DirectionsEnum direction) throws Exception {
+    	logger.trace("Client is moving");
+    	return new Message(MessagesEnum.MESSAGE_CLIENT_MOVE, direction);
     }
 
     public static Message clientConfig(CardsEnum suspect) throws Exception {
