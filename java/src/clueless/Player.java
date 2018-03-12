@@ -7,23 +7,25 @@ import java.util.ArrayList;
 
 public class Player {
 
-    private static final Logger logger =
-        LogManager.getLogger(Player.class);
+    private static final Logger logger
+            = LogManager.getLogger(Player.class);
 
-	private CardsEnum suspect;
-	private String username;
-	private ArrayList<Card> cards;
-	
-	public Player(CardsEnum suspect) {
-		this.suspect = suspect;
-		cards = new ArrayList<Card>();
-	}
-	
-	public ArrayList<Card> getCards() {
+    private CardsEnum suspect;
+    private String username;
+    private ArrayList<Card> cards;
+    String uuid;
+
+    public Player(CardsEnum suspect, String uuid) {
+        this.suspect = suspect;
+        cards = new ArrayList<Card>();
+        this.uuid = uuid;
+    }
+
+    public ArrayList<Card> getCards() {
         return cards;
     }
-	
-	public CardsEnum getSuspect() {
-		return suspect;
-	}
+
+    public CardsEnum getSuspect() {
+        return suspect;
+    }
 }

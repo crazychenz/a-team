@@ -36,6 +36,10 @@ public class Game {
         //HeartbeatThread gt = new HeartbeatThread(activePlayers,this);
         //gt.start();
     }
+    
+    public LinkedList<Player> getActivePlayers() {
+        return activePlayers;
+    }
 
     /*private void sendMessageToAllPlayers(Message message) {
         Iterator<Player> iter = activePlayers.iterator();
@@ -93,9 +97,9 @@ public class Game {
                 break;
             case MESSAGE_CHAT_FROM_CLIENT:
                 //Chat from client
-                System.out.println("Chat from client: " + msg.getMessageData());
-                //publishChatMessage(msg);
-                break;
+                logger.info("Chat from client: " + msg.getMessageData());
+                msg.setBroadcast(true);
+                return msg;
             case MESSAGE_CHAT_FROM_SERVER:
                 //This shouldn't happen
                 System.out.println("Chat from server: " + msg.getMessageData());
@@ -108,7 +112,7 @@ public class Game {
                         s.setActive(true);
                     }
                 }
-                addPlayer(pickedSuspect);
+                addPlayer(pickedSuspect, msg.getFromUuid());
                 // TODO: Develop acknowledgement
                 break;
             case MESSAGE_CLIENT_MOVE:
@@ -155,9 +159,9 @@ public class Game {
         activePlayers.add(activePlayers.pop());
     }
 
-    private void addPlayer(CardsEnum suspect) {
+    private void addPlayer(CardsEnum suspect, String fromUuid) {
         logger.info("Adding new player");
-        activePlayers.add(new Player(suspect));
+        activePlayers.add(new Player(suspect, fromUuid));
         startGame();	//For now, try to start the game after every user connects.  We need to let the users pick when to start
     }
 
@@ -187,33 +191,4 @@ public class Game {
     }
 }
 
-/*
-class HeartbeatThread extends Thread {
-	private LinkedList<Player> activePlayers;
-	private Game game;
-    static long lastUpdate = 0;
-    
-    
-    public HeartbeatThread(LinkedList<Player> activePlayers, Game game) {
-		this.activePlayers = activePlayers;
-		this.game=game;
-	}
-	
-	public void run() {
-		while(true) {
-	    	//We should update all clients at the same time.
-	    	if((System.currentTimeMillis() - lastUpdate) > 1000) {
-	    		LinkedList<?> copy = (LinkedList<?>) activePlayers.clone();
-	    		Iterator<?> iter = copy.iterator();
-	    		while(iter.hasNext()) {
-	    			Player p = (Player) iter.next();
-	    			if(!p.getThread().send(game.getGameState())) {
-	    				iter.remove();
-	    			}
-	    		}
-		    	lastUpdate = System.currentTimeMillis();
-	    	}
-		}
-	}
-}
- */
+

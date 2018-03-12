@@ -1,7 +1,6 @@
 package clueless;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.nio.ByteBuffer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -22,13 +21,13 @@ public class Server implements Runnable {
     Socket socket;
     Game gameState;
 
-    ConcurrentLinkedQueue<Message> chatMessageQueue;
+    ConcurrentLinkedQueue<Message> users;
 
     public Server() {
         // Grab a context object with one I/O thread.
         zmqContext = ZMQ.context(1);
         socket = zmqContext.socket(ZMQ.ROUTER);
-        chatMessageQueue = new ConcurrentLinkedQueue<Message>();
+        users = new ConcurrentLinkedQueue<Message>();
         gameState = new Game();
     }
 
@@ -40,6 +39,19 @@ public class Server implements Runnable {
             logger.error("Failed to sendMessage.");
             throw e;
         }
+        socket.sendMore("");
+        socket.send(buf.array());
+    }
+    
+    public void sendMessage(String uuid, Message msg) throws Exception {
+        ByteBuffer buf;
+        try {
+            buf = Message.toBuffer(msg);
+        } catch (Exception e) {
+            logger.error("Failed to sendMessage.");
+            throw e;
+        }
+        socket.sendMore(uuid);
         socket.sendMore("");
         socket.send(buf.array());
     }
@@ -58,7 +70,7 @@ public class Server implements Runnable {
 
             if (items.pollin(0)) {
                 Message msg = null;
-                byte[] replyto = socket.recv();
+                String replyto = socket.recvStr();
                 logger.info("Got a message from " + replyto);
 
                 // Fetch delimiter (assumed empty)
@@ -67,6 +79,7 @@ public class Server implements Runnable {
                 // Fetch the request
                 try {
                     msg = Message.fromBuffer(ByteBuffer.wrap(socket.recv()));
+                    msg.setFromUuid(replyto);
                 } catch (Exception e) {
                     logger.error("Failed to parse message.");
                 }
@@ -74,21 +87,23 @@ public class Server implements Runnable {
                 logger.info("Request: " + msg);
 
                 msg = gameState.processMessage(msg);
-
-                if (msg != null) {
-                    // Send the response
-                    socket.sendMore(replyto);
-                    socket.sendMore("");
-                    try {
-                        ByteBuffer buf = Message.toBuffer(msg);
-                        logger.info("Response: " + msg.getMessageID() + " " + buf.limit() + " bytes");
-                        socket.send(buf.array());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        logger.error("Failed to serialize reply.");
+                
+                try {
+                    if (msg != null) {
+                        if (msg.isBroadcast()) {
+                            for (Player player: gameState.getActivePlayers()) {
+                                logger.trace("Sending broadcast to " + player.uuid);
+                                sendMessage(player.uuid, msg);
+                            }
+                        }
+                        else {
+                            logger.trace("Sending message to " + replyto);
+                            sendMessage(replyto, msg);
+                        }
                     }
+                } catch (Exception e) {
+                    logger.error("Failed to send response message.");
                 }
-
             }
 
         }
