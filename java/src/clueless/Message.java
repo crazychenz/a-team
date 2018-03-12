@@ -30,14 +30,35 @@ public class Message implements Serializable {
     private static final long serialVersionUID = -2609974894890218306L;
     private MessagesEnum messageID;
     private Object messageData;
+    private String fromUuid;
+    private boolean broadcast;
 
     public Message(MessagesEnum messageID, Object messageData) {
         this.messageID = messageID;
         this.messageData = messageData;
+        fromUuid = null;
+        broadcast = false;
+    }
+    
+    public void setBroadcast(boolean value) {
+        broadcast = value;
+    }
+    
+    public boolean isBroadcast() {
+        return broadcast;
+    }
+    
+    public String getFromUuid() {
+        return fromUuid;
+    }
+    
+    public void setFromUuid(String uuid) {
+        fromUuid = uuid;
     }
 
     public String toString() {
-        return "Message ID: " + messageID + " Message Data: " + messageData;
+        return "Message ID: " + messageID + 
+                " Message Data: " + messageData;
     }
 
     public MessagesEnum getMessageID() {
