@@ -22,10 +22,9 @@ public class CLIEventHandler {
                 logger.info("chat: " + msg);
                 break;
             case MESSAGE_SERVER_AVAILABLE_SUSPECTS:
-                AvailableSuspects suspects;
-                suspects = (AvailableSuspects) msg.getMessageData();
-                logger.info("Count: " + suspects.list.size());
-                for (CardsEnum suspect : suspects.list) {
+                clientState.availableSuspects = (AvailableSuspects) msg.getMessageData();
+                logger.info("Count: " + clientState.availableSuspects.list.size());
+                for (CardsEnum suspect : clientState.availableSuspects.list) {
                     logger.info(suspect);
                 }
                 break;

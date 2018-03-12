@@ -3,6 +3,8 @@ package clueless;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 public class Helper {
@@ -13,19 +15,19 @@ public class Helper {
 	static public CardsEnum GetStartingLocationOfSuspect(CardsEnum suspect) {
 		switch(suspect) {
 		case SUSPECT_PLUM: 
-			return CardsEnum.LOCATION_BATHROOM;
+			return CardsEnum.HALLWAY_STUDY_LIBRARY;
 		case SUSPECT_PEACOCK: 
-			return CardsEnum.LOCATION_BEDROOM;
+			return CardsEnum.HALLWAY_CONSERVATORY_LIBRARY;
 		case SUSPECT_GREEN: 
-			return CardsEnum.LOCATION_COURTYARD;
+			return CardsEnum.HALLWAY_BALL_CONSERVATORY;
 		case SUSPECT_WHITE: 
-			return CardsEnum.LOCATION_GAMEROOM;
+			return CardsEnum.HALLWAY_KITCHEN_BALL;
 		case SUSPECT_MUSTARD: 
-			return CardsEnum.LOCATION_GARAGE;
+			return CardsEnum.HALLWAY_LOUNGE_DINING;
 		case SUSPECT_SCARLET: 
-			return CardsEnum.LOCATION_STUDY;
+			return CardsEnum.HALLWAY_HALL_LOUNGE;
 		default:
-			return CardsEnum.LOCATION_KITCHEN;
+			return CardsEnum.HALLWAY_STUDY_HALL;
 		}
 	}
 	
@@ -67,4 +69,5 @@ public class Helper {
 	static public Random GetRandom() {
 		return new Random();
 	}
+
 }

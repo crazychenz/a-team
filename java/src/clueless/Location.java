@@ -18,7 +18,7 @@ public class Location {
 
 	
 	public Location(CardsEnum location) {
-		this.location = location;
+		this.setLocation(location);
 		adjacentRooms = new Hashtable<DirectionsEnum, Location>();
 		logger.debug("Creating location " + location.toString());
 	}
@@ -42,5 +42,53 @@ public class Location {
 	
 	public void setAdjacentRoom(DirectionsEnum direction, Location location) {
 		adjacentRooms.put(direction, location);
+	}
+
+	/**
+	 * @return the location
+	 */
+	public CardsEnum getLocation() {
+		return location;
+	}
+
+	/**
+	 * @param location the location to set
+	 */
+	public void setLocation(CardsEnum location) {
+		this.location = location;
+	}
+	
+	public String toString() {
+		String toReturn = "";
+		boolean west = false;
+		toReturn += "This location: " + location.toString() + "\n\n";
+		Location t = adjacentRooms.get(DirectionsEnum.DIRECTION_NORTH);
+		if(t != null) {
+			toReturn += "\t\t\tN:" + t.getLocation() + "\n";
+		}
+		t = adjacentRooms.get(DirectionsEnum.DIRECTION_WEST);
+		if(t != null) {
+			toReturn += "W:" + t.getLocation();
+			west = true;
+		}
+		t = adjacentRooms.get(DirectionsEnum.DIRECTION_EAST);
+		if(t != null) {
+			if(west) {
+				toReturn += "\tE: " + t.getLocation() + "\n";
+			}
+			else {
+				toReturn += "\t\t\t\tE: " + t.getLocation() + "\n";
+			}
+		}
+		t = adjacentRooms.get(DirectionsEnum.DIRECTION_SOUTH);
+		if(t != null) {
+			toReturn += "\t\t\tS:" + t.getLocation() + "\n";
+		}
+		
+		t = adjacentRooms.get(DirectionsEnum.DIRECTION_SECRET);
+		if(t != null) {
+			toReturn += "\nSC:" + t.getLocation() + "\n";
+		}
+		return toReturn;
 	}
 }

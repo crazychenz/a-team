@@ -24,18 +24,36 @@ public class CLI {
             = LogManager.getLogger(CLI.class);
 
     public static Object[] buildSuspectMap(HashMap<String, CardsEnum> map) {
-        map.put("green", CardsEnum.SUSPECT_GREEN);
-        map.put("mustard", CardsEnum.SUSPECT_MUSTARD);
-        map.put("peacock", CardsEnum.SUSPECT_PEACOCK);
-        map.put("plum", CardsEnum.SUSPECT_PLUM);
-        map.put("scarlet", CardsEnum.SUSPECT_SCARLET);
-        map.put("white", CardsEnum.SUSPECT_WHITE);
+        map.put("Green", CardsEnum.SUSPECT_GREEN);
+        map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
+        map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
+        map.put("Plum", CardsEnum.SUSPECT_PLUM);
+        map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
+        map.put("White", CardsEnum.SUSPECT_WHITE);
 
         Object[] nodes = new Object[map.size() + 1];
         nodes[0] = "config";
         int i = 1;
         for (String suspect : map.keySet()) {
             nodes[i] = node(suspect);
+            i += 1;
+        }
+
+        return nodes;
+    }
+    
+    public static Object[] buildDirectionMap(HashMap<String, DirectionsEnum> map) {
+        map.put("north", DirectionsEnum.DIRECTION_NORTH);
+        map.put("south", DirectionsEnum.DIRECTION_SOUTH);
+        map.put("east", DirectionsEnum.DIRECTION_EAST);
+        map.put("west", DirectionsEnum.DIRECTION_WEST);
+        map.put("secret", DirectionsEnum.DIRECTION_SECRET);
+
+        Object[] nodes = new Object[map.size() + 1];
+        nodes[0] = "move";
+        int i = 1;
+        for (String direction : map.keySet()) {
+            nodes[i] = node(direction);
             i += 1;
         }
 
@@ -116,6 +134,10 @@ public class CLI {
         HashMap<String, CardsEnum> suspectStrToEnum
                 = new HashMap<String, CardsEnum>();
         Object[] suspectNodes = buildSuspectMap(suspectStrToEnum);
+        
+        HashMap<String, DirectionsEnum> directionsStrToEnum
+        = new HashMap<String, DirectionsEnum>();
+        Object[] directionNodes = buildDirectionMap(directionsStrToEnum);
 
         Terminal terminal = null;
         try {
@@ -129,6 +151,8 @@ public class CLI {
                 node("exit"),
                 node("quit"),
                 node("help"),
+                node("start"),
+                node(directionNodes),
                 node(suspectNodes),
                 node("chat")
         );
@@ -177,8 +201,12 @@ public class CLI {
                 terminal.writer().println("\n"
                         + "chat <message>\n"
                         + "    Send a message to all players\n"
-                        + "config <green|mustard|peacock|plum|scarlet|white>\n"
+                        + "config <" + clientState.availableSuspects.toString() + ">\n"
                         + "    Configure the client\n"
+                        + "start\n"
+                        + "    Start the game\n"
+                        + "move <direction>\n"
+                        + "    Move in the given direction\n"
                         + "exit|quit\n"
                         + "    Exit clueless CLI\n");
             }
@@ -194,12 +222,50 @@ public class CLI {
             } else if ("config".equals(pl.word())) {
                 if (pl.words().size() == 2) {
                     try {
-                        client.sendMessage(Message.clientConfig(suspectStrToEnum.get(pl.words().get(1))));
+                    	if(suspectStrToEnum.get(pl.words().get(1)) == null) {
+                    		terminal.writer().println("Problem selecting that suspect.  Please try again!");
+                    	}
+                    	else {
+                    		logger.info("Selected " + suspectStrToEnum.get(pl.words().get(1)));
+                    		client.sendMessage(Message.clientConfig(suspectStrToEnum.get(pl.words().get(1))));
+                    		clientState.configured = true;
+                    	}
                     } catch (Exception e) {
-                        logger.error("failed chat");
+                        logger.error("failed config");
                     }
                 }
-            }
+            } else if("start".equals(pl.word())) {
+            	try {
+            		if(!clientState.configured) {
+            			terminal.writer().println("Must config first!");
+            		}
+            		else {
+    					client.sendMessage(Message.startGame());
+            		}
+				} catch (Exception e) {
+					logger.error("failed starting game");
+				}
+	        } else if("move".equals(pl.word())) {
+	        	try {
+            		if(!clientState.configured) {
+            			terminal.writer().println("Must config first!");
+            		}
+            		else if (!clientState.gameStarted) {
+            			terminal.writer().println("Must start first!");
+            		}
+            		else {
+    	        		if(directionsStrToEnum.get(pl.words().get(1)) == null) {
+                    		terminal.writer().println("Problem moving in that direction.  Please try again!");
+                    	}
+                    	else {
+                    		logger.info("Moving direction: " + directionsStrToEnum.get(pl.words().get(1)));
+                    		client.sendMessage(Message.moveClient(directionsStrToEnum.get(pl.words().get(1))));
+                    	}
+            		}
+				} catch (Exception e) {
+					logger.error("failed starting game");
+				}
+	        }
 
         }
     }
