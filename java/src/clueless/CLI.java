@@ -201,26 +201,40 @@ public class CLI {
                 terminal.writer().println("\n"
                         + "chat <message>\n"
                         + "    Send a message to all players\n"
-                        + "config <" + clientState.availableSuspects.toString() + ">\n"
+                        + "config <" + clientState.getAvailableSuspects().toString() + ">\n"
                         + "    Configure the client\n"
                         + "start\n"
                         + "    Start the game\n"
-                        + "move <direction>\n"
+                        + "move <north|south|east|west|secret>\n"
                         + "    Move in the given direction\n"
+                        + "done\n"
+                        + "    End your turn\n"
                         + "exit|quit\n"
                         + "    Exit clueless CLI\n");
             }
 
             ParsedLine pl = reader.getParser().parse(line, 0);
 
+            //if-else hell..
+            
             if ("chat".equals(pl.word())) {
                 try {
                     client.sendMessage(Message.chatMessage(line.split(" ", 2)[1]));
                 } catch (Exception e) {
                     logger.error("failed chat");
                 }
+            } else if ("done".equals(pl.word())) {
+	            try {
+	                client.sendMessage(Message.endTurn());
+	            } catch (Exception e) {
+	                logger.error("failed chat");
+	            }
             } else if ("config".equals(pl.word())) {
-                if (pl.words().size() == 2) {
+            	if(clientState.isConfigured())
+            	{
+            		logger.info("You've already selected a suspect!");
+            	}
+            	else if (pl.words().size() == 2) {
                     try {
                     	if(suspectStrToEnum.get(pl.words().get(1)) == null) {
                     		terminal.writer().println("Problem selecting that suspect.  Please try again!");
@@ -228,7 +242,8 @@ public class CLI {
                     	else {
                     		logger.info("Selected " + suspectStrToEnum.get(pl.words().get(1)));
                     		client.sendMessage(Message.clientConfig(suspectStrToEnum.get(pl.words().get(1))));
-                    		clientState.configured = true;
+                    		clientState.setConfigured(true);
+                    		clientState.setMySuspect(suspectStrToEnum.get(pl.words().get(1)));
                     	}
                     } catch (Exception e) {
                         logger.error("failed config");
@@ -236,7 +251,7 @@ public class CLI {
                 }
             } else if("start".equals(pl.word())) {
             	try {
-            		if(!clientState.configured) {
+            		if(!clientState.isConfigured()) {
             			terminal.writer().println("Must config first!");
             		}
             		else {
@@ -247,19 +262,29 @@ public class CLI {
 				}
 	        } else if("move".equals(pl.word())) {
 	        	try {
-            		if(!clientState.configured) {
+            		if(!clientState.isConfigured()) {
             			terminal.writer().println("Must config first!");
             		}
-            		else if (!clientState.gameStarted) {
+            		else if (!clientState.getGameState().isGameActive()) {
             			terminal.writer().println("Must start first!");
             		}
+            		else if (!clientState.isMyTurn()) {
+            			terminal.writer().println("Must be the active player!");
+            		}
+            		else if (clientState.isMoved()) {
+            			terminal.writer().println("Already moved this turn!");
+            		}
             		else {
-    	        		if(directionsStrToEnum.get(pl.words().get(1)) == null) {
+            			if(pl.words().size() != 2) {
+            				terminal.writer().println("Must specify a direction to move in.  Please try again!");
+            			}
+            			else if(directionsStrToEnum.get(pl.words().get(1)) == null) {
                     		terminal.writer().println("Problem moving in that direction.  Please try again!");
                     	}
                     	else {
                     		logger.info("Moving direction: " + directionsStrToEnum.get(pl.words().get(1)));
                     		client.sendMessage(Message.moveClient(directionsStrToEnum.get(pl.words().get(1))));
+                    		clientState.setMoved(true);
                     	}
             		}
 				} catch (Exception e) {

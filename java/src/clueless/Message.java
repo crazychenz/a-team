@@ -133,10 +133,20 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_CHAT_FROM_CLIENT, chatMessage);
     }
     
-    public static Message pulse() throws Exception {
+    public static Message endTurn() throws Exception {
+        logger.trace("Ending turn");
+        return new Message(MessagesEnum.MESSAGE_CLIENT_END_TURN, "");
+    }
+    
+    public static Message clientPulse() throws Exception {
         // BUG: log4j is printing \n when trace is disabled.
         //logger.trace("Sending watchdog pulse");
         return new Message(MessagesEnum.MESSAGE_PULSE, "");
-        
     }
+    
+    public static Message serverPulse(GameStatePulse pulsePayload) throws Exception {
+        return new Message(MessagesEnum.MESSAGE_PULSE, pulsePayload);
+    }
+    
+    
 }

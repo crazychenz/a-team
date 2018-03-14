@@ -30,7 +30,7 @@ public class AvailableSuspects implements Serializable {
     	for ( CardsEnum suspect : list) {
     		toString += suspect.getLabel() + "|";
     	}
-    	toString.substring(0, toString.length()-1);
-    	return toString;
+    	
+    	return toString.substring(0, toString.length()-1);
     }
 }

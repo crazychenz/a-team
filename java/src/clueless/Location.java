@@ -12,36 +12,56 @@ public class Location {
         LogManager.getLogger(Location.class);
 
 	private CardsEnum location;
-	private ArrayList<Suspect> suspectsInside;
+	private ArrayList<CardsEnum> suspectsInside;
 	private Hashtable<DirectionsEnum,Location> adjacentRooms;
-	private ArrayList<Weapon> weaponsInside;
+	private ArrayList<CardsEnum> weaponsInside;
 
 	
 	public Location(CardsEnum location) {
 		this.setLocation(location);
 		adjacentRooms = new Hashtable<DirectionsEnum, Location>();
+		suspectsInside = new ArrayList<CardsEnum>();
+		weaponsInside = new ArrayList<CardsEnum>();
 		logger.debug("Creating location " + location.toString());
 	}
 	
 	public void place_suspect(Suspect suspect) {
-		
+		suspectsInside.add(suspect.getSuspect());
 	}
 	
 	public void place_weapon(Weapon weapon) {
-		weaponsInside.add(weapon);
-		
+		weaponsInside.add(weapon.getWeapon());
 	}
 	
 	public void remove_suspect(Suspect suspect) {
-		
+		suspectsInside.remove(suspect.getSuspect());
 	}
 	
 	public void remove_weapon(Weapon weapon) {
-		weaponsInside.remove(weapon);
+		weaponsInside.remove(weapon.getWeapon());
 	}
 	
 	public void setAdjacentRoom(DirectionsEnum direction, Location location) {
 		adjacentRooms.put(direction, location);
+	}
+	
+	public boolean validMove(DirectionsEnum direction) {
+		if(adjacentRooms.get(direction) != null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	public Location getAdjacentRoomInDirection(DirectionsEnum direction) {
+		if(validMove(direction)) 
+		{
+			return adjacentRooms.get(direction);
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
@@ -61,6 +81,7 @@ public class Location {
 	public String toString() {
 		String toReturn = "";
 		boolean west = false;
+		boolean east = false;
 		toReturn += "This location: " + location.toString() + "\n\n";
 		Location t = adjacentRooms.get(DirectionsEnum.DIRECTION_NORTH);
 		if(t != null) {
@@ -68,11 +89,12 @@ public class Location {
 		}
 		t = adjacentRooms.get(DirectionsEnum.DIRECTION_WEST);
 		if(t != null) {
-			toReturn += "W:" + t.getLocation();
+			toReturn += "\tW:" + t.getLocation();
 			west = true;
 		}
 		t = adjacentRooms.get(DirectionsEnum.DIRECTION_EAST);
 		if(t != null) {
+			east = true;
 			if(west) {
 				toReturn += "\tE: " + t.getLocation() + "\n";
 			}
@@ -82,7 +104,12 @@ public class Location {
 		}
 		t = adjacentRooms.get(DirectionsEnum.DIRECTION_SOUTH);
 		if(t != null) {
-			toReturn += "\t\t\tS:" + t.getLocation() + "\n";
+			if(west && !east) {
+				toReturn += "\n\t\t\tS:" + t.getLocation() + "\n";
+			}
+			else {
+				toReturn += "\t\t\tS:" + t.getLocation() + "\n";
+			}
 		}
 		
 		t = adjacentRooms.get(DirectionsEnum.DIRECTION_SECRET);

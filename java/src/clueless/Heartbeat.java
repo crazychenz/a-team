@@ -19,7 +19,7 @@ public class Heartbeat implements Runnable {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                client.sendMessage(Message.pulse());
+                client.sendMessage(Message.clientPulse());
                 Thread.sleep(duration);
             } catch (Exception e) {
                 logger.error("Something wrong with heartbeat thread.");

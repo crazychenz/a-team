@@ -82,9 +82,9 @@ public class Game {
         }
         
         for (Location location: locations.values()) {
-        	System.out.println(location);
+        	logger.info(location);
         }
-        
+
         for (Location hall: hallways.values()) {
         	logger.info(hall);
         }
@@ -231,7 +231,7 @@ public class Game {
     private void setupSuspects() {
         for (CardsEnum suspect : CardsEnum.values()) {
             if (suspect.getCardType() == CardType.CARD_TYPE_SUSPECT) {
-                Suspect t = new Suspect(suspect, Helper.GetStartingLocationOfSuspect(suspect));
+                Suspect t = new Suspect(suspect, hallways.get(Helper.GetStartingLocationOfSuspect(suspect)));
                 suspects.put(suspect, t);
                 cards.add(new Card(suspect));
             }
@@ -243,8 +243,10 @@ public class Game {
 
         switch (msg.getMessageID()) {
             case MESSAGE_CLIENT_CONNECTED:
-                //Client just connected, let them pick a suspect
-                return sendAvailableSuspects();
+                //Client just connected
+                //Available suspects in pulse since it can change on the fly, shouldn't send it out just once
+            	
+            	//return sendAvailableSuspects();
             case MESSAGE_CLIENT_START_GAME:
                 //Client chose to start the game
                 //Should check with all other clients before starting
@@ -257,33 +259,59 @@ public class Game {
                 return msg;
             case MESSAGE_CHAT_FROM_SERVER:
                 //This shouldn't happen
-                System.out.println("Chat from server: " + msg.getMessageData());
+                logger.info("Chat from server: " + msg.getMessageData());
                 break;
             case MESSAGE_CLIENT_CONFIG:
                 //Client picked a suspect (and username, any other configurables, etc)
                 CardsEnum pickedSuspect = (CardsEnum) msg.getMessageData();
                 for (Suspect s : suspects.values()) {
                     if (s.getSuspect() == pickedSuspect) {
-                        s.setActive(true);
+                    	if(s.getActive()) {
+                    		logger.info("Suspect already chosen!");
+                    		return failedAction("Suspect already chosen!");
+                    	}
+                    	else {
+                    		s.setActive(true);
+                    	}
                     }
                 }
                 addPlayer(pickedSuspect, msg.getFromUuid());
                 // TODO: Develop acknowledgement
                 break;
             case MESSAGE_CLIENT_MOVE:
-                //handle the move
-                setNextPlayer();
+                //move from active player
+            	if(activePlayer.uuid.equals(msg.getFromUuid())) {
+            		Suspect suspect = suspects.get(activePlayer.getSuspect());
+            		//valid move
+            		if(suspect.move((DirectionsEnum)msg.getMessageData())) {
+                        //the person can now accuse or end their turn
+            		}
+            		//invalid move
+            		else
+            		{
+            			logger.info("Unable to move there!");
+                		return failedAction("Unable to move there!");
+            		}
+            	}
+            	//move from non-active player
+            	else {
+            		logger.info("Non-active player tried to move!");
+            		return failedAction("Non-active player tried to move!");
+            	}
                 break;
-            case MESSAGE_CLIENT_SUGGESTION:
+            case MESSAGE_CLIENT_SUGGEST:
                 //handle the suggestion
                 break;
             case MESSAGE_CLIENT_ACCUSE:
                 //handle the accuse
                 setNextPlayer();
                 break;
+            case MESSAGE_CLIENT_END_TURN:
+                setNextPlayer();
+                break;
             case MESSAGE_PULSE:
                 // return echo request
-                return msg;
+            	return sendGameStatePulse();
             default:
                 break;
         }
@@ -291,7 +319,17 @@ public class Game {
         return null;
     }
 
-    private void startGame() {
+    private HashMap<CardsEnum, CardsEnum> getWeaponLocations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private HashMap<CardsEnum, CardsEnum> getSuspectLocations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private void startGame() {
         if (activePlayers.size() >= 3) {
             cards.setupCardDeckAndDealCards(activePlayers, classicMode);
             gameStarted = true;
@@ -313,6 +351,15 @@ public class Game {
         activePlayer = activePlayers.element();
         activePlayers.add(activePlayers.pop());
     }
+    
+    private CardsEnum getActiveSuspect() {
+    	if(activePlayer == null) {
+    		return null;
+    	}
+    	else {
+    		return activePlayer.getSuspect();
+    	}
+    }
 
     private void addPlayer(CardsEnum suspect, String fromUuid) {
         logger.info("Adding new player");
@@ -320,55 +367,29 @@ public class Game {
         startGame();	//For now, try to start the game after every user connects.  We need to let the users pick when to start
     }
 
-    public Message getGameState() {
-        CardsEnum activeSuspect;
-        if (activePlayer != null) {
-            activeSuspect = activePlayer.getSuspect();
-        } else {
-            activeSuspect = activePlayers.element().getSuspect();
-        }
-        return new Message(MessagesEnum.MESSAGE_SERVER_HEARTBEAT, "");
-    }
-
-    private Message sendAvailableSuspects() {
+    private AvailableSuspects getAvailableSuspects() {
         AvailableSuspects availableSuspects = new AvailableSuspects();
         for (Suspect suspect : suspects.values()) {
             if (!suspect.getActive()) {
                 availableSuspects.list.add(suspect.getSuspect());
             }
         }
+        return availableSuspects;
+    }
+    
+    private Message failedAction(String message) {
+        return new Message(
+                MessagesEnum.MESSAGE_SERVER_FAIL_ACTION,
+                message);
+    }
+    
+    private Message sendGameStatePulse() {
+    	
+    	GameStatePulse pulsePayload = new GameStatePulse(gameStarted, getActiveSuspect(), getAvailableSuspects(), getSuspectLocations(), getWeaponLocations());
 
         return new Message(
-                MessagesEnum.MESSAGE_SERVER_AVAILABLE_SUSPECTS,
-                availableSuspects);
+                MessagesEnum.MESSAGE_PULSE,
+                pulsePayload);
     }
 }
-
-//class HeartbeatThread extends Thread {
-//	private LinkedList<Player> activePlayers;
-//	private Game game;
-//    static long lastUpdate = 0;
-//    
-//    public HeartbeatThread(LinkedList<Player> activePlayers, Game game) {
-//		this.activePlayers = activePlayers;
-//		this.game=game;
-//	}
-//	
-//	public void run() {
-//		while(true) {
-//	    	//We should update all clients at the same time.
-//	    	if((System.currentTimeMillis() - lastUpdate) > 1000) {
-//	    		LinkedList<?> copy = (LinkedList<?>) activePlayers.clone();
-//	    		Iterator<?> iter = copy.iterator();
-//	    		while(iter.hasNext()) {
-//	    			Player p = (Player) iter.next();
-//	    			if(!p.getThread().send(game.getGameState())) {
-//	    				iter.remove();
-//	    			}
-//	    		}
-//		    	lastUpdate = System.currentTimeMillis();
-//	    	}
-//		}
-//	}
-//}
 
