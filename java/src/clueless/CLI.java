@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import java.util.HashMap;
 
@@ -20,132 +21,283 @@ import org.jline.reader.ParsedLine;
 
 public class CLI {
 
-    private static final Logger logger
-            = LogManager.getLogger(CLI.class);
+	private static final Logger logger
+			= LogManager.getLogger(CLI.class);
 
-    public static Object[] buildSuspectMap(HashMap<String, CardsEnum> map) {
-        map.put("Green", CardsEnum.SUSPECT_GREEN);
-        map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
-        map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
-        map.put("Plum", CardsEnum.SUSPECT_PLUM);
-        map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
-        map.put("White", CardsEnum.SUSPECT_WHITE);
+	// Static Maps
+	private static HashMap<String, String> argMap;
+	private static HashMap<String, DirectionsEnum> directionsStrToEnum;
+	private static HashMap<String, CardsEnum> suspectStrToEnum;
+	private static Object[] directionNodes;
+	private static Object[] suspectNodes;
+	
+	// Client Specific Properties
+	private Client client;
+	private ClientState clientState;
+	private CLIEventHandler evtHandler;
+	private Watchdog watchdog;
+	private Thread watchdogThread;
+	private Heartbeat heartbeat;
+	private Thread heartbeatThread;
 
-        Object[] nodes = new Object[map.size() + 1];
-        nodes[0] = "config";
-        int i = 1;
-        for (String suspect : map.keySet()) {
-            nodes[i] = node(suspect);
-            i += 1;
-        }
+	// Terminal Properties
+	private static Terminal terminal;
+	private static LineReader reader;
+	private static PrintWriter termout;
+	
+	private static DefaultParser parser;
 
-        return nodes;
-    }
-    
-    public static Object[] buildDirectionMap(HashMap<String, DirectionsEnum> map) {
-        map.put("north", DirectionsEnum.DIRECTION_NORTH);
-        map.put("south", DirectionsEnum.DIRECTION_SOUTH);
-        map.put("east", DirectionsEnum.DIRECTION_EAST);
-        map.put("west", DirectionsEnum.DIRECTION_WEST);
-        map.put("secret", DirectionsEnum.DIRECTION_SECRET);
+	public static void buildSuspectMap(HashMap<String, CardsEnum> map) {
+		map.put("Green", CardsEnum.SUSPECT_GREEN);
+		map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
+		map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
+		map.put("Plum", CardsEnum.SUSPECT_PLUM);
+		map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
+		map.put("White", CardsEnum.SUSPECT_WHITE);
+	}
 
-        Object[] nodes = new Object[map.size() + 1];
-        nodes[0] = "move";
-        int i = 1;
-        for (String direction : map.keySet()) {
-            nodes[i] = node(direction);
-            i += 1;
-        }
+	public static Object[] buildSuspectNodes(HashMap<String, CardsEnum> map) {
+		Object[] nodes = new Object[map.size() + 1];
+		nodes[0] = "config";
+		int i = 1;
+		for (String suspect : map.keySet()) {
+			nodes[i] = node(suspect);
+			i += 1;
+		}
 
-        return nodes;
-    }
+		return nodes;
+	}
 
-    public static HashMap<String, String> argumentHandler(String[] args) {
-        int index = 0;
-        HashMap<String, String> argMap = new HashMap<String, String>();
-        argMap.put("addess", null);
-        argMap.put("port", null);
+	public static void buildDirectionMap(
+			HashMap<String, DirectionsEnum> map) {
+		map.put("north", DirectionsEnum.DIRECTION_NORTH);
+		map.put("south", DirectionsEnum.DIRECTION_SOUTH);
+		map.put("east", DirectionsEnum.DIRECTION_EAST);
+		map.put("west", DirectionsEnum.DIRECTION_WEST);
+		map.put("secret", DirectionsEnum.DIRECTION_SECRET);
+	}
+	
+	public static Object[] buildDirectionNodes(
+			HashMap<String, DirectionsEnum> map) {
+		Object[] nodes = new Object[map.size() + 1];
+		nodes[0] = "move";
+		int i = 1;
+		for (String direction : map.keySet()) {
+			nodes[i] = node(direction);
+			i += 1;
+		}
 
-        label:
-        while (args.length > index) {
-            switch (args[index]) {
-                case "--address":
-                    index++;
-                    argMap.put("address", args[index]);
-                    index++;
-                    continue;
-                case "--port":
-                    index++;
-                    argMap.put("port", args[index]);
-                    index++;
-                    continue;
-                case "--help":
-                    System.out.println(""
-                            + "--address <server-ip>\n"
-                            + "    The IPv4 address or hostname of the server.\n"
-                            + "--port <server-port>\n"
-                            + "    The TCP port number of the server.\n"
-                            + "--help\n"
-                            + "    This help message.\n");
-                    System.exit(0);
-                default:
-                    index++;
-                    break label;
-            }
-        }
-        return argMap;
-    }
+		return nodes;
+	}
 
-    public static void main(String[] args) {
-        logger.info("Starting client CLI");
+	public static HashMap<String, String> argumentHandler(String[] args) {
+		int index = 0;
+		HashMap<String, String> argMap = new HashMap<String, String>();
+		argMap.put("addess", null);
+		argMap.put("port", null);
 
-        // Parse command line arguments
-        HashMap<String, String> argMap = argumentHandler(args);
+		label:
+		while (args.length > index) {
+			switch (args[index]) {
+				case "--address":
+					index++;
+					argMap.put("address", args[index]);
+					index++;
+					continue;
+				case "--port":
+					index++;
+					argMap.put("port", args[index]);
+					index++;
+					continue;
+				case "--help":
+					System.out.println(""
+							+ "--address <server-ip>\n"
+							+ "    The IPv4 address or hostname of the server.\n"
+							+ "--port <server-port>\n"
+							+ "    The TCP port number of the server.\n"
+							+ "--help\n"
+							+ "    This help message.\n");
+					System.exit(0);
+					break;
+				default:
+					index++;
+					break label;
+			}
+		}
+		return argMap;
+	}
 
-        // Where client side state lives
-        ClientState clientState = new ClientState();
+	public static String handleCommand(CLI cli, String line) {
+		Client client = cli.client;
+		ClientState clientState = cli.clientState;
+		
+		ParsedLine pl;
+		pl = parser.parse(line, 0);
+		if (null == pl.word()) {
+			return null;
+		}
+		
+		switch (pl.word()) {
+			case "chat":
+				try {
+					String chatMsg = line.split(" ", 2)[1];
+					Message msg = Message.chatMessage(chatMsg);
+					client.sendMessage(msg);
+				} catch (Exception e) {
+					logger.error("failed chat");
+				}
+				break;
+			case "done":
+				try {
+					client.sendMessage(Message.endTurn());
+				} catch (Exception e) {
+					logger.error("failed chat");
+				}
+				break;
+			case "config":
+				try {
+					if (clientState.isConfigured()) {
+						return "You've already selected a suspect!";
+					}
 
-        // Initialize watchdog thread
-        Watchdog watchdog = new Watchdog(10000);
-        Thread watchdogThread = new Thread(watchdog);
-        watchdogThread.start();
+					if (pl.words().size() == 2) {
+						if (suspectStrToEnum.get(pl.words().get(1)) == null) {
+							return "Problem selecting that suspect."
+									+ "  Please try again!";
+						}
 
-        // Client side event handler (for CLI user interface)
-        CLIEventHandler evtHandler = new CLIEventHandler(clientState, watchdog);
+						logger.info("Selected " 
+								+ suspectStrToEnum.get(pl.words().get(1)));
+						String card = pl.words().get(1);
+						CardsEnum suspect = suspectStrToEnum.get(card);
+						client.sendMessage(Message.clientConfig(suspect));
+						clientState.setConfigured(true);
+						String myCard = pl.words().get(1);
+						CardsEnum mySuspect = suspectStrToEnum.get(myCard);
+						clientState.setMySuspect(mySuspect);
+					}
+				} catch (Exception e) {
+					logger.error("failed config");
+				}
+				break;
+			case "start":
+				try {
+					if (!clientState.isConfigured()) {
+						return "Must config first!";
+					}
+					
+					client.sendMessage(Message.startGame());
+					
+				} catch (Exception e) {
+					logger.error("failed starting game");
+				}
+				break;
+			case "cards":
+        		if(!clientState.isConfigured()) {
+        			return "Must config first!";
+        		}
+        		else if (!clientState.getGameState().isGameActive()) {
+        			return "Must start first!";
+        		}
+        		else {
+        			String toReturn = "";
+        			toReturn += "\nYour cards:\n";
+        			for(Card card : clientState.getCards()) {
+            			toReturn += card.toString() +"\n";
+        			}
+        			
+        			toReturn += "\n\nFace Up Cards:\n";
+        			for(Card card : clientState.getFaceUpCards()) {
+        				toReturn += card.toString() +"\n";
+        			}
+            		return toReturn;
+        		}
+			case "move":
+				try {
+					if (!clientState.isConfigured()) {
+						return "Must config first!";
+					}
 
-        // Initialize the Client link.
-        Client client = new Client(evtHandler);
-        logger.info("Client UUID: " + client.uuid);
+					if (!clientState.getGameState().isGameActive()) {
+						return "Must start first!";
+					}
 
-        try {
-            client.connect(argMap.get("address"), argMap.get("port"));
+					if (!clientState.isMyTurn()) {
+						return "Must be the active player!";
+					}
 
-            // Do the initial available suspect fetch
-            client.sendMessage(Message.clientConnect());
-        } catch (Exception e) {
-            logger.error("Exception in connect client.");
-        }
+					if (clientState.isMoved()) {
+						return "Already moved this turn!";
+					}
 
-        // Init heartbeat thread (duration half length of watchdog timeout)
-        Heartbeat heartbeat = new Heartbeat(client, 5000);
-        Thread heartbeatThread = new Thread(heartbeat);
-        heartbeatThread.start();
+					if (pl.words().size() != 2) {
+						return "Must specify a direction to move in."
+								+ "  Please try again!";
+					}
 
-        HashMap<String, CardsEnum> suspectStrToEnum
-                = new HashMap<String, CardsEnum>();
-        Object[] suspectNodes = buildSuspectMap(suspectStrToEnum);
-        
-        HashMap<String, DirectionsEnum> directionsStrToEnum
-        = new HashMap<String, DirectionsEnum>();
-        Object[] directionNodes = buildDirectionMap(directionsStrToEnum);
+					if (directionsStrToEnum.get(pl.words().get(1)) == null) {
+						return "Problem moving in that direction."
+								+ "  Please try again!";
+					}
 
-        Terminal terminal = null;
-        try {
-            terminal = TerminalBuilder.builder().build();
-        } catch (IOException e) {
-            logger.error("Failed to build terminal.");
-            System.exit(-1);
-        }
+					logger.info("Moving direction: "
+							+ directionsStrToEnum.get(pl.words().get(1)));
+					
+					String dirStr = pl.words().get(1);
+					DirectionsEnum dir = directionsStrToEnum.get(dirStr);
+					client.sendMessage(Message.moveClient(dir));
+					clientState.setMoved(true);
+				} catch (Exception e) {
+					logger.error("failed starting game");
+				}
+				break;
+			default:
+				break;
+		}
+		return null;
+	}
+	
+	public CLI() {
+		// Where client side state lives
+		clientState = new ClientState();
+
+		// Initialize watchdog thread
+		watchdog = new Watchdog(10000);
+		watchdogThread = new Thread(watchdog);
+		watchdogThread.start();
+
+		// Client side event handler (for CLI user interface)
+		evtHandler = new CLIEventHandler(clientState, watchdog);
+
+		// Initialize the Client link.
+		client = new Client(evtHandler);
+		logger.info("Client UUID: " + client.uuid);
+
+		try {
+			client.connect(argMap.get("address"), argMap.get("port"));
+
+			// Do the initial available suspect fetch
+			client.sendMessage(Message.clientConnect());
+		} catch (Exception e) {
+			logger.error("Exception in connect client.");
+		}
+
+		// Init heartbeat thread (duration half length of watchdog timeout)
+		heartbeat = new Heartbeat(client, 5000);
+		heartbeatThread = new Thread(heartbeat);
+		heartbeatThread.start();
+	}
+	
+	public static void doInteractiveSession(CLI cli) {
+		terminal = null;
+		try {
+			terminal = TerminalBuilder.builder().build();
+		} catch (IOException e) {
+			logger.error("Failed to build terminal.");
+			System.exit(-1);
+		}
+
+		termout = terminal.writer();
 
         TreeCompleter completer = new TreeCompleter(
                 node("exit"),
@@ -159,51 +311,48 @@ public class CLI {
                 node("cards")
         );
 
-        DefaultParser parser = new DefaultParser();
-        parser.setEofOnUnclosedQuote(true);
+		
 
-        LineReader reader = LineReaderBuilder.builder().terminal(terminal)
-                .completer(completer)
-                .parser(parser)
-                .build();
+		reader = LineReaderBuilder.builder().terminal(terminal)
+				.completer(completer)
+				.parser(parser)
+				.build();
 
-        // Display minimum guidance
-        terminal.writer().println("Type 'exit' or 'quit' to return to shell.");
-        terminal.writer().println("Type 'help' for more info.");
-        String prompt = "clueless>";
-        while (true) {
-            String line = null;
-            try {
-                line = reader.readLine(prompt);
-            } catch (UserInterruptException e) {
-                // Ctrl-D
-                return;
-            } catch (EndOfFileException e) {
-                return;
-            }
-            if (line == null) {
-                // Ctrl-C
-                return;
-            }
-            line = line.trim();
-            //terminal.writer().println("======>\"" + line + "\"");
+		// Display minimum guidance
+		termout.println("Type 'exit' or 'quit' to return to shell.");
+		termout.println("Type 'help' for more info.");
+		String prompt = "clueless>";
+		while (true) {
+			String line = null;
+			try {
+				line = reader.readLine(prompt);
+			} catch (UserInterruptException | EndOfFileException e) {
+				// Ctrl-D
+				return;
+			}
+			if (line == null) {
+				// Ctrl-C
+				return;
+			}
+			line = line.trim();
+			//terminal.writer().println("======>\"" + line + "\"");
 
-            if (line.equalsIgnoreCase("quit")
-                    || line.equalsIgnoreCase("exit")) {
-                /*try {
+			if (line.equalsIgnoreCase("quit")
+					|| line.equalsIgnoreCase("exit")) {
+				/*try {
                     client.disconnect();
                 } catch (Exception e) {
                     logger.error("Failed to disconnect client.");
                     System.exit(-1);
                 }*/
-                System.exit(0);
-            }
+				System.exit(0);
+			}
 
             if (line.equalsIgnoreCase("help")) {
-                terminal.writer().println("\n"
+                termout.println("\n"
                         + "chat <message>\n"
                         + "    Send a message to all players\n"
-                        + "config <" + clientState.getAvailableSuspects().toString() + ">\n"
+                        + "config <" + cli.clientState.getAvailableSuspects().toString() + ">\n"
                         + "    Configure the client\n"
                         + "start\n"
                         + "    Start the game\n"
@@ -217,103 +366,40 @@ public class CLI {
                         + "    Exit clueless CLI\n");
             }
 
-            ParsedLine pl = reader.getParser().parse(line, 0);
+			
+			String response = handleCommand(cli, line);
+			if (response != null) {
+				termout.println(response);
+			}
+		}
+	}
+	
+	public static void init(String[] args) {
+		// Parse command line arguments
+		argMap = argumentHandler(args);
+		
+		// Setup some static mappings
+		suspectStrToEnum = new HashMap<>();
+		buildSuspectMap(suspectStrToEnum);
+		suspectNodes = buildSuspectNodes(suspectStrToEnum);
+		directionsStrToEnum = new HashMap<>();
+		buildDirectionMap(directionsStrToEnum);
+		directionNodes = buildDirectionNodes(directionsStrToEnum);
+		
+		parser = new DefaultParser();
+		parser.setEofOnUnclosedQuote(true);
+	}
+	
+	public static void main(String[] args) {
+		logger.info("Starting interactive client CLI" + args);
 
-            //if-else hell..
-            
-            if ("chat".equals(pl.word())) {
-                try {
-                    client.sendMessage(Message.chatMessage(line.split(" ", 2)[1]));
-                } catch (Exception e) {
-                    logger.error("failed chat");
-                }
-            } else if ("done".equals(pl.word())) {
-	            try {
-	                client.sendMessage(Message.endTurn());
-	            } catch (Exception e) {
-	                logger.error("failed chat");
-	            }
-            } else if ("config".equals(pl.word())) {
-            	if(clientState.isConfigured())
-            	{
-            		terminal.writer().println("You've already selected a suspect!");
-            	}
-            	else if (pl.words().size() == 2) {
-                    try {
-                    	if(suspectStrToEnum.get(pl.words().get(1)) == null) {
-                    		terminal.writer().println("Problem selecting that suspect.  Please try again!");
-                    	}
-                    	else {
-                    		terminal.writer().println("Selected " + suspectStrToEnum.get(pl.words().get(1)));
-                    		client.sendMessage(Message.clientConfig(suspectStrToEnum.get(pl.words().get(1))));
-                    		clientState.setConfigured(true);
-                    		clientState.setMySuspect(suspectStrToEnum.get(pl.words().get(1)));
-                    	}
-                    } catch (Exception e) {
-                        logger.error("failed config");
-                    }
-                }
-            } else if("start".equals(pl.word())) {
-            	try {
-            		if(!clientState.isConfigured()) {
-            			terminal.writer().println("Must config first!");
-            		}
-            		else {
-    					client.sendMessage(Message.startGame());
-            		}
-				} catch (Exception e) {
-					logger.error("failed starting game");
-				}
-            } else if ("cards".equals(pl.word())) {
-        		if(!clientState.isConfigured()) {
-        			terminal.writer().println("Must config first!");
-        		}
-        		else if (!clientState.getGameState().isGameActive()) {
-        			terminal.writer().println("Must start first!");
-        		}
-        		else {
-        			terminal.writer().println("\nYour cards:\n");
-        			for(Card card : clientState.getCards()) {
-            			terminal.writer().println(card);
-        			}
-        			
-        			terminal.writer().println("\n\nFace Up Cards:\n");
-        			for(Card card : clientState.getFaceUpCards()) {
-            			terminal.writer().println(card);
-        			}
-        		}
-	        } else if("move".equals(pl.word())) {
-	        	try {
-            		if(!clientState.isConfigured()) {
-            			terminal.writer().println("Must config first!");
-            		}
-            		else if (!clientState.getGameState().isGameActive()) {
-            			terminal.writer().println("Must start first!");
-            		}
-            		else if (!clientState.isMyTurn()) {
-            			terminal.writer().println("Must be the active player!");
-            		}
-            		else if (clientState.isMoved()) {
-            			terminal.writer().println("Already moved this turn!");
-            		}
-            		else {
-            			if(pl.words().size() != 2) {
-            				terminal.writer().println("Must specify a direction to move in.  Please try again!");
-            			}
-            			else if(directionsStrToEnum.get(pl.words().get(1)) == null) {
-                    		terminal.writer().println("Problem moving in that direction.  Please try again!");
-                    	}
-                    	else {
-                    		terminal.writer().println("Moving direction: " + directionsStrToEnum.get(pl.words().get(1)));
-                    		client.sendMessage(Message.moveClient(directionsStrToEnum.get(pl.words().get(1))));
-                    		clientState.setMoved(true);
-                    	}
-            		}
-				} catch (Exception e) {
-					logger.error("failed starting game");
-				}
-	        }
+		// Initialize common static environment
+		init(args);
 
-        }
-    }
+		// Create an instance of our CLI state
+		CLI cli = new CLI();
+		
+		// Start interactive loop
+		doInteractiveSession(cli);
+	}
 }

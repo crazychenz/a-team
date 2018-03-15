@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class GameStatePulse implements Serializable{
+public class GameStatePulse implements Serializable {
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2547048036673558884L;
 	private boolean gameActive;

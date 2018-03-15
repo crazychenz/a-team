@@ -28,16 +28,16 @@ public enum MessagesEnum {
     MESSAGE_CLIENT_END_TURN(0x64),
     MESSAGE_SERVER_FAIL_MOVE(0x65);
 
-    private final int messageID;
+	private final int messageID;
 
-    MessagesEnum(int messageID) {
-        this.messageID = messageID;
-    }
+	MessagesEnum(int messageID) {
+		this.messageID = messageID;
+	}
 
-    /**
-     * @return the messageID
-     */
-    public int getMessageID() {
-        return messageID;
-    }
+	/**
+	 * @return the messageID
+	 */
+	public int getMessageID() {
+		return messageID;
+	}
 }

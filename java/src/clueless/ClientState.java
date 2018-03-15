@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 
 public class ClientState {
-	
+
 	private AvailableSuspects availableSuspects;
 	private boolean configured = false;
 	private GameStatePulse gameState;
@@ -26,7 +26,7 @@ public class ClientState {
     	setCards(new ArrayList<Card>());
     	setFaceUpCards(new ArrayList<Card>());
     }
-
+    
 	/**
 	 * @return the gameState
 	 */
@@ -39,24 +39,22 @@ public class ClientState {
 	 */
 	public void setGameState(GameStatePulse gameState) {
 		this.gameState = gameState;
-		
+
 		if(gameState.isGameActive() && gameState.getActiveSuspect().equals(mySuspect)) {
 			setMyTurn(true);
-			if(!alerted) {
-				System.out.println("You are the active player!  Make your move!");
+
+			if (!alerted) {
+				logger.info("You are the active player!  Perform an action.");
 				alerted = true;
 			}
-		}
-		else
-		{
+		} else {
 			setMyTurn(false);
-			if(alerted) {
+			if (alerted) {
 				alerted = false;
 			}
 		}
-		
 		lastLocation = gameState.getSuspectLocations().get(mySuspect);
-		
+
 		setAvailableSuspects(gameState.getAvailableSuspects());
 		setCards(gameState.getCards());
 		setFaceUpCards(gameState.getFaceUpCards());
@@ -74,10 +72,10 @@ public class ClientState {
 	 */
 	public void setAvailableSuspects(AvailableSuspects availableSuspects) {
 		this.availableSuspects = availableSuspects;
-        //logger.info("Available Suspects Count: " + availableSuspects.list.size());
-        //for (CardsEnum suspect : availableSuspects.list) {
-        //    logger.info(suspect);
-        //}
+		//logger.info("Available Suspects Count: " + availableSuspects.list.size());
+		//for (CardsEnum suspect : availableSuspects.list) {
+		//    logger.info(suspect);
+		//}
 	}
 
 	/**
@@ -135,7 +133,7 @@ public class ClientState {
 	public void setMoved(boolean moved) {
 		this.moved = moved;
 	}
-
+	
 	/**
 	 * @return the cards
 	 */

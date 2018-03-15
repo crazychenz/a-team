@@ -5,16 +5,16 @@ import org.apache.logging.log4j.LogManager;
 
 public class CLIEventHandler {
 
-    private static final Logger logger
-            = LogManager.getLogger(CLIEventHandler.class);
+	private static final Logger logger
+			= LogManager.getLogger(CLIEventHandler.class);
 
-    ClientState clientState;
-    Watchdog watchdog;
+	ClientState clientState;
+	Watchdog watchdog;
 
-    CLIEventHandler(ClientState state, Watchdog wd) {
-        clientState = state;
-        watchdog = wd;
-    }
+	CLIEventHandler(ClientState state, Watchdog wd) {
+		clientState = state;
+		watchdog = wd;
+	}
 
     void onMessageEvent(Client client, Message msg) {
         switch (msg.getMessageID()) {
@@ -22,7 +22,7 @@ public class CLIEventHandler {
             case MESSAGE_CHAT_FROM_CLIENT:
                 logger.info("chat: " + msg.getMessageData());
                 break;
-            /*case MESSAGE_SERVER_AVAILABLE_SUSPECTS:
+			/*case MESSAGE_SERVER_AVAILABLE_SUSPECTS:
                 clientState.setAvailableSuspects((AvailableSuspects) msg.getMessageData());
                 logger.info("Count: " + clientState.getAvailableSuspects().list.size());
                 for (CardsEnum suspect : clientState.getAvailableSuspects().list) {
@@ -50,5 +50,4 @@ public class CLIEventHandler {
                 break;
         }
     }
-
 }
