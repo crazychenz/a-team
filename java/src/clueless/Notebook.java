@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package clueless;
 
@@ -12,10 +12,10 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Notebook {
 
-    private static final Logger logger =
-        LogManager.getLogger(Notebook.class);
+	private static final Logger logger
+			= LogManager.getLogger(Notebook.class);
 
 	public Notebook() {
-		
+
 	}
 }

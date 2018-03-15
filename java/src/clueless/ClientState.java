@@ -39,8 +39,7 @@ public class ClientState {
 	 */
 	public void setGameState(GameStatePulse gameState) {
 		this.gameState = gameState;
-
-		if(gameState.isGameActive() && gameState.getActiveSuspect().equals(mySuspect)) {
+		if (gameState.isGameActive() && gameState.getActiveSuspect().equals(mySuspect)) {
 			setMyTurn(true);
 
 			if (!alerted) {

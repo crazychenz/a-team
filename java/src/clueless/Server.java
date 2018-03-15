@@ -15,8 +15,8 @@ import org.zeromq.ZMQ.Socket;
 
 public class Server implements Runnable {
 
-    private static final Logger logger
-            = LogManager.getLogger(Server.class);
+	private static final Logger logger
+			= LogManager.getLogger(Server.class);
 
     Context zmqContext;
     Socket socket;
