@@ -1,4 +1,4 @@
 Used eclipse IDE to create the files and project.  ServerRun and ClientRun are the files to run
 
-Downloaded jeromq.jar from https://mvnrepository.com/artifact/org.zeromq/jeromq/0.4.3
+Downloaded zzeromq.jar from https://mvnrepository.com/artifact/org.zeromq/jeromq/0.4.3
 
