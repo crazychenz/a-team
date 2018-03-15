@@ -99,5 +99,9 @@ public class CardDeck {
 		envelope.setSuspect(suspect);
 		envelope.setWeapon(weapon);
 	}
+	
+	public ArrayList<Card> getFaceUpCards() {
+		return faceUpCards;
+	}
 
 }

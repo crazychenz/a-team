@@ -268,7 +268,7 @@ public class Game {
                     if (s.getSuspect() == pickedSuspect) {
                     	if(s.getActive()) {
                     		logger.info("Suspect already chosen!");
-                    		return failedAction("Suspect already chosen!");
+                    		return failedConfig("Suspect already chosen!");
                     	}
                     	else {
                     		s.setActive(true);
@@ -290,13 +290,13 @@ public class Game {
             		else
             		{
             			logger.info("Unable to move there!");
-                		return failedAction("Unable to move there!");
+                		return failedMove("Unable to move there!");
             		}
             	}
             	//move from non-active player
             	else {
             		logger.info("Non-active player tried to move!");
-            		return failedAction("Non-active player tried to move!");
+            		return failedMove("Non-active player tried to move!");
             	}
                 break;
             case MESSAGE_CLIENT_SUGGEST:
@@ -311,7 +311,7 @@ public class Game {
                 break;
             case MESSAGE_PULSE:
                 // return echo request
-            	return sendGameStatePulse();
+            	return sendGameStatePulse(msg.getFromUuid());
             default:
                 break;
         }
@@ -320,21 +320,31 @@ public class Game {
     }
 
     private HashMap<CardsEnum, CardsEnum> getWeaponLocations() {
-		// TODO Auto-generated method stub
-		return null;
+    	HashMap<CardsEnum, CardsEnum> weaponLocations = new HashMap<CardsEnum,CardsEnum>();
+    	for(Weapon weapon : weapons.values()) {
+    		weaponLocations.put(weapon.getWeapon(), weapon.getCurrent_location());
+    	}
+		return weaponLocations;
 	}
 
 	private HashMap<CardsEnum, CardsEnum> getSuspectLocations() {
-		// TODO Auto-generated method stub
-		return null;
+    	HashMap<CardsEnum, CardsEnum> suspectLocations = new HashMap<CardsEnum,CardsEnum>();
+    	for(Suspect suspect : suspects.values()) {
+    		suspectLocations.put(suspect.getSuspect(), suspect.getCurrent_location().getLocation());
+    	}
+    	return suspectLocations;
 	}
 
 	private void startGame() {
+		//Don't start again
+		if(gameStarted) {
+			return;
+		}
         if (activePlayers.size() >= 3) {
             cards.setupCardDeckAndDealCards(activePlayers, classicMode);
             gameStarted = true;
             shufflePlayersAndSetActivePlayer();
-            //sendMessageToAllPlayers(new Message(MessagesEnum.MESSAGE_SERVER_START_GAME,""));			
+			
         } else {
             logger.info("Not enough players to start the game");
             return;
@@ -377,15 +387,27 @@ public class Game {
         return availableSuspects;
     }
     
-    private Message failedAction(String message) {
+    private Message failedConfig(String message) {
         return new Message(
-                MessagesEnum.MESSAGE_SERVER_FAIL_ACTION,
+                MessagesEnum.MESSAGE_SERVER_FAIL_CONFIG,
                 message);
     }
     
-    private Message sendGameStatePulse() {
+    private Message failedMove(String message) {
+        return new Message(
+                MessagesEnum.MESSAGE_SERVER_FAIL_MOVE,
+                message);
+    }
+    
+    private Message sendGameStatePulse(String uuid) {
+    	ArrayList<Card> individualCards = new ArrayList<Card>();
+    	for(Player player : activePlayers) {
+    		if(player.uuid.equals(uuid)) {
+    			individualCards = player.getCards();
+    		}
+    	}
     	
-    	GameStatePulse pulsePayload = new GameStatePulse(gameStarted, getActiveSuspect(), getAvailableSuspects(), getSuspectLocations(), getWeaponLocations());
+    	GameStatePulse pulsePayload = new GameStatePulse(gameStarted, getActiveSuspect(), getAvailableSuspects(), getSuspectLocations(), getWeaponLocations(), individualCards, cards.getFaceUpCards());
 
         return new Message(
                 MessagesEnum.MESSAGE_PULSE,

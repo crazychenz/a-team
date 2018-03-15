@@ -154,7 +154,9 @@ public class CLI {
                 node("start"),
                 node(directionNodes),
                 node(suspectNodes),
-                node("chat")
+                node("done"),
+                node("chat"),
+                node("cards")
         );
 
         DefaultParser parser = new DefaultParser();
@@ -209,6 +211,8 @@ public class CLI {
                         + "    Move in the given direction\n"
                         + "done\n"
                         + "    End your turn\n"
+                        + "cards\n"
+                        + "    Display your cards and face up cards\n"
                         + "exit|quit\n"
                         + "    Exit clueless CLI\n");
             }
@@ -232,7 +236,7 @@ public class CLI {
             } else if ("config".equals(pl.word())) {
             	if(clientState.isConfigured())
             	{
-            		logger.info("You've already selected a suspect!");
+            		terminal.writer().println("You've already selected a suspect!");
             	}
             	else if (pl.words().size() == 2) {
                     try {
@@ -240,7 +244,7 @@ public class CLI {
                     		terminal.writer().println("Problem selecting that suspect.  Please try again!");
                     	}
                     	else {
-                    		logger.info("Selected " + suspectStrToEnum.get(pl.words().get(1)));
+                    		terminal.writer().println("Selected " + suspectStrToEnum.get(pl.words().get(1)));
                     		client.sendMessage(Message.clientConfig(suspectStrToEnum.get(pl.words().get(1))));
                     		clientState.setConfigured(true);
                     		clientState.setMySuspect(suspectStrToEnum.get(pl.words().get(1)));
@@ -260,6 +264,24 @@ public class CLI {
 				} catch (Exception e) {
 					logger.error("failed starting game");
 				}
+            } else if ("cards".equals(pl.word())) {
+        		if(!clientState.isConfigured()) {
+        			terminal.writer().println("Must config first!");
+        		}
+        		else if (!clientState.getGameState().isGameActive()) {
+        			terminal.writer().println("Must start first!");
+        		}
+        		else {
+        			terminal.writer().println("\nYour cards:\n");
+        			for(Card card : clientState.getCards()) {
+            			terminal.writer().println(card);
+        			}
+        			
+        			terminal.writer().println("\n\nFace Up Cards:\n");
+        			for(Card card : clientState.getFaceUpCards()) {
+            			terminal.writer().println(card);
+        			}
+        		}
 	        } else if("move".equals(pl.word())) {
 	        	try {
             		if(!clientState.isConfigured()) {
@@ -282,7 +304,7 @@ public class CLI {
                     		terminal.writer().println("Problem moving in that direction.  Please try again!");
                     	}
                     	else {
-                    		logger.info("Moving direction: " + directionsStrToEnum.get(pl.words().get(1)));
+                    		terminal.writer().println("Moving direction: " + directionsStrToEnum.get(pl.words().get(1)));
                     		client.sendMessage(Message.moveClient(directionsStrToEnum.get(pl.words().get(1))));
                     		clientState.setMoved(true);
                     	}

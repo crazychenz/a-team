@@ -1,5 +1,6 @@
 package clueless;
-
+//TODO - If a client disconnects in the middle of the game, we need to handle it.  The easy way out is to end the game.
+//The more difficult way is to add their cards to the face up cards, or have the server pretend to play as the person (not happening)
 import java.util.ArrayList;
 import java.nio.ByteBuffer;
 import org.apache.logging.log4j.Logger;

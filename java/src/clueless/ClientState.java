@@ -1,6 +1,9 @@
 package clueless;
 
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+
 import org.apache.logging.log4j.LogManager;
 
 public class ClientState {
@@ -10,14 +13,18 @@ public class ClientState {
 	private GameStatePulse gameState;
 	private CardsEnum mySuspect;
 	private boolean myTurn = false;
-	private static boolean alerted = false;
+	private boolean alerted = false;
 	private boolean moved = false;
 	private CardsEnum lastLocation;
+	private ArrayList<Card> cards;
+	private ArrayList<Card> faceUpCards;
 	
     private static final Logger logger
             = LogManager.getLogger(CLIEventHandler.class);
     
     ClientState() {
+    	setCards(new ArrayList<Card>());
+    	setFaceUpCards(new ArrayList<Card>());
     }
 
 	/**
@@ -32,10 +39,11 @@ public class ClientState {
 	 */
 	public void setGameState(GameStatePulse gameState) {
 		this.gameState = gameState;
+		
 		if(gameState.isGameActive() && gameState.getActiveSuspect().equals(mySuspect)) {
 			setMyTurn(true);
 			if(!alerted) {
-				logger.info("You are the active player!  Perform an action.");
+				System.out.println("You are the active player!  Make your move!");
 				alerted = true;
 			}
 		}
@@ -47,10 +55,11 @@ public class ClientState {
 			}
 		}
 		
-		//check if our suspect has moved.  if so, the move was valid. if not, then we need to reset setMoved(false) so they can attempt to move again
-		//to do this, we need to fill out the suspect and weapon locations structures in the pulse to see if it changed from the previous pulse to this one
+		lastLocation = gameState.getSuspectLocations().get(mySuspect);
 		
 		setAvailableSuspects(gameState.getAvailableSuspects());
+		setCards(gameState.getCards());
+		setFaceUpCards(gameState.getFaceUpCards());
 	}
 
 	/**
@@ -125,5 +134,33 @@ public class ClientState {
 	 */
 	public void setMoved(boolean moved) {
 		this.moved = moved;
+	}
+
+	/**
+	 * @return the cards
+	 */
+	public ArrayList<Card> getCards() {
+		return cards;
+	}
+
+	/**
+	 * @param cards the cards to set
+	 */
+	public void setCards(ArrayList<Card> cards) {
+		this.cards = cards;
+	}
+
+	/**
+	 * @return the faceUpCards
+	 */
+	public ArrayList<Card> getFaceUpCards() {
+		return faceUpCards;
+	}
+
+	/**
+	 * @param faceUpCards the faceUpCards to set
+	 */
+	public void setFaceUpCards(ArrayList<Card> faceUpCards) {
+		this.faceUpCards = faceUpCards;
 	}
 }

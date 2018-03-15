@@ -20,7 +20,7 @@ public class CLIEventHandler {
         switch (msg.getMessageID()) {
             case MESSAGE_CHAT_FROM_SERVER:
             case MESSAGE_CHAT_FROM_CLIENT:
-                logger.info("chat: " + msg);
+                logger.info("chat: " + msg.getMessageData());
                 break;
             /*case MESSAGE_SERVER_AVAILABLE_SUSPECTS:
                 clientState.setAvailableSuspects((AvailableSuspects) msg.getMessageData());
@@ -36,8 +36,14 @@ public class CLIEventHandler {
             	clientState.setGameState(gameState);
                 watchdog.pulse();
                 break;
-            case MESSAGE_SERVER_FAIL_ACTION:
+            case MESSAGE_SERVER_FAIL_CONFIG:
             	logger.info(msg);
+            	clientState.setConfigured(false);
+            	clientState.setMySuspect(null);
+            	break;
+            case MESSAGE_SERVER_FAIL_MOVE:
+            	logger.info(msg);
+            	clientState.setMoved(false);
             	break;
             default:
                 logger.info("Message: " + msg);

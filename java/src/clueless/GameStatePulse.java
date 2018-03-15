@@ -1,6 +1,7 @@
 package clueless;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameStatePulse implements Serializable{
@@ -13,13 +14,18 @@ public class GameStatePulse implements Serializable{
 	private HashMap<CardsEnum, CardsEnum> suspectLocations;
 	private HashMap<CardsEnum, CardsEnum> weaponLocations;
 	private AvailableSuspects availableSuspects;
+	private ArrayList<Card> cards;
+	private ArrayList<Card> faceUpCards;
 	
-	public GameStatePulse(boolean gameActive, CardsEnum activeSuspect, AvailableSuspects availableSuspects, HashMap<CardsEnum, CardsEnum> suspectLocations, HashMap<CardsEnum, CardsEnum> weaponLocations) {
+	public GameStatePulse(boolean gameActive, CardsEnum activeSuspect, AvailableSuspects availableSuspects, HashMap<CardsEnum, CardsEnum> suspectLocations, HashMap<CardsEnum, CardsEnum> weaponLocations, ArrayList<Card> cards,
+			ArrayList<Card> faceUpCards) {
 		setGameActive(gameActive);
 		setActiveSuspect(activeSuspect);
 		setSuspectLocations(suspectLocations);
 		setWeaponLocations(weaponLocations);
 		setAvailableSuspects(availableSuspects);
+		setCards(cards);
+		setFaceUpCards(faceUpCards);
 	}
 
 	/**
@@ -90,5 +96,33 @@ public class GameStatePulse implements Serializable{
 	 */
 	private void setAvailableSuspects(AvailableSuspects availableSuspects) {
 		this.availableSuspects = availableSuspects;
+	}
+
+	/**
+	 * @return the cards
+	 */
+	public ArrayList<Card> getCards() {
+		return cards;
+	}
+
+	/**
+	 * @param cards the cards to set
+	 */
+	public void setCards(ArrayList<Card> cards) {
+		this.cards = cards;
+	}
+	
+	/**
+	 * @return the faceUpCards
+	 */
+	public ArrayList<Card> getFaceUpCards() {
+		return faceUpCards;
+	}
+
+	/**
+	 * @param faceUpCards the cards to set
+	 */
+	public void setFaceUpCards(ArrayList<Card> faceUpCards) {
+		this.faceUpCards = faceUpCards;
 	}
 }
