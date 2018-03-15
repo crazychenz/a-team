@@ -24,31 +24,39 @@ public class CLI {
 	private static final Logger logger
 			= LogManager.getLogger(CLI.class);
 
-	private static HashMap<String, DirectionsEnum> directionsStrToEnum;
+	// Static Maps
 	private static HashMap<String, String> argMap;
-	private static Client client;
-	private static ClientState clientState;
+	private static HashMap<String, DirectionsEnum> directionsStrToEnum;
 	private static HashMap<String, CardsEnum> suspectStrToEnum;
-	private static CLIEventHandler evtHandler;
-	private static Watchdog watchdog;
-	private static Thread watchdogThread;
-	private static Heartbeat heartbeat;
-	private static Thread heartbeatThread;
+	private static Object[] directionNodes;
+	private static Object[] suspectNodes;
+	
+	// Client Specific Properties
+	private Client client;
+	private ClientState clientState;
+	private CLIEventHandler evtHandler;
+	private Watchdog watchdog;
+	private Thread watchdogThread;
+	private Heartbeat heartbeat;
+	private Thread heartbeatThread;
 
+	// Terminal Properties
 	private static Terminal terminal;
-	private static DefaultParser parser;
 	private static LineReader reader;
-	private static ParsedLine pl;
 	private static PrintWriter termout;
+	
+	private static DefaultParser parser;
 
-	public static Object[] buildSuspectMap(HashMap<String, CardsEnum> map) {
+	public static void buildSuspectMap(HashMap<String, CardsEnum> map) {
 		map.put("Green", CardsEnum.SUSPECT_GREEN);
 		map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
 		map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
 		map.put("Plum", CardsEnum.SUSPECT_PLUM);
 		map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
 		map.put("White", CardsEnum.SUSPECT_WHITE);
+	}
 
+	public static Object[] buildSuspectNodes(HashMap<String, CardsEnum> map) {
 		Object[] nodes = new Object[map.size() + 1];
 		nodes[0] = "config";
 		int i = 1;
@@ -60,14 +68,17 @@ public class CLI {
 		return nodes;
 	}
 
-	public static Object[] buildDirectionMap(
+	public static void buildDirectionMap(
 			HashMap<String, DirectionsEnum> map) {
 		map.put("north", DirectionsEnum.DIRECTION_NORTH);
 		map.put("south", DirectionsEnum.DIRECTION_SOUTH);
 		map.put("east", DirectionsEnum.DIRECTION_EAST);
 		map.put("west", DirectionsEnum.DIRECTION_WEST);
 		map.put("secret", DirectionsEnum.DIRECTION_SECRET);
-
+	}
+	
+	public static Object[] buildDirectionNodes(
+			HashMap<String, DirectionsEnum> map) {
 		Object[] nodes = new Object[map.size() + 1];
 		nodes[0] = "move";
 		int i = 1;
@@ -116,7 +127,16 @@ public class CLI {
 		return argMap;
 	}
 
-	public static void handleCommand(String line) {
+	public static String handleCommand(CLI cli, String line) {
+		Client client = cli.client;
+		ClientState clientState = cli.clientState;
+		
+		ParsedLine pl;
+		pl = parser.parse(line, 0);
+		if (null == pl.word()) {
+			return null;
+		}
+		
 		switch (pl.word()) {
 			case "chat":
 				try {
@@ -143,9 +163,8 @@ public class CLI {
 
 					if (pl.words().size() == 2) {
 						if (suspectStrToEnum.get(pl.words().get(1)) == null) {
-							termout.println("Problem selecting that suspect."
-									+ "  Please try again!");
-							break;
+							return "Problem selecting that suspect."
+									+ "  Please try again!";
 						}
 
 						logger.info("Selected " 
@@ -165,8 +184,7 @@ public class CLI {
 			case "start":
 				try {
 					if (!clientState.isConfigured()) {
-						termout.println("Must config first!");
-						break;
+						return "Must config first!";
 					}
 					
 					client.sendMessage(Message.startGame());
@@ -178,35 +196,29 @@ public class CLI {
 			case "move":
 				try {
 					if (!clientState.isConfigured()) {
-						termout.println("Must config first!");
-						break;
+						return "Must config first!";
 					}
 
 					if (!clientState.getGameState().isGameActive()) {
-						termout.println("Must start first!");
-						break;
+						return "Must start first!";
 					}
 
 					if (!clientState.isMyTurn()) {
-						termout.println("Must be the active player!");
-						break;
+						return "Must be the active player!";
 					}
 
 					if (clientState.isMoved()) {
-						termout.println("Already moved this turn!");
-						break;
+						return "Already moved this turn!";
 					}
 
 					if (pl.words().size() != 2) {
-						termout.println("Must specify a direction to move in."
-								+ "  Please try again!");
-						break;
+						return "Must specify a direction to move in."
+								+ "  Please try again!";
 					}
 
 					if (directionsStrToEnum.get(pl.words().get(1)) == null) {
-						termout.println("Problem moving in that direction."
-								+ "  Please try again!");
-						break;
+						return "Problem moving in that direction."
+								+ "  Please try again!";
 					}
 
 					logger.info("Moving direction: "
@@ -223,14 +235,10 @@ public class CLI {
 			default:
 				break;
 		}
+		return null;
 	}
-
-	public static void main(String[] args) {
-		logger.info("Starting client CLI");
-
-		// Parse command line arguments
-		argMap = argumentHandler(args);
-
+	
+	public CLI() {
 		// Where client side state lives
 		clientState = new ClientState();
 
@@ -259,13 +267,9 @@ public class CLI {
 		heartbeat = new Heartbeat(client, 5000);
 		heartbeatThread = new Thread(heartbeat);
 		heartbeatThread.start();
-
-		suspectStrToEnum = new HashMap<>();
-		Object[] suspectNodes = buildSuspectMap(suspectStrToEnum);
-
-		directionsStrToEnum = new HashMap<>();
-		Object[] directionNodes = buildDirectionMap(directionsStrToEnum);
-
+	}
+	
+	public static void doInteractiveSession(CLI cli) {
 		terminal = null;
 		try {
 			terminal = TerminalBuilder.builder().build();
@@ -276,6 +280,8 @@ public class CLI {
 
 		termout = terminal.writer();
 
+		suspectNodes = buildSuspectNodes(suspectStrToEnum);
+		directionNodes = buildDirectionNodes(directionsStrToEnum);
 		TreeCompleter completer = new TreeCompleter(
 				node("exit"),
 				node("quit"),
@@ -286,8 +292,7 @@ public class CLI {
 				node("chat")
 		);
 
-		parser = new DefaultParser();
-		parser.setEofOnUnclosedQuote(true);
+		
 
 		reader = LineReaderBuilder.builder().terminal(terminal)
 				.completer(completer)
@@ -295,8 +300,8 @@ public class CLI {
 				.build();
 
 		// Display minimum guidance
-		terminal.writer().println("Type 'exit' or 'quit' to return to shell.");
-		terminal.writer().println("Type 'help' for more info.");
+		termout.println("Type 'exit' or 'quit' to return to shell.");
+		termout.println("Type 'help' for more info.");
 		String prompt = "clueless>";
 		while (true) {
 			String line = null;
@@ -325,11 +330,11 @@ public class CLI {
 			}
 
 			if (line.equalsIgnoreCase("help")) {
-				terminal.writer().println("\n"
+				termout.println("\n"
 						+ "chat <message>\n"
 						+ "    Send a message to all players\n"
 						+ "config <"
-						+ clientState.getAvailableSuspects().toString()
+						+ cli.clientState.getAvailableSuspects().toString()
 						+ ">\n"
 						+ "    Configure the client\n"
 						+ "start\n"
@@ -342,11 +347,38 @@ public class CLI {
 						+ "    Exit clueless CLI\n");
 			}
 
-			pl = reader.getParser().parse(line, 0);
-			if (null != pl.word()) {
-				handleCommand(line);
+			
+			String response = handleCommand(cli, line);
+			if (response != null) {
+				termout.println(response);
 			}
-
 		}
+	}
+	
+	public static void init(String[] args) {
+		// Parse command line arguments
+		argMap = argumentHandler(args);
+		
+		// Setup some static mappings
+		suspectStrToEnum = new HashMap<>();
+		buildSuspectMap(suspectStrToEnum);
+		directionsStrToEnum = new HashMap<>();
+		buildDirectionMap(directionsStrToEnum);
+		
+		parser = new DefaultParser();
+		parser.setEofOnUnclosedQuote(true);
+	}
+	
+	public static void main(String[] args) {
+		logger.info("Starting interactive client CLI" + args);
+
+		// Initialize common static environment
+		init(args);
+
+		// Create an instance of our CLI state
+		CLI cli = new CLI();
+		
+		// Start interactive loop
+		doInteractiveSession(cli);
 	}
 }
