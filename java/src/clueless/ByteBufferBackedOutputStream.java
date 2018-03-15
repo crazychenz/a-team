@@ -10,22 +10,24 @@ import java.io.IOException;
 
 public class ByteBufferBackedOutputStream extends OutputStream {
 
-    private static final Logger logger =
-        LogManager.getLogger(ByteBufferBackedOutputStream.class);
-        
-    ByteBuffer buf;
+	private static final Logger logger
+			= LogManager.getLogger(ByteBufferBackedOutputStream.class);
 
-    public ByteBufferBackedOutputStream(ByteBuffer buf) {
-        this.buf = buf;
-    }
+	ByteBuffer buf;
 
-    public void write(int b) throws IOException {
-        buf.put((byte) b);
-    }
+	public ByteBufferBackedOutputStream(ByteBuffer buf) {
+		this.buf = buf;
+	}
 
-    public void write(byte[] bytes, int off, int len)
-            throws IOException {
-        buf.put(bytes, off, len);
-    }
+	@Override
+	public void write(int b) throws IOException {
+		buf.put((byte) b);
+	}
+
+	@Override
+	public void write(byte[] bytes, int off, int len)
+			throws IOException {
+		buf.put(bytes, off, len);
+	}
 
 }

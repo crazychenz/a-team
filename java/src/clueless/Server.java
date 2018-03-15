@@ -14,104 +14,103 @@ import org.zeromq.ZMQ.Socket;
 
 public class Server implements Runnable {
 
-    private static final Logger logger
-            = LogManager.getLogger(Server.class);
+	private static final Logger logger
+			= LogManager.getLogger(Server.class);
 
-    Context zmqContext;
-    Socket socket;
-    Game gameState;
+	Context zmqContext;
+	Socket socket;
+	Game gameState;
 
-    ConcurrentLinkedQueue<Message> users;
+	ConcurrentLinkedQueue<Message> users;
 
-    public Server() {
-        // Grab a context object with one I/O thread.
-        zmqContext = ZMQ.context(1);
-        socket = zmqContext.socket(ZMQ.ROUTER);
-        users = new ConcurrentLinkedQueue<Message>();
-        gameState = new Game();
-    }
+	public Server() {
+		// Grab a context object with one I/O thread.
+		zmqContext = ZMQ.context(1);
+		socket = zmqContext.socket(ZMQ.ROUTER);
+		users = new ConcurrentLinkedQueue<Message>();
+		gameState = new Game();
+	}
 
-    public void sendMessage(Message msg) throws Exception {
-        ByteBuffer buf;
-        try {
-            buf = Message.toBuffer(msg);
-        } catch (Exception e) {
-            logger.error("Failed to sendMessage.");
-            throw e;
-        }
-        socket.sendMore("");
-        socket.send(buf.array());
-    }
-    
-    public void sendMessage(String uuid, Message msg) throws Exception {
-        ByteBuffer buf;
-        try {
-            buf = Message.toBuffer(msg);
-        } catch (Exception e) {
-            logger.error("Failed to sendMessage.");
-            throw e;
-        }
-        socket.sendMore(uuid);
-        socket.sendMore("");
-        socket.send(buf.array());
-    }
+	public void sendMessage(Message msg) throws Exception {
+		ByteBuffer buf;
+		try {
+			buf = Message.toBuffer(msg);
+		} catch (Exception e) {
+			logger.error("Failed to sendMessage.");
+			throw e;
+		}
+		socket.sendMore("");
+		socket.send(buf.array());
+	}
 
-    public void run() {
-        socket.bind("tcp://*:2323");
+	public void sendMessage(String uuid, Message msg) throws Exception {
+		ByteBuffer buf;
+		try {
+			buf = Message.toBuffer(msg);
+		} catch (Exception e) {
+			logger.error("Failed to sendMessage.");
+			throw e;
+		}
+		socket.sendMore(uuid);
+		socket.sendMore("");
+		socket.send(buf.array());
+	}
 
-        Poller items = zmqContext.poller(1);
-        items.register(socket, Poller.POLLIN);
+	public void run() {
+		socket.bind("tcp://*:2323");
 
-        //while (!Thread.currentThread().isInterrupted()) {
-        while (true) {
-            if (items.poll(2000) < 0) {
-                return; //  Interrupted
-            }
+		Poller items = zmqContext.poller(1);
+		items.register(socket, Poller.POLLIN);
 
-            if (items.pollin(0)) {
-                Message msg = null;
-                String replyto = socket.recvStr();
-                logger.info("Got a message from " + replyto);
+		//while (!Thread.currentThread().isInterrupted()) {
+		while (true) {
+			if (items.poll(2000) < 0) {
+				return; //  Interrupted
+			}
 
-                // Fetch delimiter (assumed empty)
-                socket.recvStr();
+			if (items.pollin(0)) {
+				Message msg = null;
+				String replyto = socket.recvStr();
+				logger.info("Got a message from " + replyto);
 
-                // Fetch the request
-                try {
-                    msg = Message.fromBuffer(ByteBuffer.wrap(socket.recv()));
-                    msg.setFromUuid(replyto);
-                } catch (Exception e) {
-                    logger.error("Failed to parse message.");
-                }
+				// Fetch delimiter (assumed empty)
+				socket.recvStr();
 
-                logger.info("Request: " + msg);
+				// Fetch the request
+				try {
+					msg = Message.fromBuffer(ByteBuffer.wrap(socket.recv()));
+					msg.setFromUuid(replyto);
+				} catch (Exception e) {
+					logger.error("Failed to parse message.");
+				}
 
-                msg = gameState.processMessage(msg);
-                
-                try {
-                    if (msg != null) {
-                        if (msg.isBroadcast()) {
-                            for (Player player: gameState.getActivePlayers()) {
-                                logger.trace("Sending broadcast to " + player.uuid);
-                                sendMessage(player.uuid, msg);
-                            }
-                        }
-                        else {
-                            logger.trace("Sending message to " + replyto);
-                            sendMessage(replyto, msg);
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Failed to send response message.");
-                }
-            }
+				logger.info("Request: " + msg);
 
-        }
-    }
+				msg = gameState.processMessage(msg);
 
-    public void disconnect() throws Exception {
-        socket.close();
-        return;
-    }
+				try {
+					if (msg != null) {
+						if (msg.isBroadcast()) {
+							for (Player player : gameState.getActivePlayers()) {
+								logger.trace("Sending broadcast to " + player.uuid);
+								sendMessage(player.uuid, msg);
+							}
+						} else {
+							logger.trace("Sending message to " + replyto);
+							sendMessage(replyto, msg);
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Failed to send response message.");
+				}
+			}
+
+		}
+	}
+
+	public void disconnect() throws Exception {
+		socket.close();
+		return;
+	}
 
 }

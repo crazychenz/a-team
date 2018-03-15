@@ -3,9 +3,10 @@ package clueless;
 import java.io.Serializable;
 import java.util.HashMap;
 
-public class GameStatePulse implements Serializable{
+public class GameStatePulse implements Serializable {
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2547048036673558884L;
 	private boolean gameActive;
@@ -13,7 +14,7 @@ public class GameStatePulse implements Serializable{
 	private HashMap<CardsEnum, CardsEnum> suspectLocations;
 	private HashMap<CardsEnum, CardsEnum> weaponLocations;
 	private AvailableSuspects availableSuspects;
-	
+
 	public GameStatePulse(boolean gameActive, CardsEnum activeSuspect, AvailableSuspects availableSuspects, HashMap<CardsEnum, CardsEnum> suspectLocations, HashMap<CardsEnum, CardsEnum> weaponLocations) {
 		setGameActive(gameActive);
 		setActiveSuspect(activeSuspect);

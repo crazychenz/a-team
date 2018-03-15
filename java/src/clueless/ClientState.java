@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 public class ClientState {
-	
+
 	private AvailableSuspects availableSuspects;
 	private boolean configured = false;
 	private GameStatePulse gameState;
@@ -13,12 +13,12 @@ public class ClientState {
 	private static boolean alerted = false;
 	private boolean moved = false;
 	private CardsEnum lastLocation;
-	
-    private static final Logger logger
-            = LogManager.getLogger(CLIEventHandler.class);
-    
-    ClientState() {
-    }
+
+	private static final Logger logger
+			= LogManager.getLogger(CLIEventHandler.class);
+
+	ClientState() {
+	}
 
 	/**
 	 * @return the gameState
@@ -32,24 +32,21 @@ public class ClientState {
 	 */
 	public void setGameState(GameStatePulse gameState) {
 		this.gameState = gameState;
-		if(gameState.isGameActive() && gameState.getActiveSuspect().equals(mySuspect)) {
+		if (gameState.isGameActive() && gameState.getActiveSuspect().equals(mySuspect)) {
 			setMyTurn(true);
-			if(!alerted) {
+			if (!alerted) {
 				logger.info("You are the active player!  Perform an action.");
 				alerted = true;
 			}
-		}
-		else
-		{
+		} else {
 			setMyTurn(false);
-			if(alerted) {
+			if (alerted) {
 				alerted = false;
 			}
 		}
-		
+
 		//check if our suspect has moved.  if so, the move was valid. if not, then we need to reset setMoved(false) so they can attempt to move again
 		//to do this, we need to fill out the suspect and weapon locations structures in the pulse to see if it changed from the previous pulse to this one
-		
 		setAvailableSuspects(gameState.getAvailableSuspects());
 	}
 
@@ -65,10 +62,10 @@ public class ClientState {
 	 */
 	public void setAvailableSuspects(AvailableSuspects availableSuspects) {
 		this.availableSuspects = availableSuspects;
-        //logger.info("Available Suspects Count: " + availableSuspects.list.size());
-        //for (CardsEnum suspect : availableSuspects.list) {
-        //    logger.info(suspect);
-        //}
+		//logger.info("Available Suspects Count: " + availableSuspects.list.size());
+		//for (CardsEnum suspect : availableSuspects.list) {
+		//    logger.info(suspect);
+		//}
 	}
 
 	/**
