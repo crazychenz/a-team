@@ -36,6 +36,7 @@
         <pathconvert pathsep=" " refid="java-source-fileset" property="java-source-files" />
         <exec executable="java">
             <arg line="-jar ${lib.dir}/google-java-format-1.5-all-deps.jar" />
+            <arg value="--aosp" />
             <arg value="--replace" />
             <arg line="${java-source-files}" />
         </exec>
