@@ -14,6 +14,7 @@
         </fileset>
     </path>
 
+
     <!-- Deletes the existing build, docs and dist directory-->
     <target name="clean">
         <delete dir="${build.dir}" />
@@ -28,8 +29,20 @@
         <mkdir dir="${dist.dir}" />
     </target>
 
+    <target name="style" depends="makedir">
+        <fileset id="java-source-fileset" dir="${src.dir}" casesensitive="yes">
+            <include name="**/*.java" />
+        </fileset>
+        <pathconvert pathsep=" " refid="java-source-fileset" property="java-source-files" />
+        <exec executable="java">
+            <arg line="-jar ${lib.dir}/google-java-format-1.5-all-deps.jar" />
+            <arg value="--replace" />
+            <arg line="${java-source-files}" />
+        </exec>
+    </target>
+
     <!-- Compiles the java code (including the usage of library for JUnit -->
-    <target name="compile" depends="clean, makedir">
+    <target name="compile" depends="style">
         <javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}">
             <classpath refid="lib-classpath" />
             <compilerarg value="-Xlint:unchecked" />
