@@ -252,7 +252,9 @@ public class CLI {
 
         // Initialize watchdog thread
         watchdog = new Watchdog(10000);
+        watchdog.pulse();
         watchdogThread = new Thread(watchdog);
+        // TODO start thread outside of constructor
         watchdogThread.start();
 
         // Client side event handler (for CLI user interface)
@@ -274,6 +276,7 @@ public class CLI {
         // Init heartbeat thread (duration half length of watchdog timeout)
         heartbeat = new Heartbeat(client, 5000);
         heartbeatThread = new Thread(heartbeat);
+        // TODO start thread outside of constructor
         heartbeatThread.start();
     }
 
@@ -381,7 +384,7 @@ public class CLI {
     }
 
     public static void main(String[] args) {
-        logger.info("Starting interactive client CLI" + args);
+        logger.info("Starting interactive client CLI");
 
         // Initialize common static environment
         init(args);

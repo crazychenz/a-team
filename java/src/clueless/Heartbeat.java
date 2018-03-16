@@ -15,6 +15,7 @@ public class Heartbeat implements Runnable {
         client = c;
     }
 
+    @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {

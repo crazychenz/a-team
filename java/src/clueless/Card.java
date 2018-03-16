@@ -13,12 +13,13 @@ public class Card implements Serializable {
     /** */
     private static final long serialVersionUID = 4423696825620129194L;
 
-    private CardsEnum card;
+    private final CardsEnum card;
 
     public Card(CardsEnum card) {
         this.card = card;
     }
 
+    @Override
     public String toString() {
         return card.getLabel() + " " + card.getUid() + " " + card.name();
     }

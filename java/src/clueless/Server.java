@@ -27,7 +27,7 @@ public class Server implements Runnable {
         // Grab a context object with one I/O thread.
         zmqContext = ZMQ.context(1);
         socket = zmqContext.socket(ZMQ.ROUTER);
-        users = new ConcurrentLinkedQueue<Message>();
+        users = new ConcurrentLinkedQueue<>();
         gameState = new Game();
     }
 
@@ -56,6 +56,7 @@ public class Server implements Runnable {
         socket.send(buf.array());
     }
 
+    @Override
     public void run() {
         socket.bind("tcp://*:2323");
 

@@ -12,31 +12,39 @@ public class CardDeck {
 
     private static final Logger logger = LogManager.getLogger(CardDeck.class);
 
-    private Envelope envelope;
-    private ArrayList<Card> faceUpCards;
-    private ArrayList<Card> allSuspectCards;
-    private ArrayList<Card> allLocationCards;
-    private ArrayList<Card> allWeaponCards;
-    private Random rngjesus;
+    private final Envelope envelope;
+    private final ArrayList<Card> faceUpCards;
+    private final ArrayList<Card> allSuspectCards;
+    private final ArrayList<Card> allLocationCards;
+    private final ArrayList<Card> allWeaponCards;
+    private final Random rngjesus;
 
     public CardDeck() {
         rngjesus = new Random(System.currentTimeMillis());
-        allSuspectCards = new ArrayList<Card>();
-        allLocationCards = new ArrayList<Card>();
-        allWeaponCards = new ArrayList<Card>();
-        faceUpCards = new ArrayList<Card>();
+        allSuspectCards = new ArrayList<>();
+        allLocationCards = new ArrayList<>();
+        allWeaponCards = new ArrayList<>();
+        faceUpCards = new ArrayList<>();
         envelope = new Envelope();
         logger.debug("Setting up CardDeck");
     }
 
     public void add(Card add) {
         logger.debug("Adding new card " + add.toString());
-        if (add.getCardType() == CardType.CARD_TYPE_LOCATION) {
-            allLocationCards.add(add);
-        } else if (add.getCardType() == CardType.CARD_TYPE_SUSPECT) {
-            allSuspectCards.add(add);
-        } else if (add.getCardType() == CardType.CARD_TYPE_WEAPON) {
-            allWeaponCards.add(add);
+        if (null != add.getCardType()) {
+            switch (add.getCardType()) {
+                case CARD_TYPE_LOCATION:
+                    allLocationCards.add(add);
+                    break;
+                case CARD_TYPE_SUSPECT:
+                    allSuspectCards.add(add);
+                    break;
+                case CARD_TYPE_WEAPON:
+                    allWeaponCards.add(add);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -50,7 +58,7 @@ public class CardDeck {
         logger.debug("Dealing to " + numUsers + " players.");
         int numberOfFaceUpCards =
                 Helper.GetNumberOfFaceUpCardsForNumberOfUsers(numUsers, classicClue);
-        ArrayList<Card> allCards = new ArrayList<Card>();
+        ArrayList<Card> allCards = new ArrayList<>();
         allCards.addAll(allLocationCards);
         allCards.addAll(allSuspectCards);
         allCards.addAll(allWeaponCards);

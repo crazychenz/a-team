@@ -9,7 +9,7 @@ public class Suspect {
 
     private static final Logger logger = LogManager.getLogger(Suspect.class);
 
-    private CardsEnum suspect;
+    private final CardsEnum suspect;
     private Location start_location;
     private Location current_location;
     private boolean active;
@@ -57,7 +57,7 @@ public class Suspect {
     }
 
     /** @param start_location the start_location to set */
-    public void setStart_location(Location start_location) {
+    private void setStart_location(Location start_location) {
         this.start_location = start_location;
     }
 
@@ -67,7 +67,7 @@ public class Suspect {
     }
 
     /** @param current_location the current_location to set */
-    public void setCurrent_location(Location current_location) {
+    private void setCurrent_location(Location current_location) {
         this.current_location = current_location;
     }
 }

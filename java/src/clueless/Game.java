@@ -11,22 +11,22 @@ public class Game {
 
     private static final Logger logger = LogManager.getLogger(Game.class);
 
-    private CardDeck cards;
-    private LinkedList<Player> activePlayers;
+    private final CardDeck cards;
+    private final LinkedList<Player> activePlayers;
     public boolean classicMode = false;
-    private HashMap<CardsEnum, Location> locations;
-    private HashMap<CardsEnum, Location> hallways;
-    private HashMap<CardsEnum, Weapon> weapons;
-    private HashMap<CardsEnum, Suspect> suspects;
+    private final HashMap<CardsEnum, Location> locations;
+    private final HashMap<CardsEnum, Location> hallways;
+    private final HashMap<CardsEnum, Weapon> weapons;
+    private final HashMap<CardsEnum, Suspect> suspects;
     private boolean gameStarted = false;
     private Player activePlayer;
 
     public Game() {
-        locations = new HashMap<CardsEnum, Location>();
-        weapons = new HashMap<CardsEnum, Weapon>();
-        suspects = new HashMap<CardsEnum, Suspect>();
-        hallways = new HashMap<CardsEnum, Location>();
-        activePlayers = new LinkedList<Player>();
+        locations = new HashMap<>();
+        weapons = new HashMap<>();
+        suspects = new HashMap<>();
+        hallways = new HashMap<>();
+        activePlayers = new LinkedList<>();
         cards = new CardDeck();
         setupWeapons();
         setupLocations();
@@ -71,24 +71,34 @@ public class Game {
             }
         }
 
-        for (Location location : locations.values()) {
-            addHallways(location);
-        }
+        locations
+                .values()
+                .forEach(
+                        (location) -> {
+                            addHallways(location);
+                        });
 
-        for (Location location : locations.values()) {
-            logger.info(location);
-        }
+        locations
+                .values()
+                .forEach(
+                        (location) -> {
+                            logger.info(location);
+                        });
 
-        for (Location hall : hallways.values()) {
-            logger.info(hall);
-        }
+        hallways.values()
+                .forEach(
+                        (hall) -> {
+                            logger.info(hall);
+                        });
     }
 
     private HashMap<CardsEnum, CardsEnum> getWeaponLocations() {
-        HashMap<CardsEnum, CardsEnum> weaponLocations = new HashMap<CardsEnum, CardsEnum>();
-        for (Weapon weapon : weapons.values()) {
-            weaponLocations.put(weapon.getWeapon(), weapon.getCurrent_location());
-        }
+        HashMap<CardsEnum, CardsEnum> weaponLocations = new HashMap<>();
+        weapons.values()
+                .forEach(
+                        (weapon) -> {
+                            weaponLocations.put(weapon.getWeapon(), weapon.getCurrent_location());
+                        });
         return weaponLocations;
     }
 
@@ -327,10 +337,14 @@ public class Game {
     }
 
     private HashMap<CardsEnum, CardsEnum> getSuspectLocations() {
-        HashMap<CardsEnum, CardsEnum> suspectLocations = new HashMap<CardsEnum, CardsEnum>();
-        for (Suspect suspect : suspects.values()) {
-            suspectLocations.put(suspect.getSuspect(), suspect.getCurrent_location().getLocation());
-        }
+        HashMap<CardsEnum, CardsEnum> suspectLocations = new HashMap<>();
+        suspects.values()
+                .forEach(
+                        (suspect) -> {
+                            suspectLocations.put(
+                                    suspect.getSuspect(),
+                                    suspect.getCurrent_location().getLocation());
+                        });
         return suspectLocations;
     }
 
@@ -346,7 +360,6 @@ public class Game {
 
         } else {
             logger.info("Not enough players to start the game");
-            return;
         }
     }
 
@@ -395,7 +408,8 @@ public class Game {
     }
 
     private Message sendGameStatePulse(String uuid) {
-        ArrayList<Card> individualCards = new ArrayList<Card>();
+        ArrayList<Card> individualCards;
+        individualCards = new ArrayList<>();
         for (Player player : activePlayers) {
             if (player.uuid.equals(uuid)) {
                 individualCards = player.getCards();

@@ -27,7 +27,7 @@ public class Weapon {
     }
 
     /** @param weapon the weapon to set */
-    public void setWeapon(CardsEnum weapon) {
+    public final void setWeapon(CardsEnum weapon) {
         this.weapon = weapon;
     }
 

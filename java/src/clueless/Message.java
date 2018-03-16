@@ -17,8 +17,8 @@ public class Message implements Serializable {
     /** */
     private static final long serialVersionUID = -2609974894890218306L;
 
-    private MessagesEnum messageID;
-    private Object messageData;
+    private final MessagesEnum messageID;
+    private final Object messageData;
     private String fromUuid;
     private boolean broadcast;
 
@@ -45,6 +45,7 @@ public class Message implements Serializable {
         fromUuid = uuid;
     }
 
+    @Override
     public String toString() {
         return "Message ID: " + messageID + " Message Data: " + messageData;
     }

@@ -12,7 +12,6 @@ public class Watchdog implements Runnable {
 
     public Watchdog(long timeout) {
         this.timeout = timeout;
-        pulse();
     }
 
     public void pulse() {

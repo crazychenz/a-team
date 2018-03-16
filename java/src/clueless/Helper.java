@@ -29,27 +29,30 @@ public class Helper {
 
     public static int GetNumberOfFaceUpCardsForNumberOfUsers(int numUsers, boolean classicClue) {
         if (!classicClue) {
-            if (numUsers == 3 || numUsers == 4) {
-                return 6;
-            } else if (numUsers == 5) {
-                return 3;
-            } else if (numUsers == 6) {
-                return 6;
-            } else {
-                return 6;
+            switch (numUsers) {
+                case 3:
+                case 4:
+                    return 6;
+                case 5:
+                    return 3;
+                case 6:
+                    return 6;
+                default:
+                    return 6;
             }
         }
         if (classicClue) {
-            if (numUsers == 3) {
-                return 0;
-            } else if (numUsers == 4) {
-                return 2;
-            } else if (numUsers == 5) {
-                return 3;
-            } else if (numUsers == 6) {
-                return 0;
-            } else {
-                return 0;
+            switch (numUsers) {
+                case 3:
+                    return 0;
+                case 4:
+                    return 2;
+                case 5:
+                    return 3;
+                case 6:
+                    return 0;
+                default:
+                    return 0;
             }
         }
         return 0;

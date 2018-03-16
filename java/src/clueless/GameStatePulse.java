@@ -90,7 +90,7 @@ public class GameStatePulse implements Serializable {
     }
 
     /** @param cards the cards to set */
-    public void setCards(ArrayList<Card> cards) {
+    private void setCards(ArrayList<Card> cards) {
         this.cards = cards;
     }
 
@@ -100,7 +100,7 @@ public class GameStatePulse implements Serializable {
     }
 
     /** @param faceUpCards the cards to set */
-    public void setFaceUpCards(ArrayList<Card> faceUpCards) {
+    private void setFaceUpCards(ArrayList<Card> faceUpCards) {
         this.faceUpCards = faceUpCards;
     }
 }

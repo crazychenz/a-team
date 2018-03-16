@@ -1,7 +1,7 @@
 package clueless;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,15 +10,15 @@ public class Location {
     private static final Logger logger = LogManager.getLogger(Location.class);
 
     private CardsEnum location;
-    private ArrayList<CardsEnum> suspectsInside;
-    private Hashtable<DirectionsEnum, Location> adjacentRooms;
-    private ArrayList<CardsEnum> weaponsInside;
+    private final ArrayList<CardsEnum> suspectsInside;
+    private final HashMap<DirectionsEnum, Location> adjacentRooms;
+    private final ArrayList<CardsEnum> weaponsInside;
 
     public Location(CardsEnum location) {
         this.setLocation(location);
-        adjacentRooms = new Hashtable<DirectionsEnum, Location>();
-        suspectsInside = new ArrayList<CardsEnum>();
-        weaponsInside = new ArrayList<CardsEnum>();
+        adjacentRooms = new HashMap<>();
+        suspectsInside = new ArrayList<>();
+        weaponsInside = new ArrayList<>();
         logger.debug("Creating location " + location.toString());
     }
 
@@ -64,7 +64,7 @@ public class Location {
     }
 
     /** @param location the location to set */
-    public void setLocation(CardsEnum location) {
+    public final void setLocation(CardsEnum location) {
         this.location = location;
     }
 
