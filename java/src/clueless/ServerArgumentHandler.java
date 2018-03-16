@@ -1,42 +1,31 @@
 package clueless;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import clueless.Server;
-
-// required for arg parser
-import java.lang.Integer;
-import java.lang.NumberFormatException;
-import java.lang.Boolean;
-import java.util.Hashtable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Hashtable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServerArgumentHandler {
 
-    private static final Logger logger = 
-        LogManager.getLogger(ServerArgumentHandler.class);
+    private static final Logger logger = LogManager.getLogger(ServerArgumentHandler.class);
 
     private Hashtable<String, Boolean> validArguments;
 
-    public ServerArgumentHandler(
-        String[] args, 
-        CluelessServerSocket serverSocket) throws Exception
-    {
+    public ServerArgumentHandler(String[] args, CluelessServerSocket serverSocket)
+            throws Exception {
         // Valid arguments
         this.validArguments = new Hashtable<String, Boolean>();
         this.validArguments.put("--port", new Boolean(true));
         this.validArguments.put("--backlog", new Boolean(true));
         this.validArguments.put("--address", new Boolean(true));
-        
+
         // Note: This could easily be expanded to non-parameterized
         //       arguments with a second Hashtable.
-        
+
         String lastArg = null;
-        for (String arg: args) {
-            if (lastArg != null)
-            {
+        for (String arg : args) {
+            if (lastArg != null) {
                 if (lastArg.equals("--port")) {
                     try {
                         int port = Integer.parseInt(arg);
@@ -48,8 +37,7 @@ public class ServerArgumentHandler {
                     }
                     lastArg = null;
                     continue;
-                }
-                else if (lastArg.equals("--backlog")) {
+                } else if (lastArg.equals("--backlog")) {
                     try {
                         int backlog = Integer.parseInt(arg);
                         serverSocket.setBacklog(backlog);
@@ -60,8 +48,7 @@ public class ServerArgumentHandler {
                     }
                     lastArg = null;
                     continue;
-                }
-                else if (lastArg.equals("--address")) {
+                } else if (lastArg.equals("--address")) {
                     InetAddress bindAddr;
                     try {
                         bindAddr = InetAddress.getByName(arg);
@@ -74,8 +61,7 @@ public class ServerArgumentHandler {
                     lastArg = null;
                     continue;
                 }
-            }
-            else if (this.validArguments.containsKey(arg)) {
+            } else if (this.validArguments.containsKey(arg)) {
                 lastArg = arg;
                 continue;
             }

@@ -1,13 +1,13 @@
 package clueless;
-//TODO - If a client disconnects in the middle of the game, we need to handle it.  The easy way out is to end the game.
-//The more difficult way is to add their cards to the face up cards, or have the server pretend to play as the person (not happening)
-import java.util.ArrayList;
+// TODO - If a client disconnects in the middle of the game, we need to handle it.  The easy way out
+// is to end the game.
+// The more difficult way is to add their cards to the face up cards, or have the server pretend to
+// play as the person (not happening)
+
 import java.nio.ByteBuffer;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import java.util.concurrent.ConcurrentLinkedQueue;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Poller;
@@ -15,8 +15,7 @@ import org.zeromq.ZMQ.Socket;
 
 public class Server implements Runnable {
 
-	private static final Logger logger
-			= LogManager.getLogger(Server.class);
+    private static final Logger logger = LogManager.getLogger(Server.class);
 
     Context zmqContext;
     Socket socket;
@@ -43,7 +42,7 @@ public class Server implements Runnable {
         socket.sendMore("");
         socket.send(buf.array());
     }
-    
+
     public void sendMessage(String uuid, Message msg) throws Exception {
         ByteBuffer buf;
         try {
@@ -63,7 +62,7 @@ public class Server implements Runnable {
         Poller items = zmqContext.poller(1);
         items.register(socket, Poller.POLLIN);
 
-        //while (!Thread.currentThread().isInterrupted()) {
+        // while (!Thread.currentThread().isInterrupted()) {
         while (true) {
             if (items.poll(2000) < 0) {
                 return; //  Interrupted
@@ -88,16 +87,15 @@ public class Server implements Runnable {
                 logger.info("Request: " + msg);
 
                 msg = gameState.processMessage(msg);
-                
+
                 try {
                     if (msg != null) {
                         if (msg.isBroadcast()) {
-                            for (Player player: gameState.getActivePlayers()) {
+                            for (Player player : gameState.getActivePlayers()) {
                                 logger.trace("Sending broadcast to " + player.uuid);
                                 sendMessage(player.uuid, msg);
                             }
-                        }
-                        else {
+                        } else {
                             logger.trace("Sending message to " + replyto);
                             sendMessage(replyto, msg);
                         }
@@ -106,7 +104,6 @@ public class Server implements Runnable {
                     logger.error("Failed to send response message.");
                 }
             }
-
         }
     }
 
@@ -114,5 +111,4 @@ public class Server implements Runnable {
         socket.close();
         return;
     }
-
 }

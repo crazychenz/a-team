@@ -1,20 +1,17 @@
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import clueless.Server;
 import clueless.ServerArgumentHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServerRun {
 
-    private static final Logger logger =
-        LogManager.getLogger(ServerRun.class);
+    private static final Logger logger = LogManager.getLogger(ServerRun.class);
 
     public static void main(String[] args) {
         ServerArgumentHandler argHandler;
 
         /*try {
-            argHandler = 
+            argHandler =
                 new ServerArgumentHandler(args);
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,6 +53,6 @@ public class ServerRun {
         } catch (Exception e) {
             logger.error("Server disconnect failed.");
             System.exit(-1);
-        }	
+        }
     }
 }
