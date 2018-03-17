@@ -1,7 +1,6 @@
 package clueless.tests;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static org.junit.Assert.assertEquals;
 
 import clueless.ByteBufferBackedInputStream;
 import clueless.ByteBufferBackedOutputStream;
@@ -9,8 +8,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
-
-import static org.junit.Assert.assertEquals;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 public class ByteBufferBackedStreamTest {

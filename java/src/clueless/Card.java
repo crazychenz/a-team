@@ -27,4 +27,8 @@ public class Card implements Serializable {
     public CardType getCardType() {
         return card.getCardType();
     }
+
+    public CardsEnum getCardEnum() {
+        return card;
+    }
 }

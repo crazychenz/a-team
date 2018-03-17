@@ -135,4 +135,8 @@ public class Message implements Serializable {
     public static Message serverPulse(GameStatePulse pulsePayload) throws Exception {
         return new Message(MessagesEnum.MESSAGE_PULSE, pulsePayload);
     }
+
+    public static Message accusation(CardWrapper cards) throws Exception {
+        return new Message(MessagesEnum.MESSAGE_CLIENT_ACCUSE, cards);
+    }
 }

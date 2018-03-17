@@ -4,8 +4,8 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jline.builtins.Completers.TreeCompleter;
@@ -26,8 +26,12 @@ public class CLI {
     private static HashMap<String, String> argMap;
     private static HashMap<String, DirectionsEnum> directionsStrToEnum;
     private static HashMap<String, CardsEnum> suspectStrToEnum;
+    private static HashMap<String, CardsEnum> accuseStrToEnum;
+    private static HashMap<String, CardsEnum> suggestStrToEnum;
     private static Object[] directionNodes;
     private static Object[] suspectNodes;
+    private static Object[] accuseNodes;
+    private static Object[] suggestNodes;
 
     // Client Specific Properties
     private Client client;
@@ -60,6 +64,56 @@ public class CLI {
         int i = 1;
         for (String suspect : map.keySet()) {
             nodes[i] = node(suspect);
+            i += 1;
+        }
+
+        return nodes;
+    }
+
+    public static void buildAccuseMap(HashMap<String, CardsEnum> map) {
+        map.put("Green", CardsEnum.SUSPECT_GREEN);
+        map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
+        map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
+        map.put("Plum", CardsEnum.SUSPECT_PLUM);
+        map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
+        map.put("White", CardsEnum.SUSPECT_WHITE);
+
+        map.put("Ballroom", CardsEnum.LOCATION_BALLROOM);
+        map.put("Billiard", CardsEnum.LOCATION_BILLIARDROOM);
+        map.put("Conservatory", CardsEnum.LOCATION_CONSERVATORY);
+        map.put("Dining", CardsEnum.LOCATION_DININGROOM);
+        map.put("Hall", CardsEnum.LOCATION_HALL);
+        map.put("Kitchen", CardsEnum.LOCATION_KITCHEN);
+        map.put("Library", CardsEnum.LOCATION_LIBRARY);
+        map.put("Lounge", CardsEnum.LOCATION_LOUNGE);
+        map.put("Study", CardsEnum.LOCATION_STUDY);
+
+        map.put("Revolver", CardsEnum.WEAPON_REVOLVER);
+        map.put("Pipe", CardsEnum.WEAPON_LEADPIPE);
+        map.put("Rope", CardsEnum.WEAPON_ROPE);
+        map.put("Candlestick", CardsEnum.WEAPON_CANDLESTICK);
+        map.put("Wrench", CardsEnum.WEAPON_WRENCH);
+        map.put("Dagger", CardsEnum.WEAPON_DAGGER);
+    }
+
+    public static Object[] buildAccuseNodes(HashMap<String, CardsEnum> map) {
+        Object[] nodes = new Object[map.size() + 1];
+        nodes[0] = "accuse";
+        int i = 1;
+        for (String card : map.keySet()) {
+            nodes[i] = node(card);
+            i += 1;
+        }
+
+        return nodes;
+    }
+
+    public static Object[] buildSuggestNodes(HashMap<String, CardsEnum> map) {
+        Object[] nodes = new Object[map.size() + 1];
+        nodes[0] = "accuse";
+        int i = 1;
+        for (String card : map.keySet()) {
+            nodes[i] = node(card);
             i += 1;
         }
 
@@ -211,8 +265,8 @@ public class CLI {
                 } else if (!clientState.getGameState().isGameActive()) {
                     return "Must start first!";
                 } else {
-                    String toReturn = "";
-                    toReturn += "\nBoard:\n";
+                    String toReturn = "\n";
+                    /*toReturn += "\nBoard:\n";
                     for (Entry<CardsEnum, CardsEnum> entry :
                             clientState.getGameState().getSuspectLocations().entrySet()) {
                         toReturn +=
@@ -234,13 +288,55 @@ public class CLI {
                                         + "Location: "
                                         + entry.getValue()
                                         + "\n";
-                    }
+                    }*/
 
                     BoardBuilder bb = new BoardBuilder(clientState);
                     System.out.println(bb.generateBoard());
-
-                    return toReturn;
                 }
+            case "accuse":
+                try {
+                    if (!clientState.isConfigured()) {
+                        return "Must config first!";
+                    }
+
+                    if (!clientState.getGameState().isGameActive()) {
+                        return "Must start first!";
+                    }
+
+                    if (!clientState.isMyTurn()) {
+                        return "Must be the active player!";
+                    }
+
+                    if (pl.words().size() == 4) {
+                        if (accuseStrToEnum.get(pl.words().get(1)) == null) {
+                            return "Problem selecting that card." + "  Please try again!";
+                        }
+                        if (accuseStrToEnum.get(pl.words().get(2)) == null) {
+                            return "Problem selecting that card." + "  Please try again!";
+                        }
+                        if (accuseStrToEnum.get(pl.words().get(3)) == null) {
+                            return "Problem selecting that card." + "  Please try again!";
+                        }
+                        String card1 = pl.words().get(1);
+                        String card2 = pl.words().get(2);
+                        String card3 = pl.words().get(3);
+                        logger.info("Accusing " + card1 + card2 + card3);
+                        CardsEnum ce1 = accuseStrToEnum.get(card1);
+                        CardsEnum ce2 = accuseStrToEnum.get(card2);
+                        CardsEnum ce3 = accuseStrToEnum.get(card3);
+                        ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
+                        cardsToSend.add(ce1);
+                        cardsToSend.add(ce2);
+                        cardsToSend.add(ce3);
+                        CardWrapper cards = new CardWrapper(cardsToSend);
+                        client.sendMessage(Message.accusation(cards));
+                    } else {
+                        return "Must specify a suspect, location, and weapon to accuse!";
+                    }
+                } catch (Exception e) {
+                    logger.error("failed making accusation");
+                }
+                break;
             case "move":
                 try {
                     if (!clientState.isConfigured()) {
@@ -336,6 +432,8 @@ public class CLI {
                         node("start"),
                         node(directionNodes),
                         node(suspectNodes),
+                        node(accuseNodes),
+                        node(suggestNodes),
                         node("done"),
                         node("chat"),
                         node("cards"),
@@ -376,7 +474,7 @@ public class CLI {
                 }*/
                 System.exit(0);
             }
-
+            
             if (line.equalsIgnoreCase("help")) {
                 termout.println(
                         "\n"
@@ -396,6 +494,8 @@ public class CLI {
                                 + "    Display your cards and face up cards\n"
                                 + "board\n"
                                 + "    Display the location of all weapons and suspects\n"
+                                + "accuse\n"
+                                + "    Accuse a suspect, location, and weapon to win the game!\n"
                                 + "exit|quit\n"
                                 + "    Exit clueless CLI\n");
             }
@@ -415,6 +515,15 @@ public class CLI {
         suspectStrToEnum = new HashMap<>();
         buildSuspectMap(suspectStrToEnum);
         suspectNodes = buildSuspectNodes(suspectStrToEnum);
+
+        accuseStrToEnum = new HashMap<>();
+        buildAccuseMap(accuseStrToEnum);
+        accuseNodes = buildAccuseNodes(accuseStrToEnum);
+
+        suggestStrToEnum = new HashMap<>();
+        buildAccuseMap(suggestStrToEnum);
+        suggestNodes = buildSuggestNodes(suggestStrToEnum);
+
         directionsStrToEnum = new HashMap<>();
         buildDirectionMap(directionsStrToEnum);
         directionNodes = buildDirectionNodes(directionsStrToEnum);

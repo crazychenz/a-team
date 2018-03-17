@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 /** @author tombo */
 public class BoardBuilder {
-    //TODO show weapon locations also
+    // TODO show weapon locations also
     private ClientState clientState;
 
     public BoardBuilder(ClientState clientState) {
@@ -25,11 +25,11 @@ public class BoardBuilder {
                 returnSuspectsInRoom(CardsEnum.HALLWAY_HALL_LOUNGE),
                 "*Lounge - " + returnSuspectsInRoom(CardsEnum.LOCATION_LOUNGE));
         at.addRow(
-                "|" + returnSuspectsInRoom(CardsEnum.HALLWAY_STUDY_LIBRARY) + "|",
+                " " + returnSuspectsInRoom(CardsEnum.HALLWAY_STUDY_LIBRARY),
                 "",
-                "|" + returnSuspectsInRoom(CardsEnum.HALLWAY_HALL_BILLIARD) + "|",
+                " " + returnSuspectsInRoom(CardsEnum.HALLWAY_HALL_BILLIARD),
                 "",
-                "|" + returnSuspectsInRoom(CardsEnum.HALLWAY_LOUNGE_DINING) + "|");
+                " " + returnSuspectsInRoom(CardsEnum.HALLWAY_LOUNGE_DINING));
         at.addRow(
                 "Library - " + returnSuspectsInRoom(CardsEnum.LOCATION_LIBRARY),
                 returnSuspectsInRoom(CardsEnum.HALLWAY_LIBRARY_BILLIARD),
@@ -37,11 +37,11 @@ public class BoardBuilder {
                 returnSuspectsInRoom(CardsEnum.HALLWAY_DINING_BILLIARD),
                 "Dining Room - " + returnSuspectsInRoom(CardsEnum.LOCATION_DININGROOM));
         at.addRow(
-                "|" + returnSuspectsInRoom(CardsEnum.HALLWAY_CONSERVATORY_LIBRARY) + "|",
+                " " + returnSuspectsInRoom(CardsEnum.HALLWAY_CONSERVATORY_LIBRARY),
                 "",
-                "|" + returnSuspectsInRoom(CardsEnum.HALLWAY_BALL_BILLIARD) + "|",
+                " " + returnSuspectsInRoom(CardsEnum.HALLWAY_BALL_BILLIARD),
                 "",
-                "|" + returnSuspectsInRoom(CardsEnum.HALLWAY_DINING_KITCHEN) + "|");
+                " " + returnSuspectsInRoom(CardsEnum.HALLWAY_DINING_KITCHEN));
         at.addRow(
                 "Conservatory* - " + returnSuspectsInRoom(CardsEnum.LOCATION_CONSERVATORY),
                 returnSuspectsInRoom(CardsEnum.HALLWAY_BALL_CONSERVATORY),
@@ -49,6 +49,7 @@ public class BoardBuilder {
                 returnSuspectsInRoom(CardsEnum.HALLWAY_KITCHEN_BALL),
                 "*Kitchen - " + returnSuspectsInRoom(CardsEnum.LOCATION_KITCHEN));
         at.addRule();
+        at.getContext().setWidth(140);
         at.getContext().setGridTheme(TA_GridThemes.OUTSIDE);
         at.setTextAlignment(TextAlignment.CENTER);
         String rend = at.render();
@@ -61,7 +62,7 @@ public class BoardBuilder {
             for (Entry<CardsEnum, CardsEnum> entry :
                     clientState.getGameState().getSuspectLocations().entrySet()) {
                 if (entry.getValue().equals(room)) {
-                    toReturn += entry.getKey() + ",";
+                    toReturn += entry.getKey().getLabel() + ",";
                 }
             }
             toReturn = toReturn.substring(0, toReturn.length() - 1);

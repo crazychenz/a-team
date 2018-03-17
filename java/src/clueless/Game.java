@@ -318,11 +318,33 @@ public class Game {
                 break;
             case MESSAGE_CLIENT_SUGGEST:
                 // handle the suggestion
+                // TODO We need to relay this to each player in turn until they can disprove or not
+                if (activePlayer.uuid.equals(msg.getFromUuid())) {
+                    return relaySuggestion((CardWrapper) msg.getMessageData());
+                }
                 break;
             case MESSAGE_CLIENT_ACCUSE:
-                // handle the accuse
-                setNextPlayer();
-                break;
+                if (activePlayer.uuid.equals(msg.getFromUuid())) {
+                    if (handleAccuse((CardWrapper) msg.getMessageData())) {
+                        // Win!
+                        // End the game, alert everybody
+                        gameStarted = false;
+                        Message endMessage = sendMessage();
+                        endMessage.setBroadcast(true);
+                        return endMessage;
+                    } else {
+                        // Bad accusation!
+                        // Don't allow the player to continue making moves, but they must remain to
+                        // disprove suggestions
+                        activePlayer.setActive(false);
+                        setNextPlayer();
+                        logger.info("Bad accusation!");
+                        return failedMove(
+                                "Bad accusation!  You must sit out the rest of the game.");
+                    }
+                }
+                logger.info("Non-active player tried to accuse!");
+                return failedMove("Non-active player tried to accuse!");
             case MESSAGE_CLIENT_END_TURN:
                 setNextPlayer();
                 break;
@@ -363,6 +385,10 @@ public class Game {
         }
     }
 
+    private boolean handleAccuse(CardWrapper cards) {
+        return this.cards.envelopeMatch(cards);
+    }
+
     private void shufflePlayersAndSetActivePlayer() {
         // randomly set activePlayer linked list and set activePlayer variable
         Collections.shuffle(activePlayers, Helper.GetRandom());
@@ -398,6 +424,14 @@ public class Game {
 
     private Message failedMove(String message) {
         return new Message(MessagesEnum.MESSAGE_SERVER_FAIL_MOVE, message);
+    }
+
+    private Message relaySuggestion(CardWrapper cards) {
+        return new Message(MessagesEnum.MESSAGE_SERVER_RELAY_SUGGEST, cards);
+    }
+
+    private Message sendMessage() {
+        return new Message(MessagesEnum.MESSAGE_CHAT_FROM_SERVER, "The game has been won!");
     }
 
     private void addPlayer(CardsEnum suspect, String fromUuid) {

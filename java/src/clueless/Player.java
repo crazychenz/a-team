@@ -11,12 +11,14 @@ public class Player {
     private CardsEnum suspect;
     private String username;
     private ArrayList<Card> cards;
+    private boolean active;
     String uuid;
 
     public Player(CardsEnum suspect, String uuid) {
         this.suspect = suspect;
         cards = new ArrayList<Card>();
         this.uuid = uuid;
+        active = true;
     }
 
     public ArrayList<Card> getCards() {
@@ -25,5 +27,15 @@ public class Player {
 
     public CardsEnum getSuspect() {
         return suspect;
+    }
+
+    /** @return the active */
+    public boolean isActive() {
+        return active;
+    }
+
+    /** @param active the active to set */
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

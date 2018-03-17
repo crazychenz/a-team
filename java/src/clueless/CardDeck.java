@@ -97,6 +97,10 @@ public class CardDeck {
         envelope.setWeapon(weapon);
     }
 
+    public boolean envelopeMatch(CardWrapper cards) {
+        return envelope.matchEnvelope(cards);
+    }
+
     public ArrayList<Card> getFaceUpCards() {
         return faceUpCards;
     }

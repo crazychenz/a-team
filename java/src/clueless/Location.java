@@ -43,12 +43,18 @@ public class Location {
     }
 
     public boolean validMove(DirectionsEnum direction) {
-        //TODO - only allow one player per hallway
-        if (adjacentRooms.get(direction) != null) {
-            return true;
-        } else {
-            return false;
+        Location adjacent = adjacentRooms.get(direction);
+        boolean toReturn = false;
+        if (adjacent != null) {
+            if (adjacent.getLocation().getCardType().equals(CardType.CARD_TYPE_HALLWAY)
+                    && adjacent.numberOfSuspectsInside() == 0) {
+                toReturn = true;
+            }
+            if (adjacent.getLocation().getCardType().equals(CardType.CARD_TYPE_LOCATION)) {
+                toReturn = true;
+            }
         }
+        return toReturn;
     }
 
     public Location getAdjacentRoomInDirection(DirectionsEnum direction) {
@@ -67,6 +73,10 @@ public class Location {
     /** @param location the location to set */
     public final void setLocation(CardsEnum location) {
         this.location = location;
+    }
+
+    public int numberOfSuspectsInside() {
+        return suspectsInside.size();
     }
 
     public String toString() {
