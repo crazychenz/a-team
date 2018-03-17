@@ -29,8 +29,7 @@ public class CLIEventHandler {
                 }
                 break;*/
             case MESSAGE_PULSE:
-                // BUG: log4j is printing \n when trace is disabled.
-                // logger.trace("Got a watchdog pulse.");
+                logger.trace("Got a watchdog pulse.");
                 GameStatePulse gameState = (GameStatePulse) msg.getMessageData();
                 clientState.setGameState(gameState);
                 watchdog.pulse();

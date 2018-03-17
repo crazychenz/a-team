@@ -2,7 +2,7 @@
 <Configuration status="WARN" monitorInterval="30">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%highlight{#%sn %d{HH:mm:ss.SSS}[%level{length=1}][%t] %logger{1}: %msg%throwable%n}"/>
+      <PatternLayout pattern="%highlight{#%sn %d{HH:mm:ss.SSS}[%level{length=1}][%t] %logger{1}: %msg%throwable%n}{ERROR=red, TRACE=magenta}"/>
     </Console>
     <File name="File" filename="${sys:logFilename}">
       <PatternLayout pattern="#%sn %d{ISO8601}[%level][%pid:%t] %logger - %msg%n%throwable"/>
@@ -17,7 +17,7 @@
 
     <Root level="trace">
       <AppenderRef ref="File" />
-      <AppenderRef ref="Console" />
+      <AppenderRef ref="Console" level="debug" />
     </Root>
   </Loggers>
 </Configuration>
