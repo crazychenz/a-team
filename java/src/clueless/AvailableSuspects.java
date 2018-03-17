@@ -23,11 +23,13 @@ public class AvailableSuspects implements Serializable {
     }
 
     public String toString() {
+        if (list.isEmpty()) {
+            return "";
+        }
         String toString = "";
         for (CardsEnum suspect : list) {
             toString += suspect.getLabel() + "|";
         }
-
         return toString.substring(0, toString.length() - 1);
     }
 }

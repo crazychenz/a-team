@@ -43,6 +43,7 @@ public class Location {
     }
 
     public boolean validMove(DirectionsEnum direction) {
+        //TODO - only allow one player per hallway
         if (adjacentRooms.get(direction) != null) {
             return true;
         } else {

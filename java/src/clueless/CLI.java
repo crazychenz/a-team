@@ -5,6 +5,7 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jline.builtins.Completers.TreeCompleter;
@@ -204,6 +205,42 @@ public class CLI {
                     }
                     return toReturn;
                 }
+            case "board":
+                if (!clientState.isConfigured()) {
+                    return "Must config first!";
+                } else if (!clientState.getGameState().isGameActive()) {
+                    return "Must start first!";
+                } else {
+                    String toReturn = "";
+                    toReturn += "\nBoard:\n";
+                    for (Entry<CardsEnum, CardsEnum> entry :
+                            clientState.getGameState().getSuspectLocations().entrySet()) {
+                        toReturn +=
+                                "Suspect: "
+                                        + entry.getKey()
+                                        + "\t"
+                                        + "Location: "
+                                        + entry.getValue()
+                                        + "\n";
+                    }
+
+                    toReturn += "\nWeapons:\n";
+                    for (Entry<CardsEnum, CardsEnum> entry :
+                            clientState.getGameState().getWeaponLocations().entrySet()) {
+                        toReturn +=
+                                "Weapon: "
+                                        + entry.getKey()
+                                        + "\t"
+                                        + "Location: "
+                                        + entry.getValue()
+                                        + "\n";
+                    }
+
+                    BoardBuilder bb = new BoardBuilder(clientState);
+                    System.out.println(bb.generateBoard());
+
+                    return toReturn;
+                }
             case "move":
                 try {
                     if (!clientState.isConfigured()) {
@@ -301,7 +338,8 @@ public class CLI {
                         node(suspectNodes),
                         node("done"),
                         node("chat"),
-                        node("cards"));
+                        node("cards"),
+                        node("board"));
 
         reader =
                 LineReaderBuilder.builder()
@@ -356,6 +394,8 @@ public class CLI {
                                 + "    End your turn\n"
                                 + "cards\n"
                                 + "    Display your cards and face up cards\n"
+                                + "board\n"
+                                + "    Display the location of all weapons and suspects\n"
                                 + "exit|quit\n"
                                 + "    Exit clueless CLI\n");
             }

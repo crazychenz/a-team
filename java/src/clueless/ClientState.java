@@ -34,9 +34,9 @@ public class ClientState {
         this.gameState = gameState;
         if (gameState.isGameActive() && gameState.getActiveSuspect().equals(mySuspect)) {
             setMyTurn(true);
-
             if (!alerted) {
-                logger.info("You are the active player!  Perform an action.");
+                System.out.println("You are the active player!  Perform an action.\n");
+                setMoved(false); // reset move so the player can move again when their turn begins
                 alerted = true;
             }
         } else {
