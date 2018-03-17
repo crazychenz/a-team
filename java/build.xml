@@ -3,6 +3,7 @@
     <!-- Sets variables which can later be used. -->
     <!-- The value of a property is accessed via ${} -->
     <property name="src.dir" location="src" />
+    <property name="src.tests" location="src/clueless/tests" />
     <property name="build.dir" location="bin" />
     <property name="dist.dir" location="dist" />
     <property name="docs.dir" location="docs" />
@@ -29,6 +30,7 @@
         <mkdir dir="${dist.dir}" />
     </target>
 
+    <!-- Formats the java code -->
     <target name="style" depends="makedir">
         <fileset id="java-source-fileset" dir="${src.dir}" casesensitive="yes">
             <include name="**/*.java" />
@@ -93,6 +95,34 @@
             <sysproperty key="java.util.logging.manager" value="org.apache.logging.log4j.jul.LogManager" />
             <sysproperty key="log4j.configurationFile" value="log4j2.xml" />
             <sysproperty key="logFilename" value="client.log" />
+        </java>
+    </target>
+
+    <!-- Builtin Ant Junit Task. Doesn't seem to work with Junit 4.12 atm. -->
+    <!-- target name="junittest" depends="jar">
+        <junit showoutput="yes" printsummary="yes" haltonfailure="yes">
+            <classpath>
+                <pathelement location="dist/clueless.jar" />
+                <path refid="lib-classpath" />
+            </classpath>
+            <batchtest fork="yes" todir=".">
+                <fileset dir="${src.tests}">
+                    <include name="**/*Test*.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target -->
+
+    <!-- Independent Java Task To Perform Junit Tests -->
+    <target name="test" depends="jar">
+        <java classname="clueless.tests.TstRunner">
+            <classpath>
+                <pathelement location="dist/clueless.jar" />
+                <path refid="lib-classpath" />
+            </classpath>
+            <sysproperty key="log4j.configurationFile" value="log4j2.xml" />
+            <sysproperty key="log4j.disable.jmx" value="true" />
+            <sysproperty key="logFilename" value="myjunit.log" />
         </java>
     </target>
 
