@@ -1,6 +1,7 @@
 package clueless.tests;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import clueless.ByteBufferBackedInputStream;
 import clueless.ByteBufferBackedOutputStream;
@@ -8,13 +9,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
+
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class ByteBufferBackedStreamTest {
 
-    //private static final Logger logger = LogManager.getLogger(ByteBufferBackedStreamTest.class);
+    private static final Logger logger = LogManager.getLogger(ByteBufferBackedStreamTest.class);
 
     @Test
     public void simpleTest() {
@@ -41,7 +42,7 @@ public class ByteBufferBackedStreamTest {
             oos.writeObject(outgoing);
             oos.close();
         } catch (IOException e) {
-            //logger.error(e);
+            logger.error(e);
             return;
         }
 
@@ -53,7 +54,7 @@ public class ByteBufferBackedStreamTest {
             incoming = (String) ois.readObject();
             ois.close();
         } catch (IOException | ClassNotFoundException e) {
-            //logger.error(e);
+            logger.error(e);
             return;
         }
 
