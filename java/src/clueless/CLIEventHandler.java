@@ -44,10 +44,12 @@ public class CLIEventHandler {
                 clientState.setMoved(false);
                 break;
             case MESSAGE_SERVER_RELAY_SUGGEST:
-                //TODO prompt the user that they need to disprove this suggestion if possible
-                //They should only be given a choice of the cards they own that are in the suggestion
-                //If they own none of the cards, I think we should just tell them that, and they have to acknowledge
-                //It doesn't seem interactive enough to do it automagically
+                // TODO prompt the user that they need to disprove this suggestion if possible
+                // They should only be given a choice of the cards they own that are in the
+                // suggestion
+                // If they own none of the cards, I think we should just tell them that, and they
+                // have to acknowledge
+                // It doesn't seem interactive enough to do it automagically
                 break;
             default:
                 logger.info("Message: " + msg);

@@ -143,10 +143,10 @@ public class Message implements Serializable {
     public static Message accusation(CardWrapper cards) throws Exception {
         return new Message(MessagesEnum.MESSAGE_CLIENT_ACCUSE, cards);
     }
-    
+
     public static Message suggestion(CardWrapper cards) throws Exception {
         return new Message(MessagesEnum.MESSAGE_CLIENT_SUGGEST, cards);
-	}
+    }
 
     public static Message failedConfig(String message) {
         return new Message(MessagesEnum.MESSAGE_SERVER_FAIL_CONFIG, message);

@@ -1,13 +1,10 @@
-/** */
 package clueless;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/** @author tombo */
+// Nested Suspect Class
 public class Suspect implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(Suspect.class);
@@ -19,71 +16,21 @@ public class Suspect implements Serializable {
     private boolean active;
     private int userID;
 
-    private static HashMap<CardsEnum, Suspect> enumMap = new HashMap<>();
+    // public static ArrayList<Suspect> getCollection() {
+    //    return new ArrayList<Suspect>(enumMap.values());
+    // }
 
-    static {
-        for (CardsEnum value : CardsEnum.values()) {
-            if (value.getCardType() == CardType.CARD_TYPE_SUSPECT) {
-                Suspect newSuspect;
-                newSuspect = new Suspect(value, getStartLocation(value));
-                enumMap.put(value, newSuspect);
-            }
-        }
-    }
-
-    public static Suspect getByEnum(CardsEnum value) {
-        return enumMap.get(value);
-    }
-
-    private static CardsEnum getStartLocation(CardsEnum suspect) {
-        switch (suspect) {
-            case SUSPECT_PLUM:
-                return CardsEnum.HALLWAY_STUDY_LIBRARY;
-            case SUSPECT_PEACOCK:
-                return CardsEnum.HALLWAY_CONSERVATORY_LIBRARY;
-            case SUSPECT_GREEN:
-                return CardsEnum.HALLWAY_BALL_CONSERVATORY;
-            case SUSPECT_WHITE:
-                return CardsEnum.HALLWAY_KITCHEN_BALL;
-            case SUSPECT_MUSTARD:
-                return CardsEnum.HALLWAY_LOUNGE_DINING;
-            case SUSPECT_SCARLET:
-                return CardsEnum.HALLWAY_HALL_LOUNGE;
-            default:
-                return CardsEnum.HALLWAY_STUDY_HALL;
-        }
-    }
-
-    public static ArrayList<Suspect> getCollection() {
-        return new ArrayList<Suspect>(enumMap.values());
-    }
-
-    public static AvailableSuspects getAvailableSuspects() {
-        AvailableSuspects availableSuspects = new AvailableSuspects();
-        for (Suspect suspect : Suspect.getCollection()) {
-            if (!suspect.getActive()) {
-                availableSuspects.list.add(suspect.getSuspect());
-            }
-        }
-        return availableSuspects;
-    }
-
-    public Suspect(CardsEnum suspect, CardsEnum start_location) {
+    public Suspect(CardsEnum suspect) {
         this.suspect = suspect;
-        this.setStart_location(start_location);
-        this.setCurrent_location(start_location);
+        CardsEnum start = SuspectMap.getStartLocation(suspect);
+        this.setStart_location(start);
+        this.setCurrent_location(start);
 
-        Location location = Location.getByEnum(start_location);
-        location.place_suspect(this);
-        logger.debug(
-                "Creating suspect "
-                        + suspect.toString()
-                        + " in location "
-                        + start_location.toString());
+        logger.debug("Creating suspect " + suspect.toString() + " in location " + start.toString());
     }
 
-    public boolean move(DirectionsEnum direction) {
-        Location location = Location.getByEnum(currentLocation);
+    public boolean move(GameBoard board, DirectionsEnum direction) {
+        Location location = board.getLocationByEnum(currentLocation);
         if (location.validMove(direction)) {
             location.remove_suspect(this);
             Location newLocation = location.getAdjacentRoomInDirection(direction);

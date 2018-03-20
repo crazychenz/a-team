@@ -61,8 +61,9 @@ public class CLI {
         return nodes;
     }
 
-    public static void buildCardsMap(HashMap<String, CardsEnum> map, boolean suspects, boolean locations, boolean weapons) {
-        if(suspects) {
+    public static void buildCardsMap(
+            HashMap<String, CardsEnum> map, boolean suspects, boolean locations, boolean weapons) {
+        if (suspects) {
             map.put("Green", CardsEnum.SUSPECT_GREEN);
             map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
             map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
@@ -71,7 +72,7 @@ public class CLI {
             map.put("White", CardsEnum.SUSPECT_WHITE);
         }
 
-        if(locations) {
+        if (locations) {
             map.put("Ballroom", CardsEnum.LOCATION_BALLROOM);
             map.put("Billiard", CardsEnum.LOCATION_BILLIARDROOM);
             map.put("Conservatory", CardsEnum.LOCATION_CONSERVATORY);
@@ -83,7 +84,7 @@ public class CLI {
             map.put("Study", CardsEnum.LOCATION_STUDY);
         }
 
-        if(weapons) {
+        if (weapons) {
             map.put("Revolver", CardsEnum.WEAPON_REVOLVER);
             map.put("Pipe", CardsEnum.WEAPON_LEADPIPE);
             map.put("Rope", CardsEnum.WEAPON_ROPE);
@@ -347,8 +348,8 @@ public class CLI {
                     if (!clientState.isMyTurn()) {
                         return "Must be the active player!";
                     }
-                    
-                    if(clientState.getMyLocation().getCardType() == CardType.CARD_TYPE_HALLWAY) {
+
+                    if (clientState.getMyLocation().getCardType() == CardType.CARD_TYPE_HALLWAY) {
                         return "Cannot make a suggestion in a hallway!";
                     }
 
@@ -554,15 +555,15 @@ public class CLI {
 
         // Setup some static mappings
         suspectStrToEnum = new HashMap<>();
-        buildCardsMap(suspectStrToEnum,true,false,false);
+        buildCardsMap(suspectStrToEnum, true, false, false);
         suspectNodes = buildSuspectNodes(suspectStrToEnum);
 
         accuseStrToEnum = new HashMap<>();
-        buildCardsMap(accuseStrToEnum,true,true,true);
+        buildCardsMap(accuseStrToEnum, true, true, true);
         accuseNodes = buildAccuseNodes(accuseStrToEnum);
 
         suggestStrToEnum = new HashMap<>();
-        buildCardsMap(suggestStrToEnum,true,false,true);
+        buildCardsMap(suggestStrToEnum, true, false, true);
         suggestNodes = buildSuggestNodes(suggestStrToEnum);
 
         directionsStrToEnum = new HashMap<>();

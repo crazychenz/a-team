@@ -33,7 +33,7 @@ public class GameStatePulse implements Serializable {
         setFaceUpCards(faceUpCards);
     }*/
 
-    public GameStatePulse(GameState state, PlayerMgr players, Player player) {
+    public GameStatePulse(GameBoard board, PlayerMgr players, Player player) {
 
         Player current = players.current();
         activeSuspect = null;
@@ -41,16 +41,16 @@ public class GameStatePulse implements Serializable {
             setActiveSuspect(players.current().getSuspect());
         }
 
-        setGameActive(state.gameStarted);
-        setSuspectLocations(Suspect.getCollection());
-        setWeaponLocations(Weapon.getCollection());
-        setAvailableSuspects(Suspect.getAvailableSuspects());
+        setGameActive(board.gameStarted);
+        setSuspectLocations(board.getAllSuspects());
+        setWeaponLocations(board.getAllWeapons());
+        setAvailableSuspects(board.suspects.getAvailableSuspects());
 
         cards = null;
         if (player != null) {
             setCards(player.getCards());
         }
-        setFaceUpCards(state.cards.getFaceUpCards());
+        setFaceUpCards(board.cards.getFaceUpCards());
     }
 
     /** @return the gameActive */

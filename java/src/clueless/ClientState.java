@@ -131,16 +131,12 @@ public class ClientState {
         this.faceUpCards = faceUpCards;
     }
 
-    /**
-     * @return the myLocation
-     */
+    /** @return the myLocation */
     public CardsEnum getMyLocation() {
         return myLocation;
     }
 
-    /**
-     * @param myLocation the myLocation to set
-     */
+    /** @param myLocation the myLocation to set */
     public void setMyLocation(CardsEnum myLocation) {
         this.myLocation = myLocation;
     }

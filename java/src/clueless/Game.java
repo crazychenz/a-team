@@ -7,13 +7,13 @@ public class Game {
 
     private static final Logger logger = LogManager.getLogger(Game.class);
 
-    private GameState state;
+    private GameBoard board;
     public boolean classicMode = false;
     public PlayerMgr players;
 
     public Game() {
         players = new PlayerMgr();
-        state = new GameState();
+        board = new GameBoard();
 
         /*try {
             Weapon.class.newInstance();
@@ -53,7 +53,7 @@ public class Game {
             case MESSAGE_CLIENT_CONFIG:
                 // Client picked a suspect (and username, any other configurables, etc)
                 CardsEnum pickedSuspect = (CardsEnum) msg.getMessageData();
-                for (Suspect s : Suspect.getCollection()) {
+                for (Suspect s : board.getAllSuspects()) {
                     if (s.getSuspect() == pickedSuspect) {
                         // BUG: I feel a race condition here.
                         if (s.getActive()) {
@@ -71,8 +71,9 @@ public class Game {
                 // move from active player
                 player = players.current();
                 if (player.uuid.equals(msg.getFromUuid())) {
-                    Suspect suspect = Suspect.getByEnum(player.getSuspect());
-                    if (suspect.move((DirectionsEnum) msg.getMessageData())) {
+                    Suspect suspect = board.getSuspectByEnum(player.getSuspect());
+                    DirectionsEnum dir = (DirectionsEnum) msg.getMessageData();
+                    if (suspect.move(board, dir)) {
                         // valid move
                         // the person can now accuse or end their turn
                     } else {
@@ -90,8 +91,9 @@ public class Game {
             case MESSAGE_CLIENT_SUGGEST:
                 // handle the suggestion
                 // TODO We need to relay this to each player in turn until they can disprove or not
-                //The server can either broadcast this out to everyone, and they check if their uuid matches (add uuid to Message?)
-                //Or the server has to send this out directly to each client in succession
+                // The server can either broadcast this out to everyone, and they check if their
+                // uuid matches (add uuid to Message?)
+                // Or the server has to send this out directly to each client in succession
                 if (players.current().uuid.equals(msg.getFromUuid())) {
                     msg.setBroadcast(true);
                     return Message.relaySuggestion((CardWrapper) msg.getMessageData());
@@ -102,7 +104,7 @@ public class Game {
                     if (handleAccuse((CardWrapper) msg.getMessageData())) {
                         // Win!
                         // End the game, alert everybody
-                        state.gameStarted = false;
+                        board.gameStarted = false;
                         Message endMessage = Message.winMessage();
                         endMessage.setBroadcast(true);
                         return endMessage;
@@ -125,7 +127,7 @@ public class Game {
             case MESSAGE_PULSE:
                 // return echo request
                 player = players.byUuid(msg.getFromUuid());
-                return Message.sendGameStatePulse(new GameStatePulse(state, players, player));
+                return Message.sendGameStatePulse(new GameStatePulse(board, players, player));
             default:
                 break;
         }
@@ -135,12 +137,12 @@ public class Game {
 
     private void startGame() {
         // Don't start again
-        if (state.gameStarted) {
+        if (board.gameStarted) {
             return;
         }
         if (players.count() >= 3) {
-            state.cards.setupCardDeckAndDealCards(players.getArray(), classicMode);
-            state.gameStarted = true;
+            board.cards.setupCardDeckAndDealCards(players.getArray(), classicMode);
+            board.gameStarted = true;
             // Shuffle players
             // TODO: This has no effect on ListItem list order.
             // Collections.shuffle(players, Helper.GetRandom());
@@ -153,6 +155,6 @@ public class Game {
     }
 
     private boolean handleAccuse(CardWrapper cards) {
-        return state.cards.envelopeMatch(cards);
+        return board.cards.envelopeMatch(cards);
     }
 }
