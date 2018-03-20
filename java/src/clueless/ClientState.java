@@ -13,7 +13,7 @@ public class ClientState {
     private boolean myTurn = false;
     private boolean alerted = false;
     private boolean moved = false;
-    private CardsEnum lastLocation;
+    private CardsEnum myLocation;
     private ArrayList<Card> cards;
     private ArrayList<Card> faceUpCards;
 
@@ -45,7 +45,7 @@ public class ClientState {
                 alerted = false;
             }
         }
-        lastLocation = gameState.getSuspectLocations().get(mySuspect);
+        setMyLocation(gameState.getSuspectLocations().get(mySuspect));
 
         setAvailableSuspects(gameState.getAvailableSuspects());
         setCards(gameState.getCards());
@@ -124,5 +124,19 @@ public class ClientState {
     /** @param faceUpCards the faceUpCards to set */
     public void setFaceUpCards(ArrayList<Card> faceUpCards) {
         this.faceUpCards = faceUpCards;
+    }
+
+    /**
+     * @return the myLocation
+     */
+    public CardsEnum getMyLocation() {
+        return myLocation;
+    }
+
+    /**
+     * @param myLocation the myLocation to set
+     */
+    public void setMyLocation(CardsEnum myLocation) {
+        this.myLocation = myLocation;
     }
 }

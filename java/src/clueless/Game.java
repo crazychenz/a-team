@@ -319,7 +319,10 @@ public class Game {
             case MESSAGE_CLIENT_SUGGEST:
                 // handle the suggestion
                 // TODO We need to relay this to each player in turn until they can disprove or not
+                //The server can either broadcast this out to everyone, and they check if their uuid matches (add uuid to Message?)
+                //Or the server has to send this out directly to each client in succession
                 if (activePlayer.uuid.equals(msg.getFromUuid())) {
+                    msg.setBroadcast(true);
                     return relaySuggestion((CardWrapper) msg.getMessageData());
                 }
                 break;

@@ -49,15 +49,6 @@ public class CLI {
 
     private static DefaultParser parser;
 
-    public static void buildSuspectMap(HashMap<String, CardsEnum> map) {
-        map.put("Green", CardsEnum.SUSPECT_GREEN);
-        map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
-        map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
-        map.put("Plum", CardsEnum.SUSPECT_PLUM);
-        map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
-        map.put("White", CardsEnum.SUSPECT_WHITE);
-    }
-
     public static Object[] buildSuspectNodes(HashMap<String, CardsEnum> map) {
         Object[] nodes = new Object[map.size() + 1];
         nodes[0] = "config";
@@ -70,30 +61,36 @@ public class CLI {
         return nodes;
     }
 
-    public static void buildAccuseMap(HashMap<String, CardsEnum> map) {
-        map.put("Green", CardsEnum.SUSPECT_GREEN);
-        map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
-        map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
-        map.put("Plum", CardsEnum.SUSPECT_PLUM);
-        map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
-        map.put("White", CardsEnum.SUSPECT_WHITE);
+    public static void buildCardsMap(HashMap<String, CardsEnum> map, boolean suspects, boolean locations, boolean weapons) {
+        if(suspects) {
+            map.put("Green", CardsEnum.SUSPECT_GREEN);
+            map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
+            map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
+            map.put("Plum", CardsEnum.SUSPECT_PLUM);
+            map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
+            map.put("White", CardsEnum.SUSPECT_WHITE);
+        }
 
-        map.put("Ballroom", CardsEnum.LOCATION_BALLROOM);
-        map.put("Billiard", CardsEnum.LOCATION_BILLIARDROOM);
-        map.put("Conservatory", CardsEnum.LOCATION_CONSERVATORY);
-        map.put("Dining", CardsEnum.LOCATION_DININGROOM);
-        map.put("Hall", CardsEnum.LOCATION_HALL);
-        map.put("Kitchen", CardsEnum.LOCATION_KITCHEN);
-        map.put("Library", CardsEnum.LOCATION_LIBRARY);
-        map.put("Lounge", CardsEnum.LOCATION_LOUNGE);
-        map.put("Study", CardsEnum.LOCATION_STUDY);
+        if(locations) {
+            map.put("Ballroom", CardsEnum.LOCATION_BALLROOM);
+            map.put("Billiard", CardsEnum.LOCATION_BILLIARDROOM);
+            map.put("Conservatory", CardsEnum.LOCATION_CONSERVATORY);
+            map.put("Dining", CardsEnum.LOCATION_DININGROOM);
+            map.put("Hall", CardsEnum.LOCATION_HALL);
+            map.put("Kitchen", CardsEnum.LOCATION_KITCHEN);
+            map.put("Library", CardsEnum.LOCATION_LIBRARY);
+            map.put("Lounge", CardsEnum.LOCATION_LOUNGE);
+            map.put("Study", CardsEnum.LOCATION_STUDY);
+        }
 
-        map.put("Revolver", CardsEnum.WEAPON_REVOLVER);
-        map.put("Pipe", CardsEnum.WEAPON_LEADPIPE);
-        map.put("Rope", CardsEnum.WEAPON_ROPE);
-        map.put("Candlestick", CardsEnum.WEAPON_CANDLESTICK);
-        map.put("Wrench", CardsEnum.WEAPON_WRENCH);
-        map.put("Dagger", CardsEnum.WEAPON_DAGGER);
+        if(weapons) {
+            map.put("Revolver", CardsEnum.WEAPON_REVOLVER);
+            map.put("Pipe", CardsEnum.WEAPON_LEADPIPE);
+            map.put("Rope", CardsEnum.WEAPON_ROPE);
+            map.put("Candlestick", CardsEnum.WEAPON_CANDLESTICK);
+            map.put("Wrench", CardsEnum.WEAPON_WRENCH);
+            map.put("Dagger", CardsEnum.WEAPON_DAGGER);
+        }
     }
 
     public static Object[] buildAccuseNodes(HashMap<String, CardsEnum> map) {
@@ -110,7 +107,7 @@ public class CLI {
 
     public static Object[] buildSuggestNodes(HashMap<String, CardsEnum> map) {
         Object[] nodes = new Object[map.size() + 1];
-        nodes[0] = "accuse";
+        nodes[0] = "suggest";
         int i = 1;
         for (String card : map.keySet()) {
             nodes[i] = node(card);
@@ -265,8 +262,8 @@ public class CLI {
                 } else if (!clientState.getGameState().isGameActive()) {
                     return "Must start first!";
                 } else {
-                    String toReturn = "\n";
-                    /*toReturn += "\nBoard:\n";
+                    /*String toReturn = "\n";
+                    toReturn += "\nBoard:\n";
                     for (Entry<CardsEnum, CardsEnum> entry :
                             clientState.getGameState().getSuspectLocations().entrySet()) {
                         toReturn +=
@@ -337,6 +334,48 @@ public class CLI {
                     logger.error("failed making accusation");
                 }
                 break;
+            case "suggest":
+                try {
+                    if (!clientState.isConfigured()) {
+                        return "Must config first!";
+                    }
+
+                    if (!clientState.getGameState().isGameActive()) {
+                        return "Must start first!";
+                    }
+
+                    if (!clientState.isMyTurn()) {
+                        return "Must be the active player!";
+                    }
+                    
+                    if(clientState.getMyLocation().getCardType() == CardType.CARD_TYPE_HALLWAY) {
+                        return "Cannot make a suggestion in a hallway!";
+                    }
+
+                    if (pl.words().size() == 3) {
+                        if (suggestStrToEnum.get(pl.words().get(1)) == null) {
+                            return "Problem selecting that card." + "  Please try again!";
+                        }
+                        if (suggestStrToEnum.get(pl.words().get(2)) == null) {
+                            return "Problem selecting that card." + "  Please try again!";
+                        }
+                        String card1 = pl.words().get(1);
+                        String card2 = pl.words().get(2);
+                        logger.info("Suggesting " + card1 + card2);
+                        CardsEnum ce1 = suggestStrToEnum.get(card1);
+                        CardsEnum ce2 = suggestStrToEnum.get(card2);
+                        ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
+                        cardsToSend.add(ce1);
+                        cardsToSend.add(ce2);
+                        CardWrapper cards = new CardWrapper(cardsToSend);
+                        client.sendMessage(Message.suggestion(cards));
+                    } else {
+                        return "Must specify a suspect and a weapon to suggest!";
+                    }
+                } catch (Exception e) {
+                    logger.error("failed making suggestion");
+                }
+                break;
             case "move":
                 try {
                     if (!clientState.isConfigured()) {
@@ -370,7 +409,7 @@ public class CLI {
                     client.sendMessage(Message.moveClient(dir));
                     clientState.setMoved(true);
                 } catch (Exception e) {
-                    logger.error("failed starting game");
+                    logger.error("failed moving");
                 }
                 break;
             default:
@@ -474,7 +513,7 @@ public class CLI {
                 }*/
                 System.exit(0);
             }
-            
+
             if (line.equalsIgnoreCase("help")) {
                 termout.println(
                         "\n"
@@ -495,7 +534,9 @@ public class CLI {
                                 + "board\n"
                                 + "    Display the location of all weapons and suspects\n"
                                 + "accuse\n"
-                                + "    Accuse a suspect, location, and weapon to win the game!\n"
+                                + "    Accuse a suspect, location, and weapon combination were the who, where, and what of the crime to win the game!\n"
+                                + "suggest\n"
+                                + "    Suggest that a suspect and weapon were used in your current location to commit the crime!\n"
                                 + "exit|quit\n"
                                 + "    Exit clueless CLI\n");
             }
@@ -513,15 +554,15 @@ public class CLI {
 
         // Setup some static mappings
         suspectStrToEnum = new HashMap<>();
-        buildSuspectMap(suspectStrToEnum);
+        buildCardsMap(suspectStrToEnum,true,false,false);
         suspectNodes = buildSuspectNodes(suspectStrToEnum);
 
         accuseStrToEnum = new HashMap<>();
-        buildAccuseMap(accuseStrToEnum);
+        buildCardsMap(accuseStrToEnum,true,true,true);
         accuseNodes = buildAccuseNodes(accuseStrToEnum);
 
         suggestStrToEnum = new HashMap<>();
-        buildAccuseMap(suggestStrToEnum);
+        buildCardsMap(suggestStrToEnum,true,false,true);
         suggestNodes = buildSuggestNodes(suggestStrToEnum);
 
         directionsStrToEnum = new HashMap<>();
