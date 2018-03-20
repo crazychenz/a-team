@@ -46,7 +46,7 @@
 
     <!-- Compiles the java code (including the usage of library for JUnit -->
     <target name="compile" depends="style">
-        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}">
+        <javac debug="true" includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}">
             <classpath refid="lib-classpath" />
             <compilerarg value="-Xlint:unchecked" />
         </javac>

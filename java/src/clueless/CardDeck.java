@@ -2,7 +2,6 @@
 package clueless;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +51,7 @@ public class CardDeck {
         // shuffle all the cards
     }
 
-    public void setupCardDeckAndDealCards(LinkedList<Player> players, boolean classicClue) {
+    public void setupCardDeckAndDealCards(ArrayList<Player> players, boolean classicClue) {
         populateEnvelope();
         int numUsers = players.size();
         logger.debug("Dealing to " + numUsers + " players.");

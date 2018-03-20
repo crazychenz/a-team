@@ -92,7 +92,7 @@ public class Server implements Runnable {
                 try {
                     if (msg != null) {
                         if (msg.isBroadcast()) {
-                            for (Player player : gameState.getActivePlayers()) {
+                            for (Player player : gameState.players.getActivePlayers()) {
                                 logger.trace("Sending broadcast to " + player.uuid);
                                 sendMessage(player.uuid, msg);
                             }
@@ -103,6 +103,7 @@ public class Server implements Runnable {
                     }
                 } catch (Exception e) {
                     logger.error("Failed to send response message.");
+                    e.printStackTrace();
                 }
             }
         }

@@ -8,25 +8,6 @@ public class Helper {
 
     private static final Logger logger = LogManager.getLogger(Helper.class);
 
-    public static CardsEnum GetStartingLocationOfSuspect(CardsEnum suspect) {
-        switch (suspect) {
-            case SUSPECT_PLUM:
-                return CardsEnum.HALLWAY_STUDY_LIBRARY;
-            case SUSPECT_PEACOCK:
-                return CardsEnum.HALLWAY_CONSERVATORY_LIBRARY;
-            case SUSPECT_GREEN:
-                return CardsEnum.HALLWAY_BALL_CONSERVATORY;
-            case SUSPECT_WHITE:
-                return CardsEnum.HALLWAY_KITCHEN_BALL;
-            case SUSPECT_MUSTARD:
-                return CardsEnum.HALLWAY_LOUNGE_DINING;
-            case SUSPECT_SCARLET:
-                return CardsEnum.HALLWAY_HALL_LOUNGE;
-            default:
-                return CardsEnum.HALLWAY_STUDY_HALL;
-        }
-    }
-
     public static int GetNumberOfFaceUpCardsForNumberOfUsers(int numUsers, boolean classicClue) {
         if (!classicClue) {
             switch (numUsers) {

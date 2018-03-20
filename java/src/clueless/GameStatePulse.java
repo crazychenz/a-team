@@ -2,7 +2,6 @@ package clueless;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class GameStatePulse implements Serializable {
 
@@ -11,13 +10,13 @@ public class GameStatePulse implements Serializable {
 
     private boolean gameActive;
     private CardsEnum activeSuspect;
-    private HashMap<CardsEnum, CardsEnum> suspectLocations;
-    private HashMap<CardsEnum, CardsEnum> weaponLocations;
+    private ArrayList<Suspect> suspectLocations;
+    private ArrayList<Weapon> weaponLocations;
     private AvailableSuspects availableSuspects;
     private ArrayList<Card> cards;
     private ArrayList<Card> faceUpCards;
 
-    public GameStatePulse(
+    /*public GameStatePulse(
             boolean gameActive,
             CardsEnum activeSuspect,
             AvailableSuspects availableSuspects,
@@ -32,6 +31,26 @@ public class GameStatePulse implements Serializable {
         setAvailableSuspects(availableSuspects);
         setCards(cards);
         setFaceUpCards(faceUpCards);
+    }*/
+
+    public GameStatePulse(GameState state, PlayerMgr players, Player player) {
+
+        Player current = players.current();
+        activeSuspect = null;
+        if (current != null) {
+            setActiveSuspect(players.current().getSuspect());
+        }
+
+        setGameActive(state.gameStarted);
+        setSuspectLocations(Suspect.getCollection());
+        setWeaponLocations(Weapon.getCollection());
+        setAvailableSuspects(Suspect.getAvailableSuspects());
+
+        cards = null;
+        if (player != null) {
+            setCards(player.getCards());
+        }
+        setFaceUpCards(state.cards.getFaceUpCards());
     }
 
     /** @return the gameActive */
@@ -55,22 +74,22 @@ public class GameStatePulse implements Serializable {
     }
 
     /** @return the suspectLocations */
-    public HashMap<CardsEnum, CardsEnum> getSuspectLocations() {
+    public ArrayList<Suspect> getSuspectLocations() {
         return suspectLocations;
     }
 
     /** @param suspectLocations the suspectLocations to set */
-    private void setSuspectLocations(HashMap<CardsEnum, CardsEnum> suspectLocations) {
+    private void setSuspectLocations(ArrayList<Suspect> suspectLocations) {
         this.suspectLocations = suspectLocations;
     }
 
     /** @return the weaponLocations */
-    public HashMap<CardsEnum, CardsEnum> getWeaponLocations() {
+    public ArrayList<Weapon> getWeaponLocations() {
         return weaponLocations;
     }
 
     /** @param weaponLocations the weaponLocations to set */
-    private void setWeaponLocations(HashMap<CardsEnum, CardsEnum> weaponLocations) {
+    private void setWeaponLocations(ArrayList<Weapon> weaponLocations) {
         this.weaponLocations = weaponLocations;
     }
 

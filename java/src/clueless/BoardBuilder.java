@@ -4,7 +4,6 @@ package clueless;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciithemes.TA_GridThemes;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
-import java.util.Map.Entry;
 
 /** @author tombo */
 public class BoardBuilder {
@@ -58,15 +57,19 @@ public class BoardBuilder {
 
     private String returnSuspectsInRoom(CardsEnum room) {
         String toReturn = "[";
-        if (clientState.getGameState().getSuspectLocations().containsValue(room)) {
-            for (Entry<CardsEnum, CardsEnum> entry :
-                    clientState.getGameState().getSuspectLocations().entrySet()) {
-                if (entry.getValue().equals(room)) {
-                    toReturn += entry.getKey().getLabel() + ",";
-                }
+        // if (clientState.getGameState().getSuspectLocations().containsValue(room)) {
+        // for (Entry<CardsEnum, CardsEnum> entry :
+        //        clientState.getGameState().getSuspectLocations().entrySet()) {
+        for (Suspect entry : clientState.getGameState().getSuspectLocations()) {
+            CardsEnum location = entry.getCurrent_location();
+            if (entry.getCurrent_location() == room) {
+                toReturn += location.getLabel() + ",";
+                // toReturn += entry.getKey().getLabel() + ",";
             }
-            toReturn = toReturn.substring(0, toReturn.length() - 1);
         }
+        // Remove last comma
+        toReturn = toReturn.substring(0, toReturn.length() - 1);
+        // }
         toReturn += "]";
         return toReturn;
     }

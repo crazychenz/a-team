@@ -1,30 +1,32 @@
 package clueless;
 
+import java.util.HashMap;
+
 // This file is meant to represent the cards from the board game and nothing else
 
 public enum CardsEnum {
-    LOCATION_KITCHEN(0x01, "Kitchen", CardType.CARD_TYPE_LOCATION),
-    LOCATION_BALLROOM(0x02, "Ballroom", CardType.CARD_TYPE_LOCATION),
-    LOCATION_CONSERVATORY(0x03, "Conservatory", CardType.CARD_TYPE_LOCATION),
-    LOCATION_LIBRARY(0x04, "Library", CardType.CARD_TYPE_LOCATION),
-    LOCATION_HALL(0x05, "Hall", CardType.CARD_TYPE_LOCATION),
-    LOCATION_STUDY(0x06, "Study", CardType.CARD_TYPE_LOCATION),
-    LOCATION_DININGROOM(0x07, "Dining Room", CardType.CARD_TYPE_LOCATION),
-    LOCATION_LOUNGE(0x08, "Lounge", CardType.CARD_TYPE_LOCATION),
-    LOCATION_BILLIARDROOM(0x09, "Billiard Room", CardType.CARD_TYPE_LOCATION),
+    LOCATION_KITCHEN(0xA1, "Kitchen", CardType.CARD_TYPE_LOCATION),
+    LOCATION_BALLROOM(0xA2, "Ballroom", CardType.CARD_TYPE_LOCATION),
+    LOCATION_CONSERVATORY(0xA3, "Conservatory", CardType.CARD_TYPE_LOCATION),
+    LOCATION_LIBRARY(0xA4, "Library", CardType.CARD_TYPE_LOCATION),
+    LOCATION_HALL(0xA5, "Hall", CardType.CARD_TYPE_LOCATION),
+    LOCATION_STUDY(0xA6, "Study", CardType.CARD_TYPE_LOCATION),
+    LOCATION_DININGROOM(0xA7, "Dining Room", CardType.CARD_TYPE_LOCATION),
+    LOCATION_LOUNGE(0xA8, "Lounge", CardType.CARD_TYPE_LOCATION),
+    LOCATION_BILLIARDROOM(0xA9, "Billiard Room", CardType.CARD_TYPE_LOCATION),
 
-    HALLWAY_STUDY_HALL(0x91, "Study - Hall", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_STUDY_LIBRARY(0x92, "Study - Library", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_HALL_LOUNGE(0x93, "Hall - Lounge", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_HALL_BILLIARD(0x94, "Hall - Billiard Room", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_LOUNGE_DINING(0x95, "Lounge - Dining Room", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_DINING_BILLIARD(0x96, "Dining Room - Billiard Room", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_DINING_KITCHEN(0x97, "Dining Room - Kitchen", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_KITCHEN_BALL(0x98, "Kitchen - Ballroom", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_BALL_BILLIARD(0x99, "Ballroom - Billiard Room", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_BALL_CONSERVATORY(0x100, "Ballroom - Conservatory", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_CONSERVATORY_LIBRARY(0x101, "Conservatory - Library", CardType.CARD_TYPE_HALLWAY),
-    HALLWAY_LIBRARY_BILLIARD(0x102, "Library - Billiard Room", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_STUDY_HALL(0xB1, "Study - Hall", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_STUDY_LIBRARY(0xB2, "Study - Library", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_HALL_LOUNGE(0xB3, "Hall - Lounge", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_HALL_BILLIARD(0xB4, "Hall - Billiard Room", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_LOUNGE_DINING(0xB5, "Lounge - Dining Room", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_DINING_BILLIARD(0xB6, "Dining Room - Billiard Room", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_DINING_KITCHEN(0xB7, "Dining Room - Kitchen", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_KITCHEN_BALL(0xB8, "Kitchen - Ballroom", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_BALL_BILLIARD(0xB9, "Ballroom - Billiard Room", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_BALL_CONSERVATORY(0xBA, "Ballroom - Conservatory", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_CONSERVATORY_LIBRARY(0xBB, "Conservatory - Library", CardType.CARD_TYPE_HALLWAY),
+    HALLWAY_LIBRARY_BILLIARD(0xBC, "Library - Billiard Room", CardType.CARD_TYPE_HALLWAY),
 
     WEAPON_LEADPIPE(0x21, "Lead Pipe", CardType.CARD_TYPE_WEAPON),
     WEAPON_REVOLVER(0x22, "Revolver", CardType.CARD_TYPE_WEAPON),
@@ -43,6 +45,23 @@ public enum CardsEnum {
     private final int uid;
     private final String label;
     private final CardType cardType;
+
+    private static final HashMap<Integer, CardsEnum> uidMap = new HashMap<>();
+
+    static {
+        for (CardsEnum cardsEnum : CardsEnum.values()) {
+            uidMap.put(cardsEnum.getUid(), cardsEnum);
+        }
+    }
+
+    public static CardsEnum getByUid(Integer uid) {
+        return uidMap.get(uid);
+    }
+
+    public static boolean isLocation(CardsEnum val) {
+        int high = val.getUid() & 0xF0;
+        return (high == 0xB0 || high == 0xA0);
+    }
 
     CardsEnum(int uid, String label, CardType cardType) {
         this.uid = uid;

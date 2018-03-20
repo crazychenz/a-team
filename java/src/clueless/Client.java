@@ -89,6 +89,7 @@ public class Client implements Runnable {
 
             } catch (Exception e) {
                 logger.error(e);
+                e.printStackTrace();
                 return;
             }
         }

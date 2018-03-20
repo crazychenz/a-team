@@ -11,9 +11,6 @@ import org.apache.logging.log4j.Logger;
 
 public class AvailableSuspects implements Serializable {
 
-    /** */
-    private static final long serialVersionUID = -5384526520164948789L;
-
     private static final Logger logger = LogManager.getLogger(AvailableSuspects.class);
 
     public ArrayList<CardsEnum> list;

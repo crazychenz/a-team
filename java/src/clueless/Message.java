@@ -122,6 +122,10 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_CHAT_FROM_CLIENT, chatMessage);
     }
 
+    public static Message winMessage() {
+        return new Message(MessagesEnum.MESSAGE_CHAT_FROM_SERVER, "The game has been won!");
+    }
+
     public static Message endTurn() throws Exception {
         logger.trace("Ending turn");
         return new Message(MessagesEnum.MESSAGE_CLIENT_END_TURN, "");
@@ -142,5 +146,21 @@ public class Message implements Serializable {
     
     public static Message suggestion(CardWrapper cards) throws Exception {
         return new Message(MessagesEnum.MESSAGE_CLIENT_SUGGEST, cards);
+	}
+
+    public static Message failedConfig(String message) {
+        return new Message(MessagesEnum.MESSAGE_SERVER_FAIL_CONFIG, message);
+    }
+
+    public static Message failedMove(String message) {
+        return new Message(MessagesEnum.MESSAGE_SERVER_FAIL_MOVE, message);
+    }
+
+    public static Message relaySuggestion(CardWrapper cards) {
+        return new Message(MessagesEnum.MESSAGE_SERVER_RELAY_SUGGEST, cards);
+    }
+
+    public static Message sendGameStatePulse(GameStatePulse gsp) {
+        return new Message(MessagesEnum.MESSAGE_PULSE, gsp);
     }
 }
