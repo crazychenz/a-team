@@ -56,20 +56,24 @@ public class BoardBuilder {
     }
 
     private String returnSuspectsInRoom(CardsEnum room) {
+        // Not sure why this was changed lol it worked before. had to fix it
         String toReturn = "[";
         // if (clientState.getGameState().getSuspectLocations().containsValue(room)) {
         // for (Entry<CardsEnum, CardsEnum> entry :
         //        clientState.getGameState().getSuspectLocations().entrySet()) {
         for (Suspect entry : clientState.getGameState().getSuspectLocations()) {
             CardsEnum location = entry.getCurrent_location();
-            if (entry.getCurrent_location() == room) {
-                toReturn += location.getLabel() + ",";
+            if (location == room) {
+                toReturn += entry.getSuspect().getLabel() + ",";
                 // toReturn += entry.getKey().getLabel() + ",";
             }
         }
-        // Remove last comma
-        toReturn = toReturn.substring(0, toReturn.length() - 1);
-        // }
+
+        // Remove last comma, only if there are suspects in the room
+        if (toReturn.length() > 1) {
+            toReturn = toReturn.substring(0, toReturn.length() - 1);
+        }
+
         toReturn += "]";
         return toReturn;
     }

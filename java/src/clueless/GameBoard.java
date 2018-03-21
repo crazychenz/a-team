@@ -56,12 +56,4 @@ public class GameBoard {
             }
         }
     }
-
-    /*public CardsEnum getActiveSuspect() {
-        if (players.current() == null) {
-            return null;
-        } else {
-            return players.current().getSuspect();
-        }
-    }*/
 }

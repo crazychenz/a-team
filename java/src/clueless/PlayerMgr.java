@@ -15,9 +15,14 @@ public class PlayerMgr {
     // Note: Reference to current player's turn.
     private Player activePlayerRef;
 
+    private Player suggestionPlayerRef;
+    private Player disprovingPlayerRef;
+
     public PlayerMgr() {
         activePlayerList = null;
         activePlayerRef = null;
+        suggestionPlayerRef = null;
+        disprovingPlayerRef = null;
         activePlayerArray = new ArrayList<>();
     }
 
@@ -67,6 +72,27 @@ public class PlayerMgr {
         }
     }
 
+    public void setSuggestionPlayer() {
+        suggestionPlayerRef = activePlayerRef;
+        disprovingPlayerRef = suggestionPlayerRef.getNext();
+    }
+
+    public Player getSuggestionPlayer() {
+        return suggestionPlayerRef;
+    }
+
+    public Player getNextDisprovePlayer() {
+        Player next = disprovingPlayerRef;
+        if (next.equals(suggestionPlayerRef)) {
+            logger.info("No more players to disprove");
+            return null;
+        }
+        disprovingPlayerRef = disprovingPlayerRef.getNext();
+        return next;
+    }
+
+    // This needs to check whether the player has been marked inactive, as in they made a bad
+    // accusation
     public void setNextPlayer() {
         activePlayerRef = activePlayerRef.getNext();
         logger.info("Next player is " + activePlayerRef.getSuspect().getLabel());

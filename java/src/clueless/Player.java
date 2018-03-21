@@ -11,7 +11,9 @@ public class Player extends ListItem {
     private CardsEnum suspect;
     private String username;
     private ArrayList<Card> cards;
-    private boolean active;
+    private boolean
+            playing; // This is meant to determine if this player is an active participant in the
+    // game, or if they have made a bad accusation
     String uuid;
 
     public Player(CardsEnum suspect, String uuid) {
@@ -23,7 +25,7 @@ public class Player extends ListItem {
         this.suspect = suspect;
         cards = new ArrayList<>();
         this.uuid = uuid;
-        active = true;
+        playing = true;
     }
 
     @Override
@@ -39,13 +41,13 @@ public class Player extends ListItem {
         return suspect;
     }
 
-    /** @return the active */
-    public boolean isActive() {
-        return active;
+    /** @return the playing */
+    public boolean isPlaying() {
+        return playing;
     }
 
-    /** @param active the active to set */
-    public void setActive(boolean active) {
-        this.active = active;
+    /** @param playing the playing to set */
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
     }
 }

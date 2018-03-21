@@ -61,6 +61,26 @@ public class CLI {
         return nodes;
     }
 
+    /*public Object[] buildDisproveNodes(HashMap<String, CardsEnum> map) {
+        Object[] nodes = new Object[map.size() + 1];
+        nodes[0] = "disprove";
+        int i = 1;
+        for (String suspect : map.keySet()) {
+            nodes[i] = node(suspect);
+            i += 1;
+        }
+
+        return nodes;
+    }
+
+    public static void buildDisproveMap(HashMap<String, CardsEnum> map) {
+        if (clientState.isDisproving()) {
+            for (Card card : clientState.getDisproveCards()) {
+                map.put(card.getCardEnum().getLabel(), card.getCardEnum());
+            }
+        }
+    }*/
+
     public static void buildCardsMap(
             HashMap<String, CardsEnum> map, boolean suspects, boolean locations, boolean weapons) {
         if (suspects) {
@@ -239,6 +259,51 @@ public class CLI {
                     logger.error("failed starting game");
                 }
                 break;
+            case "disprove":
+                try {
+                    if (!clientState.isConfigured()) {
+                        return "Must config first!";
+                    }
+
+                    if (!clientState.getGameState().isGameActive()) {
+                        return "Must start first!";
+                    }
+
+                    if (!clientState.isDisproving()) {
+                        return "Must be actively disproving!";
+                    }
+
+                    if (pl.words().size() == 2) {
+                        HashMap<String, CardsEnum> disproveStrToEnum =
+                                new HashMap<String, CardsEnum>();
+                        for (Card card : clientState.getDisproveCards()) {
+                            disproveStrToEnum.put(
+                                    card.getCardEnum().getLabel(), card.getCardEnum());
+                        }
+
+                        if (disproveStrToEnum.get(pl.words().get(1)) == null) {
+                            return "Problem selecting that card." + "  Please try again!";
+                        }
+
+                        String card1 = pl.words().get(1);
+                        logger.info("Disproving " + card1);
+                        CardsEnum ce1 = suggestStrToEnum.get(card1);
+                        ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
+                        cardsToSend.add(ce1);
+                        CardWrapper cards = new CardWrapper(cardsToSend);
+                        client.sendMessage(Message.clientRespondSuggestion(cards));
+                        clientState.setDisproving(false);
+                    } else if (pl.words().size() == 1
+                            && clientState.getDisproveCards().size() == 0) {
+                        CardWrapper cards = new CardWrapper(new ArrayList<CardsEnum>());
+                        client.sendMessage(Message.clientRespondSuggestion(cards));
+                    } else {
+                        return "Must pick a card to disprove the suggestion!";
+                    }
+                } catch (Exception e) {
+                    logger.error("failed making suggestion");
+                }
+                break;
             case "cards":
                 if (!clientState.isConfigured()) {
                     return "Must config first!";
@@ -248,12 +313,12 @@ public class CLI {
                     String toReturn = "";
                     toReturn += "\nYour cards:\n";
                     for (Card card : clientState.getCards()) {
-                        toReturn += card.toString() + "\n";
+                        toReturn += card.getCardEnum().getLabel() + "\n";
                     }
 
                     toReturn += "\n\nFace Up Cards:\n";
                     for (Card card : clientState.getFaceUpCards()) {
-                        toReturn += card.toString() + "\n";
+                        toReturn += card.getCardEnum().getLabel() + "\n";
                     }
                     return toReturn;
                 }
@@ -291,6 +356,7 @@ public class CLI {
                     BoardBuilder bb = new BoardBuilder(clientState);
                     System.out.println(bb.generateBoard());
                 }
+                break;
             case "accuse":
                 try {
                     if (!clientState.isConfigured()) {
@@ -353,6 +419,7 @@ public class CLI {
                         return "Cannot make a suggestion in a hallway!";
                     }
 
+                    //TODO need to add the suspects current location, just forgot and its late
                     if (pl.words().size() == 3) {
                         if (suggestStrToEnum.get(pl.words().get(1)) == null) {
                             return "Problem selecting that card." + "  Please try again!";
@@ -477,7 +544,8 @@ public class CLI {
                         node("done"),
                         node("chat"),
                         node("cards"),
-                        node("board"));
+                        node("board"),
+                        node("disprove"));
 
         reader =
                 LineReaderBuilder.builder()
@@ -534,10 +602,12 @@ public class CLI {
                                 + "    Display your cards and face up cards\n"
                                 + "board\n"
                                 + "    Display the location of all weapons and suspects\n"
-                                + "accuse\n"
+                                + "accuse\n <cards>"
                                 + "    Accuse a suspect, location, and weapon combination were the who, where, and what of the crime to win the game!\n"
-                                + "suggest\n"
+                                + "suggest\n <cards>"
                                 + "    Suggest that a suspect and weapon were used in your current location to commit the crime!\n"
+                                + "disprove\n <card>"
+                                + "    Disprove one of the cards from the suggestion!\n"
                                 + "exit|quit\n"
                                 + "    Exit clueless CLI\n");
             }

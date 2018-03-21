@@ -21,13 +21,6 @@ public class CLIEventHandler {
             case MESSAGE_CHAT_FROM_CLIENT:
                 logger.info("chat: " + msg.getMessageData());
                 break;
-                /*case MESSAGE_SERVER_AVAILABLE_SUSPECTS:
-                clientState.setAvailableSuspects((AvailableSuspects) msg.getMessageData());
-                logger.info("Count: " + clientState.getAvailableSuspects().list.size());
-                for (CardsEnum suspect : clientState.getAvailableSuspects().list) {
-                    logger.info(suspect);
-                }
-                break;*/
             case MESSAGE_PULSE:
                 logger.trace("Got a watchdog pulse.");
                 GameStatePulse gameState = (GameStatePulse) msg.getMessageData();
@@ -50,6 +43,16 @@ public class CLIEventHandler {
                 // If they own none of the cards, I think we should just tell them that, and they
                 // have to acknowledge
                 // It doesn't seem interactive enough to do it automagically
+                if (msg.getToUuid().equals(client.uuid.toString())) {
+                    logger.info(msg);
+                    clientState.disprove((CardWrapper) msg.getMessageData());
+                }
+                break;
+            case MESSAGE_SERVER_RESPONSE_SUGGEST:
+                if (msg.getToUuid().equals(client.uuid.toString())) {
+                    logger.info(msg);
+                    clientState.suggestResponse((CardWrapper) msg.getMessageData());
+                }
                 break;
             default:
                 logger.info("Message: " + msg);

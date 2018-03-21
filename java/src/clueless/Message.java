@@ -21,14 +21,26 @@ public class Message implements Serializable {
     private final Object messageData;
     private String fromUuid;
     private boolean broadcast;
+    private String toUuid;
 
     public Message(MessagesEnum messageID, Object messageData) {
         this.messageID = messageID;
         this.messageData = messageData;
         fromUuid = null;
         broadcast = false;
+        toUuid = "";
     }
 
+    public Message(MessagesEnum messageID, Object messageData, String toUuid) {
+        this.messageID = messageID;
+        this.messageData = messageData;
+        fromUuid = null;
+        broadcast = false;
+        this.toUuid = toUuid;
+    }
+
+    // TODO add a setSingle or something, to be able to send a message to a single client by
+    // specifying their uuid
     public void setBroadcast(boolean value) {
         broadcast = value;
     }
@@ -43,6 +55,14 @@ public class Message implements Serializable {
 
     public void setFromUuid(String uuid) {
         fromUuid = uuid;
+    }
+
+    public String getToUuid() {
+        return toUuid;
+    }
+
+    public void setToUuid(String uuid) {
+        toUuid = uuid;
     }
 
     @Override
@@ -122,8 +142,10 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_CHAT_FROM_CLIENT, chatMessage);
     }
 
-    public static Message winMessage() {
-        return new Message(MessagesEnum.MESSAGE_CHAT_FROM_SERVER, "The game has been won!");
+    public static Message winMessage(CardsEnum winningSuspect) {
+        return new Message(
+                MessagesEnum.MESSAGE_CHAT_FROM_SERVER,
+                "The game has been won by " + winningSuspect.getLabel() + "!");
     }
 
     public static Message endTurn() throws Exception {
@@ -156,11 +178,19 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_SERVER_FAIL_MOVE, message);
     }
 
-    public static Message relaySuggestion(CardWrapper cards) {
-        return new Message(MessagesEnum.MESSAGE_SERVER_RELAY_SUGGEST, cards);
+    public static Message relaySuggestion(CardWrapper cards, Player playerToDisprove) {
+        return new Message(MessagesEnum.MESSAGE_SERVER_RELAY_SUGGEST, cards, playerToDisprove.uuid);
     }
 
     public static Message sendGameStatePulse(GameStatePulse gsp) {
         return new Message(MessagesEnum.MESSAGE_PULSE, gsp);
+    }
+
+    public static Message clientRespondSuggestion(CardWrapper cards) {
+        return new Message(MessagesEnum.MESSAGE_CLIENT_RESPONSE_SUGGEST, cards);
+    }
+
+    public static Message serverRespondSuggestion(CardWrapper cards) {
+        return new Message(MessagesEnum.MESSAGE_SERVER_RESPONSE_SUGGEST, cards);
     }
 }

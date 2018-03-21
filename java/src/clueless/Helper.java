@@ -1,6 +1,5 @@
 package clueless;
 
-import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,9 +36,5 @@ public class Helper {
             }
         }
         return 0;
-    }
-
-    public static Random GetRandom() {
-        return new Random();
     }
 }

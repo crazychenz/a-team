@@ -1,5 +1,6 @@
 package clueless;
 
+import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,11 +11,12 @@ public class Game {
     private GameBoard board;
     public boolean classicMode = false;
     public PlayerMgr players;
+    private CardWrapper cardsToDisprove;
 
     public Game() {
         players = new PlayerMgr();
         board = new GameBoard();
-
+        cardsToDisprove = new CardWrapper(new ArrayList<CardsEnum>());
         /*try {
             Weapon.class.newInstance();
             Suspect.class.newInstance();
@@ -95,8 +97,13 @@ public class Game {
                 // uuid matches (add uuid to Message?)
                 // Or the server has to send this out directly to each client in succession
                 if (players.current().uuid.equals(msg.getFromUuid())) {
-                    msg.setBroadcast(true);
-                    return Message.relaySuggestion((CardWrapper) msg.getMessageData());
+                    players.setSuggestionPlayer();
+                    cardsToDisprove = (CardWrapper) msg.getMessageData();
+                    Message response =
+                            Message.relaySuggestion(
+                                    cardsToDisprove, players.getNextDisprovePlayer());
+                    response.setBroadcast(true);
+                    return response;
                 }
                 break;
             case MESSAGE_CLIENT_ACCUSE:
@@ -105,14 +112,14 @@ public class Game {
                         // Win!
                         // End the game, alert everybody
                         board.gameStarted = false;
-                        Message endMessage = Message.winMessage();
+                        Message endMessage = Message.winMessage(players.current().getSuspect());
                         endMessage.setBroadcast(true);
                         return endMessage;
                     } else {
                         // Bad accusation!
                         // Don't allow the player to continue making moves, but they must remain to
                         // disprove suggestions
-                        players.current().setActive(false);
+                        players.current().setPlaying(false);
                         players.setNextPlayer();
                         logger.info("Bad accusation!");
                         return Message.failedMove(
@@ -128,6 +135,36 @@ public class Game {
                 // return echo request
                 player = players.byUuid(msg.getFromUuid());
                 return Message.sendGameStatePulse(new GameStatePulse(board, players, player));
+            case MESSAGE_CLIENT_RESPONSE_SUGGEST:
+                CardWrapper cards = (CardWrapper) msg.getMessageData();
+                if (cards.getCards().size() == 1) {
+                    // The disproving player was able to disprove
+                    // Let the suggesting player know
+                    Message response = Message.serverRespondSuggestion(cards);
+                    response.setBroadcast(true);
+                    response.setToUuid(players.getSuggestionPlayer().uuid.toString());
+                    return response;
+                } else if (cards.getCards().size() == 0) {
+                    Player next = players.getNextDisprovePlayer();
+                    if (next != null) {
+                        // try the next player
+                        Message response = Message.relaySuggestion(cardsToDisprove, next);
+                        response.setBroadcast(true);
+                        return response;
+                    } else {
+                        // No more players left to disprove
+                        // Let the suggesting player know
+                        Message response =
+                                Message.serverRespondSuggestion(
+                                        new CardWrapper(new ArrayList<CardsEnum>()));
+                        response.setBroadcast(true);
+                        response.setToUuid(players.getSuggestionPlayer().uuid.toString());
+                        return response;
+                    }
+                } else {
+                    // Something bad happened
+                    logger.error("error with suggestion");
+                }
             default:
                 break;
         }
