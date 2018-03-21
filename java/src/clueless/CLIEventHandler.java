@@ -43,16 +43,16 @@ public class CLIEventHandler {
                 // If they own none of the cards, I think we should just tell them that, and they
                 // have to acknowledge
                 // It doesn't seem interactive enough to do it automagically
-                if (msg.getToUuid().equals(client.uuid.toString())) {
-                    logger.info(msg);
-                    clientState.disprove((CardWrapper) msg.getMessageData());
-                }
+                logger.info(msg);
+                clientState.disprove(
+                        (CardWrapper) msg.getMessageData(),
+                        msg.getToUuid().equals(client.uuid.toString()));
                 break;
             case MESSAGE_SERVER_RESPONSE_SUGGEST:
-                if (msg.getToUuid().equals(client.uuid.toString())) {
-                    logger.info(msg);
-                    clientState.suggestResponse((CardWrapper) msg.getMessageData());
-                }
+                logger.info(msg);
+                clientState.suggestResponse(
+                        (CardWrapper) msg.getMessageData(),
+                        msg.getToUuid().equals(client.uuid.toString()));
                 break;
             default:
                 logger.info("Message: " + msg);

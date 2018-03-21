@@ -98,6 +98,7 @@ public class Game {
                 // Or the server has to send this out directly to each client in succession
                 if (players.current().uuid.equals(msg.getFromUuid())) {
                     players.setSuggestionPlayer();
+                    //TODO Move the suspect and weapon into the suggestion room
                     cardsToDisprove = (CardWrapper) msg.getMessageData();
                     Message response =
                             Message.relaySuggestion(

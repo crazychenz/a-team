@@ -13,6 +13,7 @@ public class ClientState {
     private boolean myTurn = false;
     private boolean alerted = false;
     private boolean moved = false;
+    private boolean suggested = false;
     private CardsEnum myLocation;
     private ArrayList<Card> cards;
     private ArrayList<Card> faceUpCards;
@@ -43,6 +44,7 @@ public class ClientState {
                 alerted = true;
             }
         } else {
+            setSuggested(false);
             setMyTurn(false);
             if (alerted) {
                 alerted = false;
@@ -141,50 +143,59 @@ public class ClientState {
     }
 
     // This isn't the best way to do this.  Should probably be moved/handled differently.
-    public void disprove(CardWrapper cards) {
-        setDisproving(true);
-        String toPrint = "";
-        boolean found = false;
-        System.out.println("You must disprove a suggestion of the following cards!\n");
-        for (CardsEnum card : cards.getCards()) {
-            System.out.println("\t" + card.getLabel() + "\n");
-        }
+    public void disprove(CardWrapper cards, boolean active) {
+        if (active) {
+            setDisproving(true);
+            String toPrint = "";
+            boolean found = false;
+            System.out.println("You must disprove a suggestion of the following cards!");
+            for (CardsEnum card : cards.getCards()) {
+                System.out.println("\t" + card.getLabel());
+            }
 
-        // Yuck this is ugly
-        for (CardsEnum card : cards.getCards()) {
-            for (Card myCard : getCards()) {
-                if (myCard.getCardEnum() == card) {
-                    if (!found) {
-                        found = true;
+            // Yuck this is ugly
+            for (CardsEnum card : cards.getCards()) {
+                for (Card myCard : getCards()) {
+                    if (myCard.getCardEnum() == card) {
+                        if (!found) {
+                            found = true;
+                        }
+                        disproveCards.add(myCard);
+                        toPrint += "\t" + myCard.getCardEnum().getLabel() + "\n";
                     }
-                    disproveCards.add(myCard);
-                    toPrint += "\t" + myCard.getCardEnum().getLabel() + "\n";
                 }
             }
-        }
-        if (found) {
-            System.out.println("Which card would you like to show?\n");
-            System.out.println(toPrint);
-            System.out.println(
-                    "Disprove the suggestion using the disprove command with the card name!\n");
+            if (found) {
+                System.out.println("Which card would you like to show?");
+                System.out.println(toPrint);
+                System.out.println(
+                        "Disprove the suggestion using the disprove command with the card name!");
+            } else {
+                System.out.println("You are unable to disprove the suggestion!");
+                System.out.println(
+                        "Let the player know you cannot disprove the suggestion using the disprove command with no card name!");
+            }
         } else {
-            System.out.println("You are unable to disprove the suggestion!\n");
             System.out.println(
-                    "Let the player know you cannot disprove the suggestion using the disprove command with no card name!\n");
+                    "Somebody is trying to disprove a suggestion of the following cards:\n");
+            for (CardsEnum card : cards.getCards()) {
+                System.out.println("\t" + card.getLabel());
+            }
         }
     }
 
     // This isn't the best way to do this.  Should probably be moved/handled differently.
-    public void suggestResponse(CardWrapper cards) {
-        String toPrint = "";
-        System.out.println("Your suggestion has been completed!\n");
+    public void suggestResponse(CardWrapper cards, boolean active) {
+        System.out.println("The suggestion has been completed!\n");
         if (cards.getCards().size() == 1) {
-            System.out.println(
-                    "The following card was disproven: "
-                            + cards.getCards().get(0).getLabel()
-                            + "\n");
+            if (active) {
+                System.out.println(
+                        "The following card was disproven: " + cards.getCards().get(0).getLabel());
+            } else {
+                System.out.println("The suggestion was disproved!");
+            }
         } else {
-            System.out.println("Your suggestion was unable to be disproven!\n");
+            System.out.println("The suggestion was unable to be disproven!");
         }
     }
 
@@ -207,5 +218,15 @@ public class ClientState {
     public void setDisproving(boolean disproving) {
         this.disproving = disproving;
         setDisproveCards(new ArrayList<Card>());
+    }
+
+    /** @return the suggested */
+    public boolean isSuggested() {
+        return suggested;
+    }
+
+    /** @param suggested the suggested to set */
+    public void setSuggested(boolean suggested) {
+        this.suggested = suggested;
     }
 }

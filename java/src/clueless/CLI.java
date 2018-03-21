@@ -287,7 +287,7 @@ public class CLI {
 
                         String card1 = pl.words().get(1);
                         logger.info("Disproving " + card1);
-                        CardsEnum ce1 = suggestStrToEnum.get(card1);
+                        CardsEnum ce1 = disproveStrToEnum.get(card1);
                         ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
                         cardsToSend.add(ce1);
                         CardWrapper cards = new CardWrapper(cardsToSend);
@@ -415,11 +415,14 @@ public class CLI {
                         return "Must be the active player!";
                     }
 
+                    if (clientState.isSuggested()) {
+                        return "Already made a suggestion this turn!";
+                    }
+
                     if (clientState.getMyLocation().getCardType() == CardType.CARD_TYPE_HALLWAY) {
                         return "Cannot make a suggestion in a hallway!";
                     }
 
-                    //TODO need to add the suspects current location, just forgot and its late
                     if (pl.words().size() == 3) {
                         if (suggestStrToEnum.get(pl.words().get(1)) == null) {
                             return "Problem selecting that card." + "  Please try again!";
@@ -432,9 +435,11 @@ public class CLI {
                         logger.info("Suggesting " + card1 + card2);
                         CardsEnum ce1 = suggestStrToEnum.get(card1);
                         CardsEnum ce2 = suggestStrToEnum.get(card2);
+                        CardsEnum location = clientState.getMyLocation();
                         ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
                         cardsToSend.add(ce1);
                         cardsToSend.add(ce2);
+                        cardsToSend.add(location);
                         CardWrapper cards = new CardWrapper(cardsToSend);
                         client.sendMessage(Message.suggestion(cards));
                     } else {
@@ -481,7 +486,7 @@ public class CLI {
                 }
                 break;
             default:
-                break;
+                return "Please enter a valid command!";
         }
         return null;
     }
@@ -561,6 +566,12 @@ public class CLI {
         while (true) {
             String line = null;
             try {
+                if (cli.clientState.isConfigured()) {
+                    prompt =
+                            "My suspect: "
+                                    + cli.clientState.getMySuspect().getLabel()
+                                    + "\nclueless>";
+                }
                 line = reader.readLine(prompt);
             } catch (UserInterruptException | EndOfFileException e) {
                 // Ctrl-D
@@ -602,19 +613,19 @@ public class CLI {
                                 + "    Display your cards and face up cards\n"
                                 + "board\n"
                                 + "    Display the location of all weapons and suspects\n"
-                                + "accuse\n <cards>"
+                                + "accuse <cards>\n"
                                 + "    Accuse a suspect, location, and weapon combination were the who, where, and what of the crime to win the game!\n"
-                                + "suggest\n <cards>"
+                                + "suggest <cards>\n"
                                 + "    Suggest that a suspect and weapon were used in your current location to commit the crime!\n"
-                                + "disprove\n <card>"
+                                + "disprove <card>\n"
                                 + "    Disprove one of the cards from the suggestion!\n"
                                 + "exit|quit\n"
                                 + "    Exit clueless CLI\n");
-            }
-
-            String response = handleCommand(cli, line);
-            if (response != null) {
-                termout.println(response);
+            } else {
+                String response = handleCommand(cli, line);
+                if (response != null) {
+                    termout.println(response);
+                }
             }
         }
     }

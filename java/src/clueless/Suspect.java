@@ -14,7 +14,6 @@ public class Suspect implements Serializable {
     private CardsEnum currentLocation;
 
     private boolean active;
-    private int userID;
 
     // public static ArrayList<Suspect> getCollection() {
     //    return new ArrayList<Suspect>(enumMap.values());
