@@ -1,5 +1,6 @@
 package clueless;
 
+import clueless.io.Message;
 import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

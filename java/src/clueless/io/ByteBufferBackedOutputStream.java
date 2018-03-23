@@ -1,5 +1,5 @@
 /* https://stackoverflow.com/questions/4332264/wrapping-a-bytebuffer-with-an-inputstream */
-package clueless;
+package clueless.io;
 
 import java.io.IOException;
 import java.io.OutputStream;

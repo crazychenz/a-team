@@ -1,5 +1,5 @@
 /** */
-package clueless;
+package clueless.io;
 
 /** @author tombo */
 public enum MessagesEnum {

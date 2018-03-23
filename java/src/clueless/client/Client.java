@@ -1,4 +1,4 @@
-package clueless;
+package clueless.client;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -10,6 +10,12 @@ import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
 
+import clueless.io.*;
+
+// TODO: This needs to become abstract
+import clueless.client.cli.CLIEventHandler;
+
+
 public class Client implements Runnable {
 
     private static final Logger logger = LogManager.getLogger(Client.class);
@@ -17,7 +23,7 @@ public class Client implements Runnable {
     Context zmqContext;
     Socket socket;
     // Socket chatSocket;
-    UUID uuid;
+    public UUID uuid;
     ConcurrentLinkedQueue<Message> chatMessageQueue;
     Thread thread;
     // TODO: Make this abstract

@@ -1,6 +1,8 @@
 /** */
-package clueless;
+package clueless.client.cli;
 
+import clueless.*;
+import clueless.client.*;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciithemes.TA_GridThemes;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
@@ -8,10 +10,10 @@ import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 /** @author tombo */
 public class BoardBuilder {
     // TODO show weapon locations also
-    private ClientState clientState;
+    private final ClientState clientState;
 
-    public BoardBuilder(ClientState clientState) {
-        this.clientState = clientState;
+    public BoardBuilder(ClientState cs) {
+        this.clientState = cs;
     }
 
     public String generateBoard() {

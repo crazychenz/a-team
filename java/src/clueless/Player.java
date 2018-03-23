@@ -14,7 +14,7 @@ public class Player extends ListItem {
     private boolean
             playing; // This is meant to determine if this player is an active participant in the
     // game, or if they have made a bad accusation
-    String uuid;
+    public String uuid;
 
     public Player(CardsEnum suspect, String uuid) {
         super();
@@ -49,5 +49,9 @@ public class Player extends ListItem {
     /** @param playing the playing to set */
     public void setPlaying(boolean playing) {
         this.playing = playing;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 }

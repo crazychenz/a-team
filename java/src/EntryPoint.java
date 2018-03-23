@@ -1,6 +1,5 @@
-import clueless.CLI;
-import clueless.Server;
-import clueless.ServerArgumentHandler;
+import clueless.client.cli.*;
+import clueless.server.*;
 import java.io.PrintStream;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +57,6 @@ public class EntryPoint {
     }
 
     public static void main(String[] args) {
-        ServerArgumentHandler argHandler;
 
         // Check if we have logging enabled before anything else.
         boolean hasLogCfgArg = false;

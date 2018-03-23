@@ -1,7 +1,10 @@
-package clueless;
+package clueless.client.cli;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
+import clueless.*;
+import clueless.client.*;
+import clueless.io.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;

@@ -1,7 +1,14 @@
-package clueless;
+package clueless.client.cli;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import clueless.client.*;
+import clueless.io.*;
+
+// TODO: Fix leaky abstraction.
+import clueless.GameStatePulse;
+import clueless.CardWrapper;
 
 public class CLIEventHandler {
 
@@ -15,7 +22,7 @@ public class CLIEventHandler {
         watchdog = wd;
     }
 
-    void onMessageEvent(Client client, Message msg) {
+    public void onMessageEvent(Client client, Message msg) {
         switch (msg.getMessageID()) {
             case MESSAGE_CHAT_FROM_SERVER:
             case MESSAGE_CHAT_FROM_CLIENT:

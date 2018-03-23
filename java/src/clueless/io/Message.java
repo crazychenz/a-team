@@ -1,7 +1,7 @@
 /** */
-package clueless;
+package clueless.io;
 
-import java.io.IOException;
+import clueless.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -88,7 +88,7 @@ public class Message implements Serializable {
 
         try {
             oos = new ObjectOutputStream(bbos);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error(e);
             bbos.close();
             throw e;
@@ -107,7 +107,7 @@ public class Message implements Serializable {
         bbis = new ByteBufferBackedInputStream(buf);
         try {
             ois = new ObjectInputStream(bbis);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error(e);
             bbis.close();
             throw e;

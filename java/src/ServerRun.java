@@ -1,5 +1,4 @@
-import clueless.Server;
-import clueless.ServerArgumentHandler;
+import clueless.server.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +9,6 @@ public class ServerRun {
     private static final Logger logger = LogManager.getLogger(ServerRun.class);
 
     public static void main(String[] args) {
-        ServerArgumentHandler argHandler;
 
         // Check if we have logging enabled before anything else.
         boolean hasLogCfgArg = false;

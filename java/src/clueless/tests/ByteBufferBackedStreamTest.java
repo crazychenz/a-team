@@ -2,8 +2,8 @@ package clueless.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import clueless.ByteBufferBackedInputStream;
-import clueless.ByteBufferBackedOutputStream;
+import clueless.io.ByteBufferBackedInputStream;
+import clueless.io.ByteBufferBackedOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

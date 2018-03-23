@@ -1,5 +1,6 @@
-package clueless;
+package clueless.client;
 
+import clueless.*;
 import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,9 +21,9 @@ public class ClientState {
     private ArrayList<Card> disproveCards;
     private boolean disproving = false;
 
-    private static final Logger logger = LogManager.getLogger(CLIEventHandler.class);
+    private static final Logger logger = LogManager.getLogger(ClientState.class);
 
-    ClientState() {
+    public ClientState() {
         setCards(new ArrayList<Card>());
         setFaceUpCards(new ArrayList<Card>());
         setDisproveCards(new ArrayList<Card>());
