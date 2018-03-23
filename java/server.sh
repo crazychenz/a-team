@@ -3,4 +3,4 @@
 java \
   -Dlog4j.configurationFile=log4j2.xml \
   -DlogFilename=client.log \
-  -jar dist/clueless.jar --enable-logger $@
+  -jar dist/clueless.jar --enable-logger --server-only $@
