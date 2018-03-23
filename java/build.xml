@@ -66,7 +66,17 @@
 
     <!--Creates the deployable jar file  -->
     <target name="jar" depends="compile">
-        <jar destfile="${dist.dir}\clueless.jar" basedir="${build.dir}">
+        <jar manifest="manifest.mf" destfile="${dist.dir}\clueless.jar" basedir="${build.dir}">
+            <fileset dir="." includes="log4j2.xml" />
+            <zipfileset src="${lib.dir}\ST4-4.0.8.jar" includes="**/*.java **/*.class" />
+            <zipfileset src="${lib.dir}\ascii-utf-themes-0.0.1.jar" includes="**/*.java **/*.class" />
+            <zipfileset src="${lib.dir}\asciitable-0.3.2.jar" includes="**/*.java **/*.class" />
+            <zipfileset src="${lib.dir}\commons-lang3-3.4.jar" includes="**/*.java **/*.class" />
+            <zipfileset src="${lib.dir}\jeromq-0.4.3.jar" includes="**/*.java **/*.class" />
+            <zipfileset src="${lib.dir}\jline-3.6.1.jar" includes="**/*.java **/*.class" />
+            <zipfileset src="${lib.dir}\log4j-api-2.10.0.jar" includes="**/*" excludes="**/META-INF" />
+            <zipfileset src="${lib.dir}\log4j-core-2.10.0.jar" includes="**/*" excludes="**/META-INF" />
+            <zipfileset src="${lib.dir}\Skb-interfaces-0.0.1.jar" includes="**/*.java **/*.class" />
         </jar>
     </target>
 

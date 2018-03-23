@@ -1,7 +1,9 @@
 import clueless.Server;
 import clueless.ServerArgumentHandler;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class ServerRun {
 
@@ -9,6 +11,18 @@ public class ServerRun {
 
     public static void main(String[] args) {
         ServerArgumentHandler argHandler;
+
+        // Check if we have logging enabled before anything else.
+        boolean hasLogCfgArg = false;
+        for (String arg : args) {
+            if (arg.equals("--enable-logger")) {
+                hasLogCfgArg = true;
+            }
+        }
+        if (!hasLogCfgArg) {
+            // You can also set the root logger:
+            Configurator.setRootLevel(Level.OFF);
+        }
 
         /*try {
             argHandler =
