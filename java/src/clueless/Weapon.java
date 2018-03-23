@@ -18,10 +18,6 @@ public class Weapon implements Serializable {
         logger.debug("Creating weapon " + weapon.toString());
     }
 
-    public void SetLocation(CardsEnum location) {
-        setCurrent_location(location);
-    }
-
     /** @return the weapon */
     public CardsEnum getWeapon() {
         return weapon;
@@ -37,8 +33,17 @@ public class Weapon implements Serializable {
         return current_location;
     }
 
-    /** @param current_location the current_location to set */
-    public void setCurrent_location(CardsEnum current_location) {
-        this.current_location = current_location;
+    /**
+     * @param new_location the new location to set
+     * @param board the game board to set
+     */
+    public void moveForSuggestion(GameBoard board, CardsEnum new_location) {
+        Location location = board.getLocationByEnum(current_location);
+        if (location != null) {
+            location.remove_weapon(this);
+        }
+        Location newLocation = board.getLocationByEnum(new_location);
+        newLocation.place_weapon(this);
+        this.current_location = new_location;
     }
 }

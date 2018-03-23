@@ -75,6 +75,26 @@ public class BoardBuilder {
         }
 
         toReturn += "]";
+        toReturn += "\n";
+        toReturn += returnWeaponsInRoom(room);
+        return toReturn;
+    }
+
+    private String returnWeaponsInRoom(CardsEnum room) {
+        String toReturn = "{";
+        for (Weapon entry : clientState.getGameState().getWeaponLocations()) {
+            CardsEnum location = entry.getCurrent_location();
+            if (location == room) {
+                toReturn += entry.getWeapon().getLabel() + ",";
+            }
+        }
+
+        // Remove last comma, only if there are weapons in the room
+        if (toReturn.length() > 1) {
+            toReturn = toReturn.substring(0, toReturn.length() - 1);
+        }
+
+        toReturn += "}";
         return toReturn;
     }
 }

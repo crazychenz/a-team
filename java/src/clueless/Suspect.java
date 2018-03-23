@@ -41,6 +41,14 @@ public class Suspect implements Serializable {
         }
     }
 
+    public void moveForSuggestion(GameBoard board, CardsEnum new_location) {
+        Location location = board.getLocationByEnum(currentLocation);
+        location.remove_suspect(this);
+        Location newLocation = board.getLocationByEnum(new_location);
+        newLocation.place_suspect(this);
+        setCurrent_location(new_location);
+    }
+
     public CardsEnum getSuspect() {
         return suspect;
     }

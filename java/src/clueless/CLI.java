@@ -442,6 +442,7 @@ public class CLI {
                         cardsToSend.add(location);
                         CardWrapper cards = new CardWrapper(cardsToSend);
                         client.sendMessage(Message.suggestion(cards));
+                        clientState.setSuggested(true);
                     } else {
                         return "Must specify a suspect and a weapon to suggest!";
                     }

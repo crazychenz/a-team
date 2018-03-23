@@ -92,14 +92,30 @@ public class Game {
                 break;
             case MESSAGE_CLIENT_SUGGEST:
                 // handle the suggestion
-                // TODO We need to relay this to each player in turn until they can disprove or not
-                // The server can either broadcast this out to everyone, and they check if their
-                // uuid matches (add uuid to Message?)
-                // Or the server has to send this out directly to each client in succession
                 if (players.current().uuid.equals(msg.getFromUuid())) {
                     players.setSuggestionPlayer();
-                    //TODO Move the suspect and weapon into the suggestion room
+                    // TODO Move the suspect and weapon into the suggestion room
                     cardsToDisprove = (CardWrapper) msg.getMessageData();
+                    CardsEnum suggestion_suspect = null;
+                    CardsEnum suggestion_location = null;
+                    CardsEnum suggestion_weapon = null;
+                    for (CardsEnum card : cardsToDisprove.getCards()) {
+                        if (card.getCardType() == CardType.CARD_TYPE_SUSPECT) {
+                            suggestion_suspect = card;
+                        }
+                        if (card.getCardType() == CardType.CARD_TYPE_LOCATION) {
+                            suggestion_location = card;
+                        }
+                        if (card.getCardType() == CardType.CARD_TYPE_WEAPON) {
+                            suggestion_weapon = card;
+                        }
+                    }
+
+                    board.getSuspectByEnum(suggestion_suspect)
+                            .moveForSuggestion(board, suggestion_location);
+                    board.getWeaponByEnum(suggestion_weapon)
+                            .moveForSuggestion(board, suggestion_location);
+
                     Message response =
                             Message.relaySuggestion(
                                     cardsToDisprove, players.getNextDisprovePlayer());

@@ -41,10 +41,10 @@ public class ClientState {
             if (!alerted) {
                 System.out.println("You are the active player!  Perform an action.\n");
                 setMoved(false); // reset move so the player can move again when their turn begins
+                setSuggested(false);
                 alerted = true;
             }
         } else {
-            setSuggested(false);
             setMyTurn(false);
             if (alerted) {
                 alerted = false;
