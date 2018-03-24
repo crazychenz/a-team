@@ -4,24 +4,30 @@ import java.util.ArrayList;
 
 public class GameBoard {
 
-    public final CardDeck cards;
-    public SuspectMap suspects;
-    public WeaponMap weapons;
-    public LocationMap locations;
+    public final SuspectMap suspects;
+    public final WeaponMap weapons;
+    public final LocationMap locations;
+    private final ArrayList<Card> faceUpCards;
 
-    public boolean gameStarted = false;
+    private Envelope envelope;
 
     public GameBoard() {
-
         // Locations must be created first so we have places to put things.
         locations = new LocationMap();
-
-        cards = new CardDeck();
         suspects = new SuspectMap(this);
         weapons = new WeaponMap();
 
-        // TODO: Move to cardDeck
-        createCards();
+        faceUpCards = new ArrayList<Card>();
+    }
+
+    public void dealCards(PlayerMgr players) {
+        Dealer dealer = new Dealer(System.currentTimeMillis());
+        envelope = dealer.populateEnvelope();
+        dealer.dealCards(players, faceUpCards);
+    }
+
+    public ArrayList<Card> getFaceUpCards() {
+        return faceUpCards;
     }
 
     public Suspect getSuspectByEnum(CardsEnum value) {
@@ -48,12 +54,7 @@ public class GameBoard {
         return locations.getByEnum(value);
     }
 
-    private void createCards() {
-        // Create the cards
-        for (CardsEnum value : CardsEnum.values()) {
-            if (value.getCardType() != CardType.CARD_TYPE_HALLWAY) {
-                cards.add(new Card(value));
-            }
-        }
+    public boolean accuse(CardWrapper cards) {
+        return envelope.matchEnvelope(cards);
     }
 }

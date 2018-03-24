@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 public class GameStatePulse implements Serializable {
 
-    /** */
     private static final long serialVersionUID = 2547048036673558884L;
 
     private boolean gameActive;
@@ -16,41 +15,25 @@ public class GameStatePulse implements Serializable {
     private ArrayList<Card> cards;
     private ArrayList<Card> faceUpCards;
 
-    /*public GameStatePulse(
-            boolean gameActive,
-            CardsEnum activeSuspect,
-            AvailableSuspects availableSuspects,
-            HashMap<CardsEnum, CardsEnum> suspectLocations,
-            HashMap<CardsEnum, CardsEnum> weaponLocations,
-            ArrayList<Card> cards,
-            ArrayList<Card> faceUpCards) {
-        setGameActive(gameActive);
-        setActiveSuspect(activeSuspect);
-        setSuspectLocations(suspectLocations);
-        setWeaponLocations(weaponLocations);
-        setAvailableSuspects(availableSuspects);
-        setCards(cards);
-        setFaceUpCards(faceUpCards);
-    }*/
-
-    public GameStatePulse(GameBoard board, PlayerMgr players, Player player) {
-
-        Player current = players.current();
-        activeSuspect = null;
-        if (current != null) {
-            setActiveSuspect(players.current().getSuspect());
-        }
-
-        setGameActive(board.gameStarted);
+    public GameStatePulse(boolean started, GameBoard board, PlayerMgr players, Player player) {
+        setGameActive(started);
+        setAvailableSuspects(board.getAvailableSuspects());
         setSuspectLocations(board.getAllSuspects());
         setWeaponLocations(board.getAllWeapons());
-        setAvailableSuspects(board.suspects.getAvailableSuspects());
 
-        cards = null;
-        if (player != null) {
-            setCards(player.getCards());
+        if (started) {
+            Player current = players.current();
+            activeSuspect = null;
+            if (current != null) {
+                setActiveSuspect(players.current().getSuspect());
+            }
+
+            cards = null;
+            if (player != null) {
+                setCards(player.getCards());
+            }
+            setFaceUpCards(board.getFaceUpCards());
         }
-        setFaceUpCards(board.cards.getFaceUpCards());
     }
 
     /** @return the gameActive */

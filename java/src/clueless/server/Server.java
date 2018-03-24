@@ -7,7 +7,6 @@ package clueless.server;
 import clueless.*;
 import clueless.io.*;
 import java.nio.ByteBuffer;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.zeromq.ZMQ;
@@ -23,13 +22,10 @@ public class Server implements Runnable {
     Socket socket;
     Game gameState;
 
-    ConcurrentLinkedQueue<Message> users;
-
     public Server() {
         // Grab a context object with one I/O thread.
         zmqContext = ZMQ.context(1);
         socket = zmqContext.socket(ZMQ.ROUTER);
-        users = new ConcurrentLinkedQueue<>();
         gameState = new Game();
     }
 

@@ -37,7 +37,13 @@ public class ClientState {
     /** @param gameState the gameState to set */
     public void setGameState(GameStatePulse gameState) {
         this.gameState = gameState;
-        if (gameState.isGameActive() && gameState.getActiveSuspect() == mySuspect) {
+
+        if (!gameState.isGameActive()) {
+            setAvailableSuspects(gameState.getAvailableSuspects());
+            return;
+        }
+
+        if (gameState.getActiveSuspect() == mySuspect) {
             setMyTurn(true);
             if (!alerted) {
                 System.out.println("You are the active player!  Perform an action.\n");
@@ -58,7 +64,6 @@ public class ClientState {
             }
         }
 
-        setAvailableSuspects(gameState.getAvailableSuspects());
         setCards(gameState.getCards());
         setFaceUpCards(gameState.getFaceUpCards());
     }

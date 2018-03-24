@@ -10,21 +10,17 @@ public class Game {
     private static final Logger logger = LogManager.getLogger(Game.class);
 
     private GameBoard board;
+    private boolean gameStarted;
     public boolean classicMode = false;
     public PlayerMgr players;
+
+    // TODO: Seems out if scope of Game
     private CardWrapper cardsToDisprove;
 
     public Game() {
         players = new PlayerMgr();
         board = new GameBoard();
         cardsToDisprove = new CardWrapper(new ArrayList<CardsEnum>());
-        /*try {
-            Weapon.class.newInstance();
-            Suspect.class.newInstance();
-            Location.class.newInstance();
-        } catch (Exception e) {
-
-        }*/
     }
 
     public Message processMessage(Message msg) {
@@ -129,7 +125,7 @@ public class Game {
                     if (handleAccuse((CardWrapper) msg.getMessageData())) {
                         // Win!
                         // End the game, alert everybody
-                        board.gameStarted = false;
+                        gameStarted = false;
                         Message endMessage = Message.winMessage(players.current().getSuspect());
                         endMessage.setBroadcast(true);
                         return endMessage;
@@ -152,7 +148,8 @@ public class Game {
             case MESSAGE_PULSE:
                 // return echo request
                 player = players.byUuid(msg.getFromUuid());
-                return Message.sendGameStatePulse(new GameStatePulse(board, players, player));
+                return Message.sendGameStatePulse(
+                        new GameStatePulse(gameStarted, board, players, player));
             case MESSAGE_CLIENT_RESPONSE_SUGGEST:
                 CardWrapper cards = (CardWrapper) msg.getMessageData();
                 if (cards.getCards().size() == 1) {
@@ -190,26 +187,27 @@ public class Game {
         return null;
     }
 
-    private void startGame() {
-        // Don't start again
-        if (board.gameStarted) {
-            return;
-        }
-        if (players.count() >= 3) {
-            board.cards.setupCardDeckAndDealCards(players.getArray(), classicMode);
-            board.gameStarted = true;
-            // Shuffle players
-            // TODO: This has no effect on ListItem list order.
-            // Collections.shuffle(players, Helper.GetRandom());
-            // TODO: Make scarlet the activePlayerRef
-            // setNextPlayer();
+    private boolean startGame() {
+        if (!gameStarted) {
+            if (players.count() < 3) {
+                logger.info("Not enough players to start the game");
+                return gameStarted;
+            }
 
-        } else {
-            logger.info("Not enough players to start the game");
+            board.dealCards(players);
+            gameStarted = true;
+            // TODO: Make scarlet the activePlayerRef
+            // TODO: All users should be using peice nearest to them
+            //       and all peices have a starting location
+            //       and all turns go to the left starting with scarlet,
+            //       therefore the turn ordering is always the same.
+            // setNextPlayer();
         }
+        return gameStarted;
     }
 
+    // TODO: Seems out of scope
     private boolean handleAccuse(CardWrapper cards) {
-        return board.cards.envelopeMatch(cards);
+        return board.accuse(cards);
     }
 }

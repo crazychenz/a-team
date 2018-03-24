@@ -6,14 +6,12 @@ import java.util.HashMap;
 public class SuspectMap {
 
     private final HashMap<CardsEnum, Suspect> suspects = new HashMap<>();
-    private GameBoard board;
 
     public SuspectMap(GameBoard board) {
-        this.board = board;
-        createSuspects();
+        createSuspects(board);
     }
 
-    private void createSuspects() {
+    private void createSuspects(GameBoard board) {
         for (CardsEnum value : CardsEnum.values()) {
             if (value.getCardType() == CardType.CARD_TYPE_SUSPECT) {
                 Suspect newSuspect;
