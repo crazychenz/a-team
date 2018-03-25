@@ -33,7 +33,9 @@ public abstract class ListItem /*implements Iterable<ListItem>*/ {
             list = nitem;
             return;
         }
-        list.insertAfter(nitem);
+
+        // This effectively adds to tail.
+        list.insertBefore(nitem);
     }
 
     /*@Override

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Player extends ListItem {
+public class Player extends ListItem implements Comparable {
 
     private static final Logger logger = LogManager.getLogger(Player.class);
 
@@ -53,5 +53,15 @@ public class Player extends ListItem {
 
     public String getUuid() {
         return uuid;
+    }
+
+    // @Override
+    // public int compareTo(Player other) {
+    //    return suspect.getId() - other.suspect.getId();
+    // }
+
+    @Override
+    public int compareTo(Object o) {
+        return suspect.getId() - ((Player) o).suspect.getId();
     }
 }

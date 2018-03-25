@@ -1,6 +1,7 @@
 package clueless;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,15 +62,26 @@ public class PlayerMgr {
         Player newPlayer = new Player(suspect, fromUuid);
         activePlayerArray.add(newPlayer);
 
-        if (activePlayerList == null) {
-            activePlayerList = newPlayer;
-        } else {
-            Player.addItem(activePlayerList, newPlayer);
+        logger.debug("BEFORE SORT:");
+        for (Player p : activePlayerArray) {
+            logger.debug(p.getSuspect().getName());
+        }
+        Collections.sort(activePlayerArray);
+        logger.debug("AFTER SORT:");
+        for (Player p : activePlayerArray) {
+            logger.debug(p.getSuspect().getName());
         }
 
-        if (activePlayerRef == null) {
-            activePlayerRef = newPlayer;
+        // lazily just rebuild the linked list each time
+        activePlayerList = null;
+        for (Player player : activePlayerArray) {
+            if (activePlayerList == null) {
+                activePlayerList = player;
+            } else {
+                Player.addItem(activePlayerList, player);
+            }
         }
+        activePlayerRef = activePlayerList;
     }
 
     public void setSuggestionPlayer() {
