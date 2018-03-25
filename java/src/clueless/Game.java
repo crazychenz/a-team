@@ -68,7 +68,7 @@ public class Game {
                 // move from active player
                 player = players.current();
                 if (player.uuid.equals(msg.getFromUuid())) {
-                    Suspect suspect = board.getSuspectByEnum(player.getSuspect());
+                    Suspect suspect = board.getSuspectByCard(player.getSuspect());
                     DirectionsEnum dir = (DirectionsEnum) msg.getMessageData();
                     if (suspect.move(board, dir)) {
                         // valid move
@@ -93,7 +93,7 @@ public class Game {
                     // TODO Move the suspect and weapon into the suggestion room
                     suggestion = (Suggestion) msg.getMessageData();
 
-                    board.getSuspectByEnum(suggestion.getSuspect())
+                    board.getSuspectByCard(suggestion.getSuspect())
                             .moveForSuggestion(board, suggestion.getRoom());
                     board.getWeaponByEnum(suggestion.getWeapon())
                             .moveForSuggestion(board, suggestion.getRoom());

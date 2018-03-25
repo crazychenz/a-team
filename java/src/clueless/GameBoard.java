@@ -30,8 +30,8 @@ public class GameBoard {
         return faceUpCards;
     }
 
-    public Suspect getSuspectByEnum(SuspectCard value) {
-        return suspects.getByEnum(value);
+    public Suspect getSuspectByCard(SuspectCard value) {
+        return suspects.getByCard(value);
     }
 
     public ArrayList<Suspect> getAllSuspects() {

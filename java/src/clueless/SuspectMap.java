@@ -2,6 +2,7 @@ package clueless;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class SuspectMap {
 
@@ -23,8 +24,14 @@ public class SuspectMap {
         }
     }
 
-    public Suspect getByEnum(SuspectCard value) {
-        return suspects.get(value);
+    public Suspect getByCard(SuspectCard value) {
+        // Bleh
+        for (Entry<SuspectCard, Suspect> entry : suspects.entrySet()) {
+            if (entry.getKey().equals(value)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     public ArrayList<Suspect> getAllSuspects() {
