@@ -20,8 +20,8 @@ public class GameBoard {
         faceUpCards = new ArrayList<Card>();
     }
 
-    public void dealCards(PlayerMgr players) {
-        Dealer dealer = new Dealer(System.currentTimeMillis());
+    public void dealCards(PlayerMgr players, long seed) {
+        Dealer dealer = new Dealer(seed);
         envelope = dealer.populateEnvelope();
         dealer.dealCards(players, faceUpCards);
     }

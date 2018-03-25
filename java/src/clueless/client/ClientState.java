@@ -47,6 +47,7 @@ public class ClientState {
         if (gameState.getActiveSuspect().equals(mySuspect)) {
             setMyTurn(true);
             if (!alerted) {
+                logger.debug(getMySuspect());
                 System.out.println("You are the active player!  Perform an action.\n");
                 setMoved(false); // reset move so the player can move again when their turn begins
                 setSuggested(false);
@@ -152,11 +153,12 @@ public class ClientState {
 
     // This isn't the best way to do this.  Should probably be moved/handled differently.
     public void disprove(Suggestion cards, boolean active) {
-
+        logger.debug(getMySuspect());
         if (active) {
             setDisproving(true);
             String toPrint = "";
             boolean found = false;
+
             System.out.println("You must disprove a suggestion of the following cards!");
 
             System.out.println("\t" + cards);

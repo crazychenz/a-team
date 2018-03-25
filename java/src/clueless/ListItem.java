@@ -6,6 +6,10 @@ public abstract class ListItem /*implements Iterable<ListItem>*/ {
     public ListItem next;
 
     public ListItem() {
+        init();
+    }
+
+    public void init() {
         prev = this;
         next = this;
     }
@@ -14,7 +18,11 @@ public abstract class ListItem /*implements Iterable<ListItem>*/ {
         return next;
     }
 
-    public void insertBefore(ListItem elem) {
+    public ListItem getPrev() {
+        return prev;
+    }
+
+    /*public void insertBefore(ListItem elem) {
         elem.prev = prev;
         elem.next = this;
         prev.next = elem;
@@ -26,16 +34,18 @@ public abstract class ListItem /*implements Iterable<ListItem>*/ {
         elem.next = next;
         next.prev = elem;
         next = elem;
+    }*/
+
+    private static void _add(ListItem nitem, ListItem prev, ListItem next) {
+        next.prev = nitem;
+        nitem.next = next;
+        nitem.prev = prev;
+        prev.next = nitem;
     }
 
-    public static void addItem(ListItem list, ListItem nitem) {
-        if (list == null) {
-            list = nitem;
-            return;
-        }
-
+    public static void addToTail(ListItem nitem, ListItem list) {
         // This effectively adds to tail.
-        list.insertBefore(nitem);
+        _add(nitem, list.prev, list);
     }
 
     /*@Override

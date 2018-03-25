@@ -33,6 +33,11 @@ public class Player extends ListItem implements Comparable {
         return (Player) super.getNext();
     }
 
+    @Override
+    public Player getPrev() {
+        return (Player) super.getPrev();
+    }
+
     public ArrayList<Card> getCards() {
         return cards;
     }

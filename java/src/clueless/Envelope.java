@@ -14,6 +14,7 @@ public class Envelope {
     private WeaponCard weapon;
 
     public Envelope(SuspectCard suspect, RoomCard location, WeaponCard weapon) {
+        logger.debug("ENVELOPE: " + suspect + location + weapon);
         this.suspect = suspect;
         this.room = location;
         this.weapon = weapon;

@@ -67,10 +67,11 @@ public class PlayerMgr {
         // lazily just rebuild the linked list each time
         activePlayerList = null;
         for (Player player : activePlayerArray) {
+            player.init();
             if (activePlayerList == null) {
                 activePlayerList = player;
             } else {
-                Player.addItem(activePlayerList, player);
+                Player.addToTail(player, activePlayerList);
             }
         }
         activePlayerRef = activePlayerList;

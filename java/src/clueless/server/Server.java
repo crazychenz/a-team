@@ -23,10 +23,14 @@ public class Server implements Runnable {
     Game gameState;
 
     public Server() {
+        this(System.currentTimeMillis());
+    }
+
+    public Server(long seed) {
         // Grab a context object with one I/O thread.
         zmqContext = ZMQ.context(1);
         socket = zmqContext.socket(ZMQ.ROUTER);
-        gameState = new Game();
+        gameState = new Game(seed);
     }
 
     public void sendMessage(Message msg) throws Exception {

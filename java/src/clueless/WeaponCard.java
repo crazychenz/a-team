@@ -14,7 +14,7 @@ public class WeaponCard extends Card {
     public static final ArrayList<WeaponCard> allCards = new ArrayList<>();
 
     static {
-        allCards.add(WEAPON_LEADPIPE = new WeaponCard(0x21, "Lead Pipe"));
+        allCards.add(WEAPON_LEADPIPE = new WeaponCard(0x21, "Pipe"));
         allCards.add(WEAPON_REVOLVER = new WeaponCard(0x22, "Revolver"));
         allCards.add(WEAPON_ROPE = new WeaponCard(0x23, "Rope"));
         allCards.add(WEAPON_DAGGER = new WeaponCard(0x24, "Dagger"));

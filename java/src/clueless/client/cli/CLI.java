@@ -199,6 +199,7 @@ public class CLI {
     }
 
     public static String handleCommand(CLI cli, String line) {
+        logger.debug(cli.clientState.getMySuspect() + ": " + line);
         Client client = cli.client;
         ClientState clientState = cli.clientState;
 
@@ -373,13 +374,19 @@ public class CLI {
                     if (pl.words().size() == 4) {
 
                         if (accuseStrToEnum.get(pl.words().get(1)) == null) {
-                            return "Problem selecting that card." + "  Please try again!";
+                            return "Problem selecting card \""
+                                    + pl.words().get(1)
+                                    + "\". Please try again!";
                         }
                         if (accuseStrToEnum.get(pl.words().get(2)) == null) {
-                            return "Problem selecting that card." + "  Please try again!";
+                            return "Problem selecting card \""
+                                    + pl.words().get(2)
+                                    + "\". Please try again!";
                         }
                         if (accuseStrToEnum.get(pl.words().get(3)) == null) {
-                            return "Problem selecting that card." + "  Please try again!";
+                            return "Problem selecting card \""
+                                    + pl.words().get(3)
+                                    + "\". Please try again!";
                         }
                         String card1 = pl.words().get(1);
                         String card2 = pl.words().get(2);
@@ -536,7 +543,7 @@ public class CLI {
         }
 
         // Init heartbeat thread (duration half length of watchdog timeout)
-        heartbeat = new Heartbeat(client, 5000);
+        heartbeat = new Heartbeat(client, 1000);
         heartbeatThread = new Thread(heartbeat);
         // TODO start thread outside of constructor
         heartbeatThread.start();

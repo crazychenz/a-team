@@ -13,10 +13,13 @@ public class Game {
     public boolean classicMode = false;
     public PlayerMgr players;
 
+    private long prngSeed;
+
     Suggestion suggestion;
 
-    public Game() {
+    public Game(long seed) {
         gameStarted = false;
+        prngSeed = seed;
         players = new PlayerMgr();
         board = new GameBoard();
     }
@@ -91,7 +94,7 @@ public class Game {
                 if (players.current().uuid.equals(msg.getFromUuid())) {
                     logger.debug("Suggesting...");
                     players.setSuggestionPlayer();
-                    // TODO Move the suspect and weapon into the suggestion room
+
                     suggestion = (Suggestion) msg.getMessageData();
                     logger.debug(suggestion);
 
@@ -100,7 +103,6 @@ public class Game {
                     board.getWeaponByCard(suggestion.getWeapon())
                             .moveForSuggestion(board, suggestion.getRoom());
 
-                    // TODO: Fix me.
                     Message response =
                             Message.relaySuggestion(suggestion, players.getNextDisprovePlayer());
                     response.setBroadcast(true);
@@ -179,7 +181,7 @@ public class Game {
                 return gameStarted;
             }
 
-            board.dealCards(players);
+            board.dealCards(players, prngSeed);
             gameStarted = true;
             // TODO: Make scarlet the activePlayerRef
             // TODO: All users should be using peice nearest to them
