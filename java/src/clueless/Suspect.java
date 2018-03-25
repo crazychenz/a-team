@@ -48,7 +48,7 @@ public class Suspect implements Serializable {
 
     public void moveForSuggestion(GameBoard board, RoomCard dest) {
         currentLocation.removeSuspect(this);
-		Room room = Room.getById(dest.getId());
+        Room room = Room.getById(dest.getId());
         room.placeSuspect(this);
         setCurrent_location(room);
     }

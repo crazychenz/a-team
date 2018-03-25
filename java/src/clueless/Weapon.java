@@ -36,11 +36,11 @@ public class Weapon implements Serializable {
     public void moveForSuggestion(GameBoard board, RoomCard dest) {
 
         if (current_location != null) {
-			// TODO: Make weapons always exist in a room.
+            // TODO: Make weapons always exist in a room.
             current_location.removeWeapon(this);
         }
 
-		Room room = Room.getById(dest.getId());
+        Room room = Room.getById(dest.getId());
         room.placeWeapon(this);
         this.current_location = room;
     }

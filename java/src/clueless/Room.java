@@ -41,15 +41,15 @@ public class Room extends Location {
         weaponsInside = new ArrayList<>();
         suspectsInside = new ArrayList<>();
     }
-	
-	public static Room getById(int id) {
-		for (Room room : allRooms) {
-			if (room.getId() == id) {
-				return room;
-			}
-		}
-		return null;
-	}
+
+    public static Room getById(int id) {
+        for (Room room : allRooms) {
+            if (room.getId() == id) {
+                return room;
+            }
+        }
+        return null;
+    }
 
     @Override
     public boolean available() {
