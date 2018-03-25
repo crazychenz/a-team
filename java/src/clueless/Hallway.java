@@ -62,4 +62,13 @@ public class Hallway extends Location {
     public void removeSuspect(Suspect suspect) {
         this.suspect = null;
     }
+
+    public static boolean isHallwayId(int id) {
+        for (Hallway hallway : allHallways) {
+            if (hallway.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

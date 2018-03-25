@@ -62,15 +62,7 @@ public class PlayerMgr {
         Player newPlayer = new Player(suspect, fromUuid);
         activePlayerArray.add(newPlayer);
 
-        logger.debug("BEFORE SORT:");
-        for (Player p : activePlayerArray) {
-            logger.debug(p.getSuspect().getName());
-        }
         Collections.sort(activePlayerArray);
-        logger.debug("AFTER SORT:");
-        for (Player p : activePlayerArray) {
-            logger.debug(p.getSuspect().getName());
-        }
 
         // lazily just rebuild the linked list each time
         activePlayerList = null;

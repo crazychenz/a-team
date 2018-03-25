@@ -275,14 +275,11 @@ public class CLI {
                         return "Must be actively disproving!";
                     }
 
-                    // TODO: Fix me.
-                    /*
                     if (pl.words().size() == 2) {
-                        HashMap<String, Card> disproveStrToEnum =
-                                new HashMap<String, Card>();
+                        HashMap<String, Card> disproveStrToEnum = new HashMap<String, Card>();
+
                         for (Card card : clientState.getDisproveCards()) {
-                            disproveStrToEnum.put(
-                                    card.getCardEnum().getLabel(), card.getCardEnum());
+                            disproveStrToEnum.put(card.getName(), card);
                         }
 
                         if (disproveStrToEnum.get(pl.words().get(1)) == null) {
@@ -291,19 +288,16 @@ public class CLI {
 
                         String card1 = pl.words().get(1);
                         logger.info("Disproving " + card1);
-                        CardsEnum ce1 = disproveStrToEnum.get(card1);
-                        ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
-                        cardsToSend.add(ce1);
-                        CardWrapper cards = new CardWrapper(cardsToSend);
-                        client.sendMessage(Message.clientRespondSuggestion(cards));
+                        Card ce1 = disproveStrToEnum.get(card1);
+
+                        client.sendMessage(Message.clientRespondSuggestion(ce1));
                         clientState.setDisproving(false);
                     } else if (pl.words().size() == 1
                             && clientState.getDisproveCards().size() == 0) {
-                        CardWrapper cards = new CardWrapper(new ArrayList<CardsEnum>());
-                        client.sendMessage(Message.clientRespondSuggestion(cards));
+                        client.sendMessage(Message.clientRespondSuggestion(null));
                     } else {
                         return "Must pick a card to disprove the suggestion!";
-                    }*/
+                    }
                 } catch (Exception e) {
                     logger.error("failed making suggestion");
                 }
@@ -426,40 +420,50 @@ public class CLI {
                     if (clientState.isSuggested()) {
                         return "Already made a suggestion this turn!";
                     }
-                    // TODO: fix me.
-                    // if (clientState.getMyLocation().getCardType() == CardType.CARD_TYPE_HALLWAY)
-                    // {
-                    //    return "Cannot make a suggestion in a hallway!";
-                    // }
+
+                    if ((clientState.getMyLocation() != null)
+                            && Hallway.isHallwayId(clientState.getMyLocation())) {
+                        return "Cannot make a suggestion in a hallway!";
+                    }
 
                     if (pl.words().size() == 3) {
-                        // TODO: Fix me.
-                        /*
-                                          if (suggestStrToEnum.get(pl.words().get(1)) == null) {
-                                              return "Problem selecting that card." + "  Please try again!";
-                                          }
-                                          if (suggestStrToEnum.get(pl.words().get(2)) == null) {
-                                              return "Problem selecting that card." + "  Please try again!";
-                                          }
-                                          String card1 = pl.words().get(1);
-                                          String card2 = pl.words().get(2);
-                                          logger.info("Suggesting " + card1 + card2);
-                                          CardsEnum ce1 = suggestStrToEnum.get(card1);
-                                          CardsEnum ce2 = suggestStrToEnum.get(card2);
-                                          CardsEnum location = clientState.getMyLocation();
-                                          ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
-                                          cardsToSend.add(ce1);
-                                          cardsToSend.add(ce2);
-                                          cardsToSend.add(location);
-                                          CardWrapper cards = new CardWrapper(cardsToSend);
-                                          client.sendMessage(Message.suggestion(cards));
-                                          clientState.setSuggested(true);
-                        */
+
+                        if (suggestStrToEnum.get(pl.words().get(1)) == null) {
+                            return "Problem selecting that card." + "  Please try again!";
+                        }
+                        if (suggestStrToEnum.get(pl.words().get(2)) == null) {
+                            return "Problem selecting that card." + "  Please try again!";
+                        }
+                        String card1 = pl.words().get(1);
+                        String card2 = pl.words().get(2);
+                        logger.info("Suggesting " + card1 + " " + card2);
+                        Card ce1 = suggestStrToEnum.get(card1);
+                        Card ce2 = suggestStrToEnum.get(card2);
+                        Card location = RoomCard.getById(clientState.getMyLocation());
+                        if (ce1 == null) {
+                            logger.error("Missing ce1");
+                        }
+                        if (ce2 == null) {
+                            logger.error("Missing ce2");
+                        }
+                        if (location == null) {
+                            logger.error("Missing location");
+                        }
+                        // ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
+                        // cardsToSend.add(ce1);
+                        // cardsToSend.add(ce2);
+                        // cardsToSend.add(location);
+                        // CardWrapper cards = new CardWrapper(cardsToSend);
+                        Suggestion cards = new Suggestion(ce1, ce2, location);
+                        client.sendMessage(Message.suggestion(cards));
+                        clientState.setSuggested(true);
+
                     } else {
                         return "Must specify a suspect and a weapon to suggest!";
                     }
                 } catch (Exception e) {
                     logger.error("failed making suggestion");
+                    e.printStackTrace();
                 }
                 break;
             case "move":

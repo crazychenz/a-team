@@ -186,8 +186,8 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_PULSE, gsp);
     }
 
-    public static Message clientRespondSuggestion(Suggestion suggestion) {
-        return new Message(MessagesEnum.MESSAGE_CLIENT_RESPONSE_SUGGEST, suggestion);
+    public static Message clientRespondSuggestion(Card card) {
+        return new Message(MessagesEnum.MESSAGE_CLIENT_RESPONSE_SUGGEST, card);
     }
 
     public static Message serverRespondSuggestion(Card card) {

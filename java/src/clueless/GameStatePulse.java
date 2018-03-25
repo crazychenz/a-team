@@ -21,7 +21,6 @@ public class GameStatePulse implements Serializable {
     public GameStatePulse(boolean started, GameBoard board, PlayerMgr players, Player player) {
         setGameActive(started);
 
-        logger.debug("GameStatePule: started=" + started);
         suspectLocations = new HashMap<>();
         for (Suspect suspect : board.getAllSuspects()) {
             suspectLocations.put(suspect.getSuspect(), suspect.getCurrent_location().getId());

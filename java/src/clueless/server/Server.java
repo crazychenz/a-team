@@ -70,7 +70,7 @@ public class Server implements Runnable {
             if (items.pollin(0)) {
                 Message msg = null;
                 String replyto = socket.recvStr();
-                logger.info("Got a message from " + replyto);
+                logger.trace("Got a message from " + replyto);
 
                 // Fetch delimiter (assumed empty)
                 socket.recvStr();
@@ -83,7 +83,7 @@ public class Server implements Runnable {
                     logger.error("Failed to parse message.");
                 }
 
-                logger.info("Request: " + msg);
+                logger.trace("Request: " + msg);
 
                 msg = gameState.processMessage(msg);
 

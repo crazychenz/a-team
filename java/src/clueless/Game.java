@@ -23,7 +23,7 @@ public class Game {
 
     public Message processMessage(Message msg) {
         Player player;
-        logger.debug("Processing the message");
+        logger.trace("Processing the message");
 
         switch (msg.getMessageID()) {
             case MESSAGE_CLIENT_CONNECTED:
@@ -89,9 +89,11 @@ public class Game {
 
                 // handle the suggestion
                 if (players.current().uuid.equals(msg.getFromUuid())) {
+                    logger.debug("Suggesting...");
                     players.setSuggestionPlayer();
                     // TODO Move the suspect and weapon into the suggestion room
                     suggestion = (Suggestion) msg.getMessageData();
+                    logger.debug(suggestion);
 
                     board.getSuspectByCard(suggestion.getSuspect())
                             .moveForSuggestion(board, suggestion.getRoom());
@@ -100,7 +102,7 @@ public class Game {
 
                     // TODO: Fix me.
                     Message response =
-                            Message.relaySuggestion(null, players.getNextDisprovePlayer());
+                            Message.relaySuggestion(suggestion, players.getNextDisprovePlayer());
                     response.setBroadcast(true);
                     return response;
                 }

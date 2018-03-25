@@ -31,4 +31,13 @@ public class RoomCard extends Card {
     private RoomCard(int id, String name) {
         super(id, name);
     }
+
+    public static RoomCard getById(int id) {
+        for (RoomCard card : allCards) {
+            if (card.getId() == id) {
+                return card;
+            }
+        }
+        return null;
+    }
 }

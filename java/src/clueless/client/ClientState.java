@@ -2,6 +2,7 @@ package clueless.client;
 
 import clueless.*;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,7 +59,12 @@ public class ClientState {
             }
         }
 
-        setMyLocation(gameState.getSuspectLocations().get(mySuspect));
+        // Bleh
+        for (Entry<SuspectCard, Integer> entry : gameState.getSuspectLocations().entrySet()) {
+            if (entry.getKey().equals(mySuspect)) {
+                setMyLocation(entry.getValue());
+            }
+        }
 
         setCards(gameState.getCards());
         setFaceUpCards(gameState.getFaceUpCards());
