@@ -1,5 +1,6 @@
 package clueless.client;
 
+import clueless.io.*;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -9,12 +10,6 @@ import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
-
-import clueless.io.*;
-
-// TODO: This needs to become abstract
-import clueless.client.cli.CLIEventHandler;
-
 
 public class Client implements Runnable {
 
@@ -27,9 +22,9 @@ public class Client implements Runnable {
     ConcurrentLinkedQueue<Message> chatMessageQueue;
     Thread thread;
     // TODO: Make this abstract
-    CLIEventHandler evtHandler;
+    EventHandler evtHandler;
 
-    public Client(CLIEventHandler handler) {
+    public Client(EventHandler handler) {
         uuid = UUID.randomUUID();
         // Grab a context object with one I/O thread.
         zmqContext = ZMQ.context(1);

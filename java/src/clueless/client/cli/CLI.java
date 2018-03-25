@@ -38,7 +38,7 @@ public class CLI {
     // Client Specific Properties
     private Client client;
     private ClientState clientState;
-    private CLIEventHandler evtHandler;
+    private EventHandler evtHandler;
     private Watchdog watchdog;
     private Thread watchdogThread;
     private Heartbeat heartbeat;

@@ -11,7 +11,7 @@ import clueless.GameStatePulse;
 import clueless.Suggestion;
 import clueless.Card;
 
-public class CLIEventHandler {
+public class CLIEventHandler extends EventHandler {
 
     private static final Logger logger = LogManager.getLogger(CLIEventHandler.class);
 
@@ -23,6 +23,7 @@ public class CLIEventHandler {
         watchdog = wd;
     }
 
+	@Override
     public void onMessageEvent(Client client, Message msg) {
         switch (msg.getMessageID()) {
             case MESSAGE_CHAT_FROM_SERVER:
