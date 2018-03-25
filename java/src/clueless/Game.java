@@ -95,7 +95,7 @@ public class Game {
 
                     board.getSuspectByCard(suggestion.getSuspect())
                             .moveForSuggestion(board, suggestion.getRoom());
-                    board.getWeaponByEnum(suggestion.getWeapon())
+                    board.getWeaponByCard(suggestion.getWeapon())
                             .moveForSuggestion(board, suggestion.getRoom());
 
                     // TODO: Fix me.

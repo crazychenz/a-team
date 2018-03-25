@@ -2,6 +2,7 @@ package clueless;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class WeaponMap {
     private HashMap<WeaponCard, Weapon> weapons = new HashMap<>();
@@ -13,8 +14,14 @@ public class WeaponMap {
         }
     }
 
-    public Weapon getByEnum(WeaponCard value) {
-        return weapons.get(value);
+    public Weapon getByCard(WeaponCard value) {
+        // Bleh
+        for (Map.Entry<WeaponCard, Weapon> entry : weapons.entrySet()) {
+            if (entry.getKey().equals(value)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     public ArrayList<Weapon> getAllWeapons() {

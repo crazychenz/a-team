@@ -42,8 +42,8 @@ public class GameBoard {
         return suspects.getAvailableSuspects();
     }
 
-    public Weapon getWeaponByEnum(WeaponCard value) {
-        return weapons.getByEnum(value);
+    public Weapon getWeaponByCard(WeaponCard value) {
+        return weapons.getByCard(value);
     }
 
     public ArrayList<Weapon> getAllWeapons() {
