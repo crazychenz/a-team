@@ -55,7 +55,7 @@ public class PlayerMgr {
         return activePlayerRef;
     }
 
-    public void add(CardsEnum suspect, String fromUuid) {
+    public void add(SuspectCard suspect, String fromUuid) {
         logger.info("Adding new player");
 
         Player newPlayer = new Player(suspect, fromUuid);
@@ -95,6 +95,6 @@ public class PlayerMgr {
     // accusation
     public void setNextPlayer() {
         activePlayerRef = activePlayerRef.getNext();
-        logger.info("Next player is " + activePlayerRef.getSuspect().getLabel());
+        logger.info("Next player is " + activePlayerRef.getSuspect());
     }
 }

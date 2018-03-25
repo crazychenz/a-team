@@ -10,12 +10,12 @@ public class ClientState {
     private AvailableSuspects availableSuspects;
     private boolean configured = false;
     private GameStatePulse gameState;
-    private CardsEnum mySuspect;
+    private SuspectCard mySuspect;
     private boolean myTurn = false;
     private boolean alerted = false;
     private boolean moved = false;
     private boolean suggested = false;
-    private CardsEnum myLocation;
+    private Integer myLocation;
     private ArrayList<Card> cards;
     private ArrayList<Card> faceUpCards;
     private ArrayList<Card> disproveCards;
@@ -43,7 +43,7 @@ public class ClientState {
             return;
         }
 
-        if (gameState.getActiveSuspect() == mySuspect) {
+        if (gameState.getActiveSuspect().equals(mySuspect)) {
             setMyTurn(true);
             if (!alerted) {
                 System.out.println("You are the active player!  Perform an action.\n");
@@ -58,11 +58,7 @@ public class ClientState {
             }
         }
 
-        for (Suspect suspect : gameState.getSuspectLocations()) {
-            if (suspect.getSuspect() == mySuspect) {
-                setMyLocation(suspect.getCurrent_location());
-            }
-        }
+        setMyLocation(gameState.getSuspectLocations().get(mySuspect));
 
         setCards(gameState.getCards());
         setFaceUpCards(gameState.getFaceUpCards());
@@ -89,12 +85,12 @@ public class ClientState {
     }
 
     /** @return the mySuspect */
-    public CardsEnum getMySuspect() {
+    public SuspectCard getMySuspect() {
         return mySuspect;
     }
 
     /** @param mySuspect the mySuspect to set */
-    public void setMySuspect(CardsEnum mySuspect) {
+    public void setMySuspect(SuspectCard mySuspect) {
         this.mySuspect = mySuspect;
     }
 
@@ -139,38 +135,35 @@ public class ClientState {
     }
 
     /** @return the myLocation */
-    public CardsEnum getMyLocation() {
+    public Integer getMyLocation() {
         return myLocation;
     }
 
     /** @param myLocation the myLocation to set */
-    public void setMyLocation(CardsEnum myLocation) {
+    public void setMyLocation(Integer myLocation) {
         this.myLocation = myLocation;
     }
 
     // This isn't the best way to do this.  Should probably be moved/handled differently.
-    public void disprove(CardWrapper cards, boolean active) {
+    public void disprove(Suggestion cards, boolean active) {
+
         if (active) {
             setDisproving(true);
             String toPrint = "";
             boolean found = false;
             System.out.println("You must disprove a suggestion of the following cards!");
-            for (CardsEnum card : cards.getCards()) {
-                System.out.println("\t" + card.getLabel());
-            }
 
-            // Yuck this is ugly
-            for (CardsEnum card : cards.getCards()) {
-                for (Card myCard : getCards()) {
-                    if (myCard.getCardEnum() == card) {
-                        if (!found) {
-                            found = true;
-                        }
-                        disproveCards.add(myCard);
-                        toPrint += "\t" + myCard.getCardEnum().getLabel() + "\n";
-                    }
+            System.out.println("\t" + cards);
+
+            // Cherry pick the relevant cards to disapprove with.
+            for (Card myCard : getCards()) {
+                if (cards.contains(myCard)) {
+                    found = true;
+                    disproveCards.add(myCard);
+                    toPrint += "\t" + myCard.getName() + "\n";
                 }
             }
+
             if (found) {
                 System.out.println("Which card would you like to show?");
                 System.out.println(toPrint);
@@ -181,27 +174,28 @@ public class ClientState {
                 System.out.println(
                         "Let the player know you cannot disprove the suggestion using the disprove command with no card name!");
             }
+
         } else {
             System.out.println(
                     "Somebody is trying to disprove a suggestion of the following cards:\n");
-            for (CardsEnum card : cards.getCards()) {
-                System.out.println("\t" + card.getLabel());
-            }
+            System.out.println("\t" + cards);
         }
     }
 
     // This isn't the best way to do this.  Should probably be moved/handled differently.
-    public void suggestResponse(CardWrapper cards, boolean active) {
+    public void suggestResponse(Card card, boolean active) {
+
         System.out.println("The suggestion has been completed!\n");
-        if (cards.getCards().size() == 1) {
-            if (active) {
-                System.out.println(
-                        "The following card was disproven: " + cards.getCards().get(0).getLabel());
-            } else {
-                System.out.println("The suggestion was disproved!");
-            }
-        } else {
+
+        if (card == null) {
             System.out.println("The suggestion was unable to be disproven!");
+            return;
+        }
+
+        if (active) {
+            System.out.println("The following card was disproven: " + card.getName());
+        } else {
+            System.out.println("The suggestion was disproved!");
         }
     }
 

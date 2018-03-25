@@ -8,7 +8,7 @@ public class Player extends ListItem {
 
     private static final Logger logger = LogManager.getLogger(Player.class);
 
-    private CardsEnum suspect;
+    private SuspectCard suspect;
     private String username;
     private ArrayList<Card> cards;
     private boolean
@@ -16,12 +16,12 @@ public class Player extends ListItem {
     // game, or if they have made a bad accusation
     public String uuid;
 
-    public Player(CardsEnum suspect, String uuid) {
+    public Player(SuspectCard suspect, String uuid) {
         super();
         setupPlayer(suspect, uuid);
     }
 
-    private void setupPlayer(CardsEnum suspect, String uuid) {
+    private void setupPlayer(SuspectCard suspect, String uuid) {
         this.suspect = suspect;
         cards = new ArrayList<>();
         this.uuid = uuid;
@@ -37,7 +37,7 @@ public class Player extends ListItem {
         return cards;
     }
 
-    public CardsEnum getSuspect() {
+    public SuspectCard getSuspect() {
         return suspect;
     }
 

@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 // This file is meant to represent the cards from the board game and nothing else
 
-public enum CardsEnum {
+public enum CardsEnum1 {
     LOCATION_KITCHEN(0xA1, "Kitchen", CardType.CARD_TYPE_LOCATION),
     LOCATION_BALLROOM(0xA2, "Ballroom", CardType.CARD_TYPE_LOCATION),
     LOCATION_CONSERVATORY(0xA3, "Conservatory", CardType.CARD_TYPE_LOCATION),

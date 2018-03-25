@@ -7,7 +7,6 @@ import clueless.client.*;
 import clueless.io.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,9 +27,9 @@ public class CLI {
     // Static Maps
     private static HashMap<String, String> argMap;
     private static HashMap<String, DirectionsEnum> directionsStrToEnum;
-    private static HashMap<String, CardsEnum> suspectStrToEnum;
-    private static HashMap<String, CardsEnum> accuseStrToEnum;
-    private static HashMap<String, CardsEnum> suggestStrToEnum;
+    private static HashMap<String, Card> suspectStrToEnum;
+    private static HashMap<String, Card> accuseStrToEnum;
+    private static HashMap<String, Card> suggestStrToEnum;
     private static Object[] directionNodes;
     private static Object[] suspectNodes;
     private static Object[] accuseNodes;
@@ -52,7 +51,7 @@ public class CLI {
 
     private static DefaultParser parser;
 
-    public static Object[] buildSuspectNodes(HashMap<String, CardsEnum> map) {
+    public static Object[] buildSuspectNodes(HashMap<String, Card> map) {
         Object[] nodes = new Object[map.size() + 1];
         nodes[0] = "config";
         int i = 1;
@@ -85,39 +84,39 @@ public class CLI {
     }*/
 
     public static void buildCardsMap(
-            HashMap<String, CardsEnum> map, boolean suspects, boolean locations, boolean weapons) {
+            HashMap<String, Card> map, boolean suspects, boolean locations, boolean weapons) {
         if (suspects) {
-            map.put("Green", CardsEnum.SUSPECT_GREEN);
-            map.put("Mustard", CardsEnum.SUSPECT_MUSTARD);
-            map.put("Peacock", CardsEnum.SUSPECT_PEACOCK);
-            map.put("Plum", CardsEnum.SUSPECT_PLUM);
-            map.put("Scarlet", CardsEnum.SUSPECT_SCARLET);
-            map.put("White", CardsEnum.SUSPECT_WHITE);
+            map.put("Green", SuspectCard.SUSPECT_GREEN);
+            map.put("Mustard", SuspectCard.SUSPECT_MUSTARD);
+            map.put("Peacock", SuspectCard.SUSPECT_PEACOCK);
+            map.put("Plum", SuspectCard.SUSPECT_PLUM);
+            map.put("Scarlet", SuspectCard.SUSPECT_SCARLET);
+            map.put("White", SuspectCard.SUSPECT_WHITE);
         }
 
         if (locations) {
-            map.put("Ballroom", CardsEnum.LOCATION_BALLROOM);
-            map.put("Billiard", CardsEnum.LOCATION_BILLIARDROOM);
-            map.put("Conservatory", CardsEnum.LOCATION_CONSERVATORY);
-            map.put("Dining", CardsEnum.LOCATION_DININGROOM);
-            map.put("Hall", CardsEnum.LOCATION_HALL);
-            map.put("Kitchen", CardsEnum.LOCATION_KITCHEN);
-            map.put("Library", CardsEnum.LOCATION_LIBRARY);
-            map.put("Lounge", CardsEnum.LOCATION_LOUNGE);
-            map.put("Study", CardsEnum.LOCATION_STUDY);
+            map.put("Ballroom", RoomCard.LOCATION_BALLROOM);
+            map.put("Billiard", RoomCard.LOCATION_BILLIARDROOM);
+            map.put("Conservatory", RoomCard.LOCATION_CONSERVATORY);
+            map.put("Dining", RoomCard.LOCATION_DININGROOM);
+            map.put("Hall", RoomCard.LOCATION_HALL);
+            map.put("Kitchen", RoomCard.LOCATION_KITCHEN);
+            map.put("Library", RoomCard.LOCATION_LIBRARY);
+            map.put("Lounge", RoomCard.LOCATION_LOUNGE);
+            map.put("Study", RoomCard.LOCATION_STUDY);
         }
 
         if (weapons) {
-            map.put("Revolver", CardsEnum.WEAPON_REVOLVER);
-            map.put("Pipe", CardsEnum.WEAPON_LEADPIPE);
-            map.put("Rope", CardsEnum.WEAPON_ROPE);
-            map.put("Candlestick", CardsEnum.WEAPON_CANDLESTICK);
-            map.put("Wrench", CardsEnum.WEAPON_WRENCH);
-            map.put("Dagger", CardsEnum.WEAPON_DAGGER);
+            map.put("Revolver", WeaponCard.WEAPON_REVOLVER);
+            map.put("Pipe", WeaponCard.WEAPON_LEADPIPE);
+            map.put("Rope", WeaponCard.WEAPON_ROPE);
+            map.put("Candlestick", WeaponCard.WEAPON_CANDLESTICK);
+            map.put("Wrench", WeaponCard.WEAPON_WRENCH);
+            map.put("Dagger", WeaponCard.WEAPON_DAGGER);
         }
     }
 
-    public static Object[] buildAccuseNodes(HashMap<String, CardsEnum> map) {
+    public static Object[] buildAccuseNodes(HashMap<String, Card> map) {
         Object[] nodes = new Object[map.size() + 1];
         nodes[0] = "accuse";
         int i = 1;
@@ -129,7 +128,7 @@ public class CLI {
         return nodes;
     }
 
-    public static Object[] buildSuggestNodes(HashMap<String, CardsEnum> map) {
+    public static Object[] buildSuggestNodes(HashMap<String, Card> map) {
         Object[] nodes = new Object[map.size() + 1];
         nodes[0] = "suggest";
         int i = 1;
@@ -239,11 +238,11 @@ public class CLI {
 
                         logger.info("Selected " + suspectStrToEnum.get(pl.words().get(1)));
                         String card = pl.words().get(1);
-                        CardsEnum suspect = suspectStrToEnum.get(card);
+                        SuspectCard suspect = (SuspectCard) suspectStrToEnum.get(card);
                         client.sendMessage(Message.clientConfig(suspect));
                         clientState.setConfigured(true);
                         String myCard = pl.words().get(1);
-                        CardsEnum mySuspect = suspectStrToEnum.get(myCard);
+                        SuspectCard mySuspect = (SuspectCard) suspectStrToEnum.get(myCard);
                         clientState.setMySuspect(mySuspect);
                     }
                 } catch (Exception e) {
@@ -276,9 +275,11 @@ public class CLI {
                         return "Must be actively disproving!";
                     }
 
+                    // TODO: Fix me.
+                    /*
                     if (pl.words().size() == 2) {
-                        HashMap<String, CardsEnum> disproveStrToEnum =
-                                new HashMap<String, CardsEnum>();
+                        HashMap<String, Card> disproveStrToEnum =
+                                new HashMap<String, Card>();
                         for (Card card : clientState.getDisproveCards()) {
                             disproveStrToEnum.put(
                                     card.getCardEnum().getLabel(), card.getCardEnum());
@@ -302,7 +303,7 @@ public class CLI {
                         client.sendMessage(Message.clientRespondSuggestion(cards));
                     } else {
                         return "Must pick a card to disprove the suggestion!";
-                    }
+                    }*/
                 } catch (Exception e) {
                     logger.error("failed making suggestion");
                 }
@@ -312,19 +313,20 @@ public class CLI {
                     return "Must config first!";
                 } else if (!clientState.getGameState().isGameActive()) {
                     return "Must start first!";
-                } else {
-                    String toReturn = "";
-                    toReturn += "\nYour cards:\n";
-                    for (Card card : clientState.getCards()) {
-                        toReturn += card.getCardEnum().getLabel() + "\n";
-                    }
-
-                    toReturn += "\n\nFace Up Cards:\n";
-                    for (Card card : clientState.getFaceUpCards()) {
-                        toReturn += card.getCardEnum().getLabel() + "\n";
-                    }
-                    return toReturn;
                 }
+
+                String toReturn = "";
+                toReturn += "\nYour cards:\n";
+                for (Card card : clientState.getCards()) {
+                    toReturn += card.getName() + "\n";
+                }
+
+                toReturn += "\n\nFace Up Cards:\n";
+                for (Card card : clientState.getFaceUpCards()) {
+                    toReturn += card.getName() + "\n";
+                }
+                return toReturn;
+
             case "board":
                 if (!clientState.isConfigured()) {
                     return "Must config first!";
@@ -375,6 +377,7 @@ public class CLI {
                     }
 
                     if (pl.words().size() == 4) {
+
                         if (accuseStrToEnum.get(pl.words().get(1)) == null) {
                             return "Problem selecting that card." + "  Please try again!";
                         }
@@ -388,15 +391,17 @@ public class CLI {
                         String card2 = pl.words().get(2);
                         String card3 = pl.words().get(3);
                         logger.info("Accusing " + card1 + card2 + card3);
-                        CardsEnum ce1 = accuseStrToEnum.get(card1);
-                        CardsEnum ce2 = accuseStrToEnum.get(card2);
-                        CardsEnum ce3 = accuseStrToEnum.get(card3);
-                        ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
-                        cardsToSend.add(ce1);
-                        cardsToSend.add(ce2);
-                        cardsToSend.add(ce3);
-                        CardWrapper cards = new CardWrapper(cardsToSend);
-                        client.sendMessage(Message.accusation(cards));
+                        try {
+                            Card ce1 = accuseStrToEnum.get(card1);
+                            Card ce2 = accuseStrToEnum.get(card2);
+                            Card ce3 = accuseStrToEnum.get(card3);
+
+                            Suggestion suggestion = new Suggestion(ce1, ce2, ce3);
+                            client.sendMessage(Message.accusation(suggestion));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                     } else {
                         return "Must specify a suspect, location, and weapon to accuse!";
                     }
@@ -421,31 +426,35 @@ public class CLI {
                     if (clientState.isSuggested()) {
                         return "Already made a suggestion this turn!";
                     }
-
-                    if (clientState.getMyLocation().getCardType() == CardType.CARD_TYPE_HALLWAY) {
-                        return "Cannot make a suggestion in a hallway!";
-                    }
+                    // TODO: fix me.
+                    // if (clientState.getMyLocation().getCardType() == CardType.CARD_TYPE_HALLWAY)
+                    // {
+                    //    return "Cannot make a suggestion in a hallway!";
+                    // }
 
                     if (pl.words().size() == 3) {
-                        if (suggestStrToEnum.get(pl.words().get(1)) == null) {
-                            return "Problem selecting that card." + "  Please try again!";
-                        }
-                        if (suggestStrToEnum.get(pl.words().get(2)) == null) {
-                            return "Problem selecting that card." + "  Please try again!";
-                        }
-                        String card1 = pl.words().get(1);
-                        String card2 = pl.words().get(2);
-                        logger.info("Suggesting " + card1 + card2);
-                        CardsEnum ce1 = suggestStrToEnum.get(card1);
-                        CardsEnum ce2 = suggestStrToEnum.get(card2);
-                        CardsEnum location = clientState.getMyLocation();
-                        ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
-                        cardsToSend.add(ce1);
-                        cardsToSend.add(ce2);
-                        cardsToSend.add(location);
-                        CardWrapper cards = new CardWrapper(cardsToSend);
-                        client.sendMessage(Message.suggestion(cards));
-                        clientState.setSuggested(true);
+                        // TODO: Fix me.
+                        /*
+                                          if (suggestStrToEnum.get(pl.words().get(1)) == null) {
+                                              return "Problem selecting that card." + "  Please try again!";
+                                          }
+                                          if (suggestStrToEnum.get(pl.words().get(2)) == null) {
+                                              return "Problem selecting that card." + "  Please try again!";
+                                          }
+                                          String card1 = pl.words().get(1);
+                                          String card2 = pl.words().get(2);
+                                          logger.info("Suggesting " + card1 + card2);
+                                          CardsEnum ce1 = suggestStrToEnum.get(card1);
+                                          CardsEnum ce2 = suggestStrToEnum.get(card2);
+                                          CardsEnum location = clientState.getMyLocation();
+                                          ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
+                                          cardsToSend.add(ce1);
+                                          cardsToSend.add(ce2);
+                                          cardsToSend.add(location);
+                                          CardWrapper cards = new CardWrapper(cardsToSend);
+                                          client.sendMessage(Message.suggestion(cards));
+                                          clientState.setSuggested(true);
+                        */
                     } else {
                         return "Must specify a suspect and a weapon to suggest!";
                     }
@@ -573,7 +582,7 @@ public class CLI {
                 if (cli.clientState.isConfigured()) {
                     prompt =
                             "My suspect: "
-                                    + cli.clientState.getMySuspect().getLabel()
+                                    + cli.clientState.getMySuspect().getName()
                                     + "\nclueless>";
                 }
                 line = reader.readLine(prompt);

@@ -2,33 +2,32 @@
 package clueless;
 
 import java.io.Serializable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /** @author tombo */
 public class Card implements Serializable {
 
-    private static final Logger logger = LogManager.getLogger(Card.class);
+    private final int id;
+    private final String name;
 
-    /** */
-    private static final long serialVersionUID = 4423696825620129194L;
-
-    private final CardsEnum card;
-
-    public Card(CardsEnum card) {
-        this.card = card;
+    protected Card(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return card.getLabel() + " " + card.getUid() + " " + card.name();
+        return name + "{" + id + "}";
     }
 
-    public CardType getCardType() {
-        return card.getCardType();
+    public int getId() {
+        return id;
     }
 
-    public CardsEnum getCardEnum() {
-        return card;
+    public String getName() {
+        return name;
+    }
+
+    public boolean equals(Card card) {
+        return getId() == card.getId();
     }
 }

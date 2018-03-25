@@ -132,7 +132,7 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_CLIENT_MOVE, direction);
     }
 
-    public static Message clientConfig(CardsEnum suspect) throws Exception {
+    public static Message clientConfig(SuspectCard suspect) throws Exception {
         logger.trace("Configuring client");
         return new Message(MessagesEnum.MESSAGE_CLIENT_CONFIG, suspect);
     }
@@ -142,10 +142,10 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_CHAT_FROM_CLIENT, chatMessage);
     }
 
-    public static Message winMessage(CardsEnum winningSuspect) {
+    public static Message winMessage(SuspectCard winningSuspect) {
         return new Message(
                 MessagesEnum.MESSAGE_CHAT_FROM_SERVER,
-                "The game has been won by " + winningSuspect.getLabel() + "!");
+                "The game has been won by " + winningSuspect.getName() + "!");
     }
 
     public static Message endTurn() throws Exception {
@@ -162,12 +162,12 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_PULSE, pulsePayload);
     }
 
-    public static Message accusation(CardWrapper cards) throws Exception {
-        return new Message(MessagesEnum.MESSAGE_CLIENT_ACCUSE, cards);
+    public static Message accusation(Suggestion suggestion) throws Exception {
+        return new Message(MessagesEnum.MESSAGE_CLIENT_ACCUSE, suggestion);
     }
 
-    public static Message suggestion(CardWrapper cards) throws Exception {
-        return new Message(MessagesEnum.MESSAGE_CLIENT_SUGGEST, cards);
+    public static Message suggestion(Suggestion suggestion) throws Exception {
+        return new Message(MessagesEnum.MESSAGE_CLIENT_SUGGEST, suggestion);
     }
 
     public static Message failedConfig(String message) {
@@ -178,7 +178,7 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_SERVER_FAIL_MOVE, message);
     }
 
-    public static Message relaySuggestion(CardWrapper cards, Player playerToDisprove) {
+    public static Message relaySuggestion(Suggestion cards, Player playerToDisprove) {
         return new Message(MessagesEnum.MESSAGE_SERVER_RELAY_SUGGEST, cards, playerToDisprove.uuid);
     }
 
@@ -186,11 +186,11 @@ public class Message implements Serializable {
         return new Message(MessagesEnum.MESSAGE_PULSE, gsp);
     }
 
-    public static Message clientRespondSuggestion(CardWrapper cards) {
-        return new Message(MessagesEnum.MESSAGE_CLIENT_RESPONSE_SUGGEST, cards);
+    public static Message clientRespondSuggestion(Suggestion suggestion) {
+        return new Message(MessagesEnum.MESSAGE_CLIENT_RESPONSE_SUGGEST, suggestion);
     }
 
-    public static Message serverRespondSuggestion(CardWrapper cards) {
-        return new Message(MessagesEnum.MESSAGE_SERVER_RESPONSE_SUGGEST, cards);
+    public static Message serverRespondSuggestion(Card card) {
+        return new Message(MessagesEnum.MESSAGE_SERVER_RESPONSE_SUGGEST, card);
     }
 }

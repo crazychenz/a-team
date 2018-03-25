@@ -8,7 +8,8 @@ import clueless.io.*;
 
 // TODO: Fix leaky abstraction.
 import clueless.GameStatePulse;
-import clueless.CardWrapper;
+import clueless.Suggestion;
+import clueless.Card;
 
 public class CLIEventHandler {
 
@@ -31,6 +32,7 @@ public class CLIEventHandler {
             case MESSAGE_PULSE:
                 logger.trace("Got a watchdog pulse.");
                 GameStatePulse gameState = (GameStatePulse) msg.getMessageData();
+				
                 clientState.setGameState(gameState);
                 watchdog.pulse();
                 break;
@@ -52,13 +54,13 @@ public class CLIEventHandler {
                 // It doesn't seem interactive enough to do it automagically
                 logger.info(msg);
                 clientState.disprove(
-                        (CardWrapper) msg.getMessageData(),
+                        (Suggestion) msg.getMessageData(),
                         msg.getToUuid().equals(client.uuid.toString()));
                 break;
             case MESSAGE_SERVER_RESPONSE_SUGGEST:
                 logger.info(msg);
                 clientState.suggestResponse(
-                        (CardWrapper) msg.getMessageData(),
+                        (Card) msg.getMessageData(),
                         msg.getToUuid().equals(client.uuid.toString()));
                 break;
             default:

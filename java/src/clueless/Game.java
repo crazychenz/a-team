@@ -1,7 +1,6 @@
 package clueless;
 
 import clueless.io.Message;
-import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,13 +13,12 @@ public class Game {
     public boolean classicMode = false;
     public PlayerMgr players;
 
-    // TODO: Seems out if scope of Game
-    private CardWrapper cardsToDisprove;
+    Suggestion suggestion;
 
     public Game() {
+        gameStarted = false;
         players = new PlayerMgr();
         board = new GameBoard();
-        cardsToDisprove = new CardWrapper(new ArrayList<CardsEnum>());
     }
 
     public Message processMessage(Message msg) {
@@ -51,9 +49,9 @@ public class Game {
                 break;
             case MESSAGE_CLIENT_CONFIG:
                 // Client picked a suspect (and username, any other configurables, etc)
-                CardsEnum pickedSuspect = (CardsEnum) msg.getMessageData();
+                SuspectCard pickedSuspect = (SuspectCard) msg.getMessageData();
                 for (Suspect s : board.getAllSuspects()) {
-                    if (s.getSuspect() == pickedSuspect) {
+                    if (s.getSuspect().equals(pickedSuspect)) {
                         // BUG: I feel a race condition here.
                         if (s.getActive()) {
                             logger.info("Suspect already chosen!");
@@ -88,41 +86,29 @@ public class Game {
                 }
                 break;
             case MESSAGE_CLIENT_SUGGEST:
+
                 // handle the suggestion
                 if (players.current().uuid.equals(msg.getFromUuid())) {
                     players.setSuggestionPlayer();
                     // TODO Move the suspect and weapon into the suggestion room
-                    cardsToDisprove = (CardWrapper) msg.getMessageData();
-                    CardsEnum suggestion_suspect = null;
-                    CardsEnum suggestion_location = null;
-                    CardsEnum suggestion_weapon = null;
-                    for (CardsEnum card : cardsToDisprove.getCards()) {
-                        if (card.getCardType() == CardType.CARD_TYPE_SUSPECT) {
-                            suggestion_suspect = card;
-                        }
-                        if (card.getCardType() == CardType.CARD_TYPE_LOCATION) {
-                            suggestion_location = card;
-                        }
-                        if (card.getCardType() == CardType.CARD_TYPE_WEAPON) {
-                            suggestion_weapon = card;
-                        }
-                    }
+                    suggestion = (Suggestion) msg.getMessageData();
 
-                    board.getSuspectByEnum(suggestion_suspect)
-                            .moveForSuggestion(board, suggestion_location);
-                    board.getWeaponByEnum(suggestion_weapon)
-                            .moveForSuggestion(board, suggestion_location);
+                    board.getSuspectByEnum(suggestion.getSuspect())
+                            .moveForSuggestion(board, suggestion.getRoom());
+                    board.getWeaponByEnum(suggestion.getWeapon())
+                            .moveForSuggestion(board, suggestion.getRoom());
 
+                    // TODO: Fix me.
                     Message response =
-                            Message.relaySuggestion(
-                                    cardsToDisprove, players.getNextDisprovePlayer());
+                            Message.relaySuggestion(null, players.getNextDisprovePlayer());
                     response.setBroadcast(true);
                     return response;
                 }
+
                 break;
             case MESSAGE_CLIENT_ACCUSE:
                 if (players.current().uuid.equals(msg.getFromUuid())) {
-                    if (handleAccuse((CardWrapper) msg.getMessageData())) {
+                    if (handleAccuse((Suggestion) msg.getMessageData())) {
                         // Win!
                         // End the game, alert everybody
                         gameStarted = false;
@@ -151,35 +137,32 @@ public class Game {
                 return Message.sendGameStatePulse(
                         new GameStatePulse(gameStarted, board, players, player));
             case MESSAGE_CLIENT_RESPONSE_SUGGEST:
-                CardWrapper cards = (CardWrapper) msg.getMessageData();
-                if (cards.getCards().size() == 1) {
+                Card proof = (Card) msg.getMessageData();
+                if (proof != null) {
                     // The disproving player was able to disprove
                     // Let the suggesting player know
-                    Message response = Message.serverRespondSuggestion(cards);
+
+                    Message response = Message.serverRespondSuggestion(proof);
                     response.setBroadcast(true);
                     response.setToUuid(players.getSuggestionPlayer().uuid.toString());
                     return response;
-                } else if (cards.getCards().size() == 0) {
-                    Player next = players.getNextDisprovePlayer();
-                    if (next != null) {
-                        // try the next player
-                        Message response = Message.relaySuggestion(cardsToDisprove, next);
-                        response.setBroadcast(true);
-                        return response;
-                    } else {
-                        // No more players left to disprove
-                        // Let the suggesting player know
-                        Message response =
-                                Message.serverRespondSuggestion(
-                                        new CardWrapper(new ArrayList<CardsEnum>()));
-                        response.setBroadcast(true);
-                        response.setToUuid(players.getSuggestionPlayer().uuid.toString());
-                        return response;
-                    }
-                } else {
-                    // Something bad happened
-                    logger.error("error with suggestion");
                 }
+
+                Player next = players.getNextDisprovePlayer();
+                if (next != null) {
+                    // try the next player
+                    Message response = Message.relaySuggestion(suggestion, next);
+                    response.setBroadcast(true);
+                    return response;
+                } else {
+                    // No more players left to disprove
+                    // Let the suggesting player know
+                    Message response = Message.serverRespondSuggestion(null);
+                    response.setBroadcast(true);
+                    response.setToUuid(players.getSuggestionPlayer().uuid.toString());
+                    return response;
+                }
+
             default:
                 break;
         }
@@ -201,13 +184,13 @@ public class Game {
             //       and all peices have a starting location
             //       and all turns go to the left starting with scarlet,
             //       therefore the turn ordering is always the same.
-            // setNextPlayer();
+            // players.setNextPlayer();
         }
         return gameStarted;
     }
 
     // TODO: Seems out of scope
-    private boolean handleAccuse(CardWrapper cards) {
+    private boolean handleAccuse(Suggestion cards) {
         return board.accuse(cards);
     }
 }

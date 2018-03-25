@@ -9,42 +9,19 @@ public class Envelope {
 
     private static final Logger logger = LogManager.getLogger(Envelope.class);
 
-    private Card suspect;
-    private Card location;
-    private Card weapon;
+    private SuspectCard suspect;
+    private RoomCard room;
+    private WeaponCard weapon;
 
-    public Envelope(Card suspect, Card location, Card weapon) {
+    public Envelope(SuspectCard suspect, RoomCard location, WeaponCard weapon) {
         this.suspect = suspect;
-        this.location = location;
+        this.room = location;
         this.weapon = weapon;
     }
 
-    public Envelope() {}
-
-    public void setSuspect(Card suspect) {
-        this.suspect = suspect;
-        logger.info("Envelope set suspect " + suspect);
-    }
-
-    public void setLocation(Card location) {
-        this.location = location;
-        logger.info("Envelope set location " + location);
-    }
-
-    public void setWeapon(Card weapon) {
-        this.weapon = weapon;
-        logger.info("Envelope set wepaon " + weapon);
-    }
-
-    public boolean matchEnvelope(CardWrapper cards) {
-        boolean toReturn = false;
-        if (cards.getCards().size() == 3) {
-            if (cards.getCards().contains(suspect.getCardEnum())
-                    && cards.getCards().contains(location.getCardEnum())
-                    && cards.getCards().contains(weapon.getCardEnum())) {
-                toReturn = true;
-            }
-        }
-        return toReturn;
+    public boolean matchEnvelope(Suggestion cards) {
+        return (cards.getRoom().equals(room)
+                && cards.getSuspect().equals(suspect)
+                && cards.getWeapon().equals(weapon));
     }
 }

@@ -5,28 +5,25 @@ import java.util.HashMap;
 
 public class SuspectMap {
 
-    private final HashMap<CardsEnum, Suspect> suspects = new HashMap<>();
+    private final HashMap<SuspectCard, Suspect> suspects = new HashMap<>();
 
     public SuspectMap(GameBoard board) {
         createSuspects(board);
     }
 
     private void createSuspects(GameBoard board) {
-        for (CardsEnum value : CardsEnum.values()) {
-            if (value.getCardType() == CardType.CARD_TYPE_SUSPECT) {
-                Suspect newSuspect;
-                newSuspect = new Suspect(value);
-                suspects.put(value, newSuspect);
+        for (SuspectCard card : SuspectCard.allCards) {
+            Suspect suspect;
+            suspect = new Suspect(card);
+            suspects.put(card, suspect);
 
-                // Put new suspect into its location.
-                CardsEnum start = SuspectMap.getStartLocation(value);
-                Location location = board.getLocationByEnum(start);
-                location.place_suspect(newSuspect);
-            }
+            // Put new suspect into its location.
+            Location location = SuspectMap.getStartLocation(card);
+            location.placeSuspect(suspect);
         }
     }
 
-    public Suspect getByEnum(CardsEnum value) {
+    public Suspect getByEnum(SuspectCard value) {
         return suspects.get(value);
     }
 
@@ -44,22 +41,32 @@ public class SuspectMap {
         return availableSuspects;
     }
 
-    public static CardsEnum getStartLocation(CardsEnum suspect) {
-        switch (suspect) {
-            case SUSPECT_PLUM:
-                return CardsEnum.HALLWAY_STUDY_LIBRARY;
-            case SUSPECT_PEACOCK:
-                return CardsEnum.HALLWAY_CONSERVATORY_LIBRARY;
-            case SUSPECT_GREEN:
-                return CardsEnum.HALLWAY_BALL_CONSERVATORY;
-            case SUSPECT_WHITE:
-                return CardsEnum.HALLWAY_KITCHEN_BALL;
-            case SUSPECT_MUSTARD:
-                return CardsEnum.HALLWAY_LOUNGE_DINING;
-            case SUSPECT_SCARLET:
-                return CardsEnum.HALLWAY_HALL_LOUNGE;
-            default:
-                return CardsEnum.HALLWAY_STUDY_HALL;
+    public static Location getStartLocation(SuspectCard suspect) {
+        if (suspect.equals(SuspectCard.SUSPECT_PLUM)) {
+            return Hallway.HALLWAY_STUDY_LIBRARY;
         }
+
+        if (suspect.equals(SuspectCard.SUSPECT_PEACOCK)) {
+            return Hallway.HALLWAY_CONSERVATORY_LIBRARY;
+        }
+
+        if (suspect.equals(SuspectCard.SUSPECT_GREEN)) {
+            return Hallway.HALLWAY_BALL_CONSERVATORY;
+        }
+
+        if (suspect.equals(SuspectCard.SUSPECT_WHITE)) {
+            return Hallway.HALLWAY_KITCHEN_BALL;
+        }
+
+        if (suspect.equals(SuspectCard.SUSPECT_MUSTARD)) {
+            return Hallway.HALLWAY_LOUNGE_DINING;
+        }
+
+        if (suspect.equals(SuspectCard.SUSPECT_SCARLET)) {
+            return Hallway.HALLWAY_HALL_LOUNGE;
+        }
+
+        // TODO: Throw exception
+        return null;
     }
 }

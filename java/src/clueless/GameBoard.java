@@ -30,7 +30,7 @@ public class GameBoard {
         return faceUpCards;
     }
 
-    public Suspect getSuspectByEnum(CardsEnum value) {
+    public Suspect getSuspectByEnum(SuspectCard value) {
         return suspects.getByEnum(value);
     }
 
@@ -42,7 +42,7 @@ public class GameBoard {
         return suspects.getAvailableSuspects();
     }
 
-    public Weapon getWeaponByEnum(CardsEnum value) {
+    public Weapon getWeaponByEnum(WeaponCard value) {
         return weapons.getByEnum(value);
     }
 
@@ -50,11 +50,11 @@ public class GameBoard {
         return weapons.getAllWeapons();
     }
 
-    public Location getLocationByEnum(CardsEnum value) {
-        return locations.getByEnum(value);
-    }
+    // public Location getLocationByEnum(Location value) {
+    //    return locations.getByEnum(value);
+    // }
 
-    public boolean accuse(CardWrapper cards) {
-        return envelope.matchEnvelope(cards);
+    public boolean accuse(Suggestion suggestion) {
+        return envelope.matchEnvelope(suggestion);
     }
 }

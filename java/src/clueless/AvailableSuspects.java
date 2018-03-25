@@ -13,10 +13,10 @@ public class AvailableSuspects implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(AvailableSuspects.class);
 
-    public ArrayList<CardsEnum> list;
+    public ArrayList<SuspectCard> list;
 
     public AvailableSuspects() {
-        list = new ArrayList<CardsEnum>();
+        list = new ArrayList<SuspectCard>();
     }
 
     public String toString() {
@@ -24,8 +24,8 @@ public class AvailableSuspects implements Serializable {
             return "";
         }
         String toString = "";
-        for (CardsEnum suspect : list) {
-            toString += suspect.getLabel() + "|";
+        for (SuspectCard suspect : list) {
+            toString += suspect.getName() + "|";
         }
         return toString.substring(0, toString.length() - 1);
     }

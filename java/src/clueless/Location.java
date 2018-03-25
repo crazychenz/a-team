@@ -1,6 +1,5 @@
 package clueless;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,78 +8,60 @@ public class Location {
 
     private static final Logger logger = LogManager.getLogger(Location.class);
 
-    private CardsEnum location;
-    private final ArrayList<CardsEnum> suspectsInside;
+    int id;
+    String name;
+
     private final HashMap<DirectionsEnum, Location> adjacentRooms;
-    private final ArrayList<CardsEnum> weaponsInside;
 
-    public Location(CardsEnum location) {
-        this.setLocation(location);
+    public Location(int id, String name) {
+
+        // this.setLocation(location);
         adjacentRooms = new HashMap<>();
-        suspectsInside = new ArrayList<>();
-        weaponsInside = new ArrayList<>();
-        logger.debug("Creating location " + location.toString());
+        this.id = id;
+        this.name = name;
     }
 
-    public void place_suspect(Suspect suspect) {
-        suspectsInside.add(suspect.getSuspect());
+    public int getId() {
+        return id;
     }
 
-    public void place_weapon(Weapon weapon) {
-        weaponsInside.add(weapon.getWeapon());
-    }
-
-    public void remove_suspect(Suspect suspect) {
-        suspectsInside.remove(suspect.getSuspect());
-    }
-
-    public void remove_weapon(Weapon weapon) {
-        weaponsInside.remove(weapon.getWeapon());
+    public String getName() {
+        return name;
     }
 
     public void setAdjacentRoom(DirectionsEnum direction, Location location) {
         adjacentRooms.put(direction, location);
     }
 
-    public boolean validMove(DirectionsEnum direction) {
-        Location adjacent = adjacentRooms.get(direction);
-        boolean toReturn = false;
-        if (adjacent != null) {
-            if (adjacent.getLocation().getCardType().equals(CardType.CARD_TYPE_HALLWAY)
-                    && adjacent.numberOfSuspectsInside() == 0) {
-                toReturn = true;
-            }
-            if (adjacent.getLocation().getCardType().equals(CardType.CARD_TYPE_LOCATION)) {
-                toReturn = true;
-            }
-        }
-        return toReturn;
+    public boolean validDirection(DirectionsEnum direction) {
+        return adjacentRooms.containsKey(direction);
     }
 
-    public Location getAdjacentRoomInDirection(DirectionsEnum direction) {
-        if (validMove(direction)) {
-            return adjacentRooms.get(direction);
-        } else {
+    // abstract-ish call ... maybe belongs in an interface?
+    public boolean available() {
+        return false;
+    }
+
+    // abstract-ish call ... maybe belongs in an interface?
+    public void placeSuspect(Suspect suspect) {
+        return;
+    }
+
+    // abstract-ish call ... maybe belongs in an interface?
+    public void removeSuspect(Suspect suspect) {
+        return;
+    }
+
+    public Location getAdjacentRoom(DirectionsEnum direction) {
+        if (!validDirection(direction)) {
             return null;
         }
-    }
-
-    /** @return the location */
-    public CardsEnum getLocation() {
-        return location;
-    }
-
-    /** @param location the location to set */
-    public final void setLocation(CardsEnum location) {
-        this.location = location;
-    }
-
-    public int numberOfSuspectsInside() {
-        return suspectsInside.size();
+        return adjacentRooms.get(direction);
     }
 
     public String toString() {
         String toReturn = "";
+        /* TODO: Disabled until we stabilize the refactor.
         boolean west = false;
         boolean east = false;
         toReturn += "This location: " + location.toString() + "\n\n";
@@ -114,7 +95,7 @@ public class Location {
         t = adjacentRooms.get(DirectionsEnum.DIRECTION_SECRET);
         if (t != null) {
             toReturn += "\nSC:" + t.getLocation() + "\n";
-        }
+        }*/
         return toReturn;
     }
 }

@@ -12,9 +12,9 @@ public class Dealer {
 
     private static final Logger logger = LogManager.getLogger(Dealer.class);
 
-    private final ArrayList<Card> allSuspectCards;
-    private final ArrayList<Card> allLocationCards;
-    private final ArrayList<Card> allWeaponCards;
+    private final ArrayList<SuspectCard> allSuspectCards;
+    private final ArrayList<RoomCard> allLocationCards;
+    private final ArrayList<WeaponCard> allWeaponCards;
     private final Random prng;
 
     public Dealer(long seed) {
@@ -22,16 +22,9 @@ public class Dealer {
 
         // Allocate all the things
         prng = new Random(seed);
-        allSuspectCards = new ArrayList<>();
-        allLocationCards = new ArrayList<>();
-        allWeaponCards = new ArrayList<>();
-
-        // Organize cards into piles by type
-        for (CardsEnum value : CardsEnum.values()) {
-            if (value.getCardType() != CardType.CARD_TYPE_HALLWAY) {
-                this.add(new Card(value));
-            }
-        }
+        allSuspectCards = new ArrayList<>(SuspectCard.allCards);
+        allLocationCards = new ArrayList<>(RoomCard.allCards);
+        allWeaponCards = new ArrayList<>(WeaponCard.allCards);
 
         // Shuffle each deck
         Collections.shuffle(allSuspectCards, prng);
@@ -42,29 +35,30 @@ public class Dealer {
     public Envelope populateEnvelope() {
         // grab 1 random card from each card type array and put it in envelope
         // remove that card from the list
-        Card suspect = allSuspectCards.remove(0);
-        Card location = allLocationCards.remove(0);
-        Card weapon = allWeaponCards.remove(0);
+        SuspectCard suspect = allSuspectCards.remove(0);
+        RoomCard location = allLocationCards.remove(0);
+        WeaponCard weapon = allWeaponCards.remove(0);
         return new Envelope(suspect, location, weapon);
     }
 
-    private void add(Card add) {
-        logger.debug("Adding new card " + add.toString());
-        if (null != add.getCardType()) {
-            switch (add.getCardType()) {
-                case CARD_TYPE_LOCATION:
-                    allLocationCards.add(add);
-                    break;
-                case CARD_TYPE_SUSPECT:
-                    allSuspectCards.add(add);
-                    break;
-                case CARD_TYPE_WEAPON:
-                    allWeaponCards.add(add);
-                    break;
-                default:
-                    break;
-            }
+    private void add(Card card) {
+        logger.debug("Adding new card " + card.toString());
+        if (card instanceof RoomCard) {
+            allLocationCards.add((RoomCard) card);
+            return;
         }
+
+        if (card instanceof SuspectCard) {
+            allSuspectCards.add((SuspectCard) card);
+            return;
+        }
+
+        if (card instanceof WeaponCard) {
+            allWeaponCards.add((WeaponCard) card);
+            return;
+        }
+
+        return;
     }
 
     public static int FaceUpCardsByPlayerCount(int numUsers, boolean classicClue) {

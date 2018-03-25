@@ -9,9 +9,9 @@ public class Suspect implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(Suspect.class);
 
-    private CardsEnum suspect;
-    private CardsEnum startLocation;
-    private CardsEnum currentLocation;
+    private SuspectCard suspect;
+    private Location startLocation;
+    private Location currentLocation;
 
     private boolean active;
 
@@ -19,9 +19,9 @@ public class Suspect implements Serializable {
     //    return new ArrayList<Suspect>(enumMap.values());
     // }
 
-    public Suspect(CardsEnum suspect) {
+    public Suspect(SuspectCard suspect) {
         this.suspect = suspect;
-        CardsEnum start = SuspectMap.getStartLocation(suspect);
+        Location start = SuspectMap.getStartLocation(suspect);
         this.setStart_location(start);
         this.setCurrent_location(start);
 
@@ -29,27 +29,31 @@ public class Suspect implements Serializable {
     }
 
     public boolean move(GameBoard board, DirectionsEnum direction) {
-        Location location = board.getLocationByEnum(currentLocation);
-        if (location.validMove(direction)) {
-            location.remove_suspect(this);
-            Location newLocation = location.getAdjacentRoomInDirection(direction);
-            newLocation.place_suspect(this);
-            setCurrent_location(newLocation.getLocation());
-            return true;
-        } else {
+
+        if (!currentLocation.validDirection(direction)) {
             return false;
         }
+
+        Location adjacent = currentLocation.getAdjacentRoom(direction);
+
+        if (!adjacent.available()) {
+            return false;
+        }
+
+        currentLocation.removeSuspect(this);
+        adjacent.placeSuspect(this);
+        setCurrent_location(adjacent);
+        return true;
     }
 
-    public void moveForSuggestion(GameBoard board, CardsEnum new_location) {
-        Location location = board.getLocationByEnum(currentLocation);
-        location.remove_suspect(this);
-        Location newLocation = board.getLocationByEnum(new_location);
-        newLocation.place_suspect(this);
-        setCurrent_location(new_location);
+    public void moveForSuggestion(GameBoard board, RoomCard dest) {
+        currentLocation.removeSuspect(this);
+		Room room = Room.getById(dest.getId());
+        room.placeSuspect(this);
+        setCurrent_location(room);
     }
 
-    public CardsEnum getSuspect() {
+    public SuspectCard getSuspect() {
         return suspect;
     }
 
@@ -62,22 +66,22 @@ public class Suspect implements Serializable {
     }
 
     /** @return the start_location */
-    public CardsEnum getStart_location() {
+    public Location getStart_location() {
         return startLocation;
     }
 
     /** @param start_location the start_location to set */
-    private void setStart_location(CardsEnum start_location) {
+    private void setStart_location(Location start_location) {
         this.startLocation = start_location;
     }
 
     /** @return the current_location */
-    public CardsEnum getCurrent_location() {
+    public Location getCurrent_location() {
         return currentLocation;
     }
 
     /** @param current_location the current_location to set */
-    private void setCurrent_location(CardsEnum current_location) {
+    private void setCurrent_location(Location current_location) {
         this.currentLocation = current_location;
     }
 
