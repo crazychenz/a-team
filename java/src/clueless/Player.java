@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * For managing the attributes of an active Player.
+ * @author ateam
+ */
 public class Player extends ListItem implements Comparable {
 
     private static final Logger logger = LogManager.getLogger(Player.class);
@@ -11,12 +15,17 @@ public class Player extends ListItem implements Comparable {
     private SuspectCard suspect;
     private String username;
     private ArrayList<Card> cards;
-    private boolean
-            playing; // This is meant to determine if this player is an active participant in the
-    // game, or if they have made a bad accusation
-    public String uuid;
+	public String uuid;
+	
+	// Indicates whether a player can move or suggest (due to bad accusation).
+    private boolean playing; 
 
-    public Player(SuspectCard suspect, String uuid) {
+	/**
+	 * Creates a Player object.
+	 * @param suspect - SuspectCard that Player represents.
+	 * @param uuid - String UUID of the Client playing Player
+	 */
+	public Player(SuspectCard suspect, String uuid) {
         super();
         setupPlayer(suspect, uuid);
     }
@@ -28,42 +37,65 @@ public class Player extends ListItem implements Comparable {
         playing = true;
     }
 
-    @Override
+	/**
+	 * Get the next Player's turn
+	 * @return Next Player in (internal) linked list.
+	 */
+	@Override
     public Player getNext() {
         return (Player) super.getNext();
     }
 
-    @Override
+	/**
+	 * Get the previous Player's turn.
+	 * @return Previous Player in (internal) linked list.
+	 */
+	@Override
     public Player getPrev() {
         return (Player) super.getPrev();
     }
 
-    public ArrayList<Card> getCards() {
+	/**
+	 * Get the cards dealt to the Player
+	 * @return Array of Card objects dealt to Player
+	 */
+	public ArrayList<Card> getCards() {
         return cards;
     }
 
-    public SuspectCard getSuspect() {
+	/**
+	 * Get the SuspectCard Player represents.
+	 * @return SuspectCard Player represents.
+	 */
+	public SuspectCard getSuspect() {
         return suspect;
     }
 
-    /** @return the playing */
+    /** 
+	 * Fetch whether the Player is playing or not. 
+	 * A false accusation causes a player to sit out 'playing' the game but
+	 * must remain to perform suggestion sequences.
+	 * @return boolean indicating whether Player can move or suggest 
+	 */
     public boolean isPlaying() {
         return playing;
     }
 
-    /** @param playing the playing to set */
+    /** 
+	 * Sets whether the Player can move or suggest.
+	 * @param playing the playing to set 
+	 */
     public void setPlaying(boolean playing) {
         this.playing = playing;
     }
 
-    public String getUuid() {
+	/**
+	 * Fetch the UUID of the client controlling Player.
+	 * @return
+	 */
+	public String getUuid() {
         return uuid;
     }
-
-    // @Override
-    // public int compareTo(Player other) {
-    //    return suspect.getId() - other.suspect.getId();
-    // }
 
     @Override
     public int compareTo(Object o) {

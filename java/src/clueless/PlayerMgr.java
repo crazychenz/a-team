@@ -5,6 +5,10 @@ import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * For managing the addition of players and selection of players for actions
+ * @author ateam
+ */
 public class PlayerMgr {
 
     private static final Logger logger = LogManager.getLogger(PlayerMgr.class);
@@ -19,7 +23,10 @@ public class PlayerMgr {
     private Player suggestionPlayerRef;
     private Player disprovingPlayerRef;
 
-    public PlayerMgr() {
+	/**
+	 * Default Constructor
+	 */
+	public PlayerMgr() {
         activePlayerList = null;
         activePlayerRef = null;
         suggestionPlayerRef = null;
@@ -27,11 +34,20 @@ public class PlayerMgr {
         activePlayerArray = new ArrayList<>();
     }
 
-    public int count() {
+	/**
+	 * Returns the number of currently tracked players.
+	 * @return
+	 */
+	public int count() {
         return activePlayerArray.size();
     }
 
-    public Player byUuid(String uuid) {
+	/**
+	 * Return a Player object with a given String form UUID
+	 * @param uuid The string form of the UUID of the player
+	 * @return Player object
+	 */
+	public Player byUuid(String uuid) {
         for (Player player : getArray()) {
             if (player.uuid.equals(uuid)) {
                 return player;
@@ -40,31 +56,38 @@ public class PlayerMgr {
         return null;
     }
 
-    public Player current() {
+	/**
+	 * Fetch the Player object for who's turn it is.
+	 * @return Player object
+	 */
+	public Player current() {
         return activePlayerRef;
     }
 
-    public ArrayList<Player> getArray() {
+	/**
+	 * Get the array object of all tracked Player objects
+	 * @return ArrayList of Player objects
+	 */
+	public ArrayList<Player> getArray() {
         return activePlayerArray;
     }
 
-    public ArrayList<Player> getActivePlayers() {
-        return activePlayerArray;
-    }
-
-    private Player getActivePlayer() {
-        return activePlayerRef;
-    }
-
-    public void add(SuspectCard suspect, String fromUuid) {
+	/**
+	 * Create a Player to be tracked.
+	 * @param suspect The SuspectCard that this player will represent.
+	 * @param fromUuid The string UUID of the client representing this Player.
+	 */
+	public void add(SuspectCard suspect, String fromUuid) {
         logger.info("Adding new player");
 
+		// Create the Player and add to the ArrayList.
         Player newPlayer = new Player(suspect, fromUuid);
         activePlayerArray.add(newPlayer);
 
+		// Sort the players according to the SuspectCard id value.
         Collections.sort(activePlayerArray);
 
-        // lazily just rebuild the linked list each time
+        // (Lazily) Rebuild the (internal) linked list each time.
         activePlayerList = null;
         for (Player player : activePlayerArray) {
             player.init();
@@ -77,16 +100,27 @@ public class PlayerMgr {
         activePlayerRef = activePlayerList;
     }
 
-    public void setSuggestionPlayer() {
+	/**
+	 * Setup a new (internal) iterator for tracking Suggestion sequence
+	 */
+	public void setSuggestionPlayer() {
         suggestionPlayerRef = activePlayerRef;
         disprovingPlayerRef = suggestionPlayerRef.getNext();
     }
 
-    public Player getSuggestionPlayer() {
+	/**
+	 * Fetch the current Suggestion sequence iteration.
+	 * @return Current Player to disprove a suggestion.
+	 */
+	public Player getSuggestionPlayer() {
         return suggestionPlayerRef;
     }
 
-    public Player getNextDisprovePlayer() {
+	/**
+	 * Advance the Suggestion sequence iteration.
+	 * @return The next player to attempt to disprove a suggestion.
+	 */
+	public Player getNextDisprovePlayer() {
         Player next = disprovingPlayerRef;
         if (next.equals(suggestionPlayerRef)) {
             logger.info("No more players to disprove");
@@ -96,8 +130,12 @@ public class PlayerMgr {
         return next;
     }
 
-    // This needs to check whether the player has been marked inactive, as in they made a bad
-    // accusation
+    // TODO: This needs to check whether the player has been marked 
+	//       inactive, as in they made a bad accusation
+
+	/**
+	 * Advancement of the Player turn sequence.
+	 */
     public void setNextPlayer() {
         activePlayerRef = activePlayerRef.getNext();
         logger.info("Next player is " + activePlayerRef.getSuspect());
