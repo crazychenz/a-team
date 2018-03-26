@@ -2,19 +2,26 @@ package clueless;
 
 import java.util.ArrayList;
 
+/**
+ * Represents all possible RoomCards
+ * @author ateam
+ */
 public class RoomCard extends Card {
 
-    public static final RoomCard LOCATION_KITCHEN,
-            LOCATION_BALLROOM,
-            LOCATION_CONSERVATORY,
-            LOCATION_LIBRARY,
-            LOCATION_HALL,
-            LOCATION_STUDY,
-            LOCATION_DININGROOM,
-            LOCATION_LOUNGE,
-            LOCATION_BILLIARDROOM;
+	/**
+	 * Enumeration of all possible RoomCards
+	 */
+	public static final RoomCard LOCATION_KITCHEN,
+	LOCATION_BALLROOM,
+	LOCATION_CONSERVATORY,
+	LOCATION_LIBRARY,
+	LOCATION_HALL,
+	LOCATION_STUDY,
+	LOCATION_DININGROOM,
+	LOCATION_LOUNGE,
+	LOCATION_BILLIARDROOM;
 
-    public static final ArrayList<RoomCard> allCards = new ArrayList<>();
+	public static final ArrayList<RoomCard> allCards = new ArrayList<>();
 
     static {
         allCards.add(LOCATION_KITCHEN = new RoomCard(0xA1, "Kitchen"));
@@ -32,7 +39,12 @@ public class RoomCard extends Card {
         super(id, name);
     }
 
-    public static RoomCard getById(int id) {
+	/**
+	 * Lookup a RoomCard by Id
+	 * @param id The id of the RoomCard to lookup
+	 * @return Static allocation of the RoomCard that matches the Id
+	 */
+	public static RoomCard getById(int id) {
         for (RoomCard card : allCards) {
             if (card.getId() == id) {
                 return card;

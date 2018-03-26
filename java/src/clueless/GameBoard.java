@@ -14,7 +14,7 @@ public class GameBoard {
     public GameBoard() {
         // Locations must be created first so we have places to put things.
         locations = new LocationMap();
-        suspects = new SuspectMap(this);
+        suspects = new SuspectMap();
         weapons = new WeaponMap();
 
         faceUpCards = new ArrayList<Card>();

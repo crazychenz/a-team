@@ -94,7 +94,7 @@ public class Server implements Runnable {
                 try {
                     if (msg != null) {
                         if (msg.isBroadcast()) {
-                            for (Player player : gameState.players.getActivePlayers()) {
+                            for (Player player : gameState.players.getArray()) {
                                 logger.trace("Sending broadcast to " + player.uuid);
                                 sendMessage(player.uuid, msg);
                             }

@@ -73,7 +73,7 @@ public class Game {
                 if (player.uuid.equals(msg.getFromUuid())) {
                     Suspect suspect = board.getSuspectByCard(player.getSuspect());
                     DirectionsEnum dir = (DirectionsEnum) msg.getMessageData();
-                    if (suspect.move(board, dir)) {
+                    if (suspect.move(dir)) {
                         // valid move
                         // the person can now accuse or end their turn
                     } else {
@@ -99,9 +99,9 @@ public class Game {
                     logger.debug(suggestion);
 
                     board.getSuspectByCard(suggestion.getSuspect())
-                            .moveForSuggestion(board, suggestion.getRoom());
+                            .moveForSuggestion(suggestion.getRoom());
                     board.getWeaponByCard(suggestion.getWeapon())
-                            .moveForSuggestion(board, suggestion.getRoom());
+                            .moveForSuggestion(suggestion.getRoom());
 
                     Message response =
                             Message.relaySuggestion(suggestion, players.getNextDisprovePlayer());
