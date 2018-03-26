@@ -2,10 +2,17 @@ package clueless;
 
 import java.util.HashSet;
 
+/**
+ * Represents all tracked Locations on the GameBoard
+ * @author ateam
+ */
 public class LocationMap {
     private HashSet<Location> locations = new HashSet<>();
 
-    public LocationMap() {
+	/**
+	 * Default Constructor
+	 */
+	public LocationMap() {
         locations.addAll(Hallway.allHallways);
         locations.addAll(Room.allRooms);
 
@@ -15,10 +22,6 @@ public class LocationMap {
             addHallways(room);
         }
     }
-
-    // public Location getByEnum(CardsEnum value) {
-    //    return locations.get(value);
-    // }
 
     private void addHallways(Room location) {
         Hallway hallway;

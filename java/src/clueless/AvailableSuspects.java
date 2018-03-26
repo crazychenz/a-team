@@ -9,16 +9,27 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Represents a list of all untracked Suspects.
+ * @author ateam
+ */
 public class AvailableSuspects implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(AvailableSuspects.class);
 
-    public ArrayList<SuspectCard> list;
+	/**
+	 * List of all untracked Suspects
+	 */
+	public ArrayList<SuspectCard> list;
 
-    public AvailableSuspects() {
+	/**
+	 * Default Constructor
+	 */
+	public AvailableSuspects() {
         list = new ArrayList<SuspectCard>();
     }
 
+	@Override
     public String toString() {
         if (list.isEmpty()) {
             return "";

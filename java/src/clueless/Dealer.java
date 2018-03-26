@@ -7,7 +7,10 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/** @author tombo */
+/** 
+ * Represents the Dealer of the Cards
+ * @author ateam 
+ */
 public class Dealer {
 
     private static final Logger logger = LogManager.getLogger(Dealer.class);
@@ -17,6 +20,10 @@ public class Dealer {
     private final ArrayList<WeaponCard> allWeaponCards;
     private final Random prng;
 
+	/**
+	 * Constructor
+	 * @param seed The seed for the PRNG 
+	 */
     public Dealer(long seed) {
         logger.debug("Setting up CardDeck");
 
@@ -32,6 +39,10 @@ public class Dealer {
         Collections.shuffle(allWeaponCards, prng);
     }
 
+	/**
+	 * Creates and populates the Envelope
+	 * @return A new populated Envelope
+	 */
     public Envelope populateEnvelope() {
         // grab 1 random card from each card type array and put it in envelope
         // remove that card from the list
@@ -41,26 +52,12 @@ public class Dealer {
         return new Envelope(suspect, location, weapon);
     }
 
-    private void add(Card card) {
-        logger.debug("Adding new card " + card.toString());
-        if (card instanceof RoomCard) {
-            allLocationCards.add((RoomCard) card);
-            return;
-        }
-
-        if (card instanceof SuspectCard) {
-            allSuspectCards.add((SuspectCard) card);
-            return;
-        }
-
-        if (card instanceof WeaponCard) {
-            allWeaponCards.add((WeaponCard) card);
-            return;
-        }
-
-        return;
-    }
-
+	/**
+	 * Helper to determine the numer of face up cards to display.
+	 * @param numUsers Number of Players being dealt cards
+	 * @param classicClue Mode of difficulty
+	 * @return 
+	 */
     public static int FaceUpCardsByPlayerCount(int numUsers, boolean classicClue) {
         if (!classicClue) {
             switch (numUsers) {
@@ -92,6 +89,11 @@ public class Dealer {
         return 0;
     }
 
+	/**
+	 * Deals the card to the Player objects and the face up pile
+	 * @param players Players to deal cards to.
+	 * @param faceUpCards Face up card pile list.
+	 */
     public void dealCards(PlayerMgr players, ArrayList<Card> faceUpCards) {
 
         logger.debug("Dealing to " + players.count() + " players.");
