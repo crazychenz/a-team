@@ -1,7 +1,11 @@
 /** */
 package clueless.io;
 
-/** @author tombo */
+/** 
+ * Enumeration of all possible MessageTypes
+ * @author ateam 
+ * @todo Embed this into Message class
+ */
 public enum MessagesEnum {
     MESSAGE_PULSE(0x50),
     MESSAGE_CLIENT_START_GAME(0x51),
