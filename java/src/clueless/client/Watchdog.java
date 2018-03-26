@@ -3,6 +3,10 @@ package clueless.client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Represents the Watchdog thread
+ * @author ateam
+ */
 public class Watchdog implements Runnable {
 
     private static final Logger logger = LogManager.getLogger(Client.class);
@@ -10,14 +14,23 @@ public class Watchdog implements Runnable {
     long lastPulse;
     long timeout;
 
-    public Watchdog(long timeout) {
+	/**
+	 * Default constructor
+	 * @param timeout The timeout before the Watchdog kills the process
+	 * @todo Let the eventhandler handle a watchdog timeout
+	 */
+	public Watchdog(long timeout) {
         this.timeout = timeout;
     }
 
-    public void pulse() {
+	/**
+	 * Update the watchdog timeout (to prevent a watchdog termination).
+	 */
+	public void pulse() {
         lastPulse = System.currentTimeMillis();
     }
 
+	@Override
     public void run() {
         logger.trace("Starting watchdog thread.");
         while (!Thread.currentThread().isInterrupted()) {

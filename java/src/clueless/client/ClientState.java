@@ -6,6 +6,10 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Represents a client's local state of the Game
+ * @author ateam
+ */
 public class ClientState {
 
     private AvailableSuspects availableSuspects;
@@ -24,18 +28,27 @@ public class ClientState {
 
     private static final Logger logger = LogManager.getLogger(ClientState.class);
 
-    public ClientState() {
+	/**
+	 * Default constructor
+	 */
+	public ClientState() {
         setCards(new ArrayList<Card>());
         setFaceUpCards(new ArrayList<Card>());
         setDisproveCards(new ArrayList<Card>());
     }
 
-    /** @return the gameState */
+    /** 
+	 * Fetch the most recent game state
+	 * @return the gameState 
+	 */
     public GameStatePulse getGameState() {
         return gameState;
     }
 
-    /** @param gameState the gameState to set */
+    /** 
+	 * Set the game state
+	 * @param gameState the gameState to set 
+	 */
     public void setGameState(GameStatePulse gameState) {
         this.gameState = gameState;
 
@@ -71,87 +84,140 @@ public class ClientState {
         setFaceUpCards(gameState.getFaceUpCards());
     }
 
-    /** @return the availableSuspects */
+    /** 
+	 * Fetch available suspects
+	 * @return the availableSuspects
+	 * @todo AvailableSuspects wrapper should be striped at this point
+	 */
     public AvailableSuspects getAvailableSuspects() {
         return availableSuspects;
     }
 
-    /** @param availableSuspects the availableSuspects to set */
+    /** 
+	 * Set the AvailableSuspects
+	 * @param availableSuspects the availableSuspects to set */
     public void setAvailableSuspects(AvailableSuspects availableSuspects) {
         this.availableSuspects = availableSuspects;
     }
 
-    /** @return the configured */
+    /** 
+	 * Check if this client is registered/configured to play on server.
+	 * @return the configured */
     public boolean isConfigured() {
         return configured;
     }
 
-    /** @param configured the configured to set */
+    /** 
+	 * Set that this client is registered/configured to play on server
+	 * @param configured the configured to set 
+	 */
     public void setConfigured(boolean configured) {
         this.configured = configured;
     }
 
-    /** @return the mySuspect */
+    /** 
+	 * Fetch the SuspectCard this client is registered with.
+	 * @return the mySuspect 
+	 */
     public SuspectCard getMySuspect() {
         return mySuspect;
     }
 
-    /** @param mySuspect the mySuspect to set */
+    /** 
+	 * Set suspect that this client represents
+	 * @param mySuspect the mySuspect to set 
+	 */
     public void setMySuspect(SuspectCard mySuspect) {
         this.mySuspect = mySuspect;
     }
 
-    /** @return the myTurn */
+    /** 
+	 * Check if this client is the current player to move, suggest, or accuse
+	 * @return the myTurn 
+	 */
     public boolean isMyTurn() {
         return myTurn;
     }
 
-    /** @param myTurn the myTurn to set */
+    /** 
+	 * Set the client as the current player to move, suggest, or accuse
+	 * @param myTurn the myTurn to set 
+	 */
     private void setMyTurn(boolean myTurn) {
         this.myTurn = myTurn;
     }
 
-    /** @return the moved */
+    /** 
+	 * Check if the client has moved its player this turn.
+	 * @return the moved 
+	 */
     public boolean isMoved() {
         return moved;
     }
 
-    /** @param moved the moved to set */
+    /** 
+	 * Set whether the player has moved this turn
+	 * @param moved the moved to set 
+	 */
     public void setMoved(boolean moved) {
         this.moved = moved;
     }
 
-    /** @return the cards */
+    /** 
+	 * Fetch an ArrayList of all the player cards
+	 * @return the cards 
+	 */
     public ArrayList<Card> getCards() {
         return cards;
     }
 
-    /** @param cards the cards to set */
+    /** 
+	 * Set the ArrayList of all the player cards in the client.
+	 * @param cards the cards to set 
+	 */
     public void setCards(ArrayList<Card> cards) {
         this.cards = cards;
     }
 
-    /** @return the faceUpCards */
+    /** 
+	 * Get all the face up cards on the GameBoard
+	 * @return the faceUpCards 
+	 */
     public ArrayList<Card> getFaceUpCards() {
         return faceUpCards;
     }
 
-    /** @param faceUpCards the faceUpCards to set */
+    /** 
+	 * Set the face up cards on the gameboard for this client
+	 * @param faceUpCards the faceUpCards to set 
+	 */
     public void setFaceUpCards(ArrayList<Card> faceUpCards) {
         this.faceUpCards = faceUpCards;
     }
 
-    /** @return the myLocation */
+    /** 
+	 * Get the location of this client's player's suspect.
+	 * @return the myLocation 
+	 */
     public Integer getMyLocation() {
         return myLocation;
     }
 
-    /** @param myLocation the myLocation to set */
+    /** 
+	 * Set the location of the client's player's suspect.
+	 * @param myLocation the myLocation to set 
+	 */
     public void setMyLocation(Integer myLocation) {
         this.myLocation = myLocation;
     }
 
     // This isn't the best way to do this.  Should probably be moved/handled differently.
+
+	/**
+	 * Disprove a suggestion
+	 * @param cards Current suggestion
+	 * @param active Whether the client is expected to perform a disprove now
+	 */
     public void disprove(Suggestion cards, boolean active) {
         logger.debug(getMySuspect());
         if (active) {
@@ -191,6 +257,12 @@ public class ClientState {
     }
 
     // This isn't the best way to do this.  Should probably be moved/handled differently.
+
+	/**
+	 * Display conclusion of the suggestion sequence
+	 * @param card The card that disproves the suggestion
+	 * @param active Whether this client is the suggester or not.
+	 */
     public void suggestResponse(Card card, boolean active) {
 
         System.out.println("The suggestion has been completed!\n");
@@ -207,33 +279,51 @@ public class ClientState {
         }
     }
 
-    /** @return the disproveCards */
+    /** 
+	 * Fetch the list of possible cards to use to disprove a suggestion.
+	 * @return the disproveCards 
+	 */
     public ArrayList<Card> getDisproveCards() {
         return disproveCards;
     }
 
-    /** @param disproveCards the disproveCards to set */
+    /** 
+	 * Set the list of possible cards to use to disprove a suggestion.
+	 * @param disproveCards the disproveCards to set 
+	 */
     public void setDisproveCards(ArrayList<Card> disproveCards) {
         this.disproveCards = disproveCards;
     }
 
-    /** @return the disproving */
+    /** 
+	 * Check if client is in a disprove state.
+	 * @return the disproving 
+	 */
     public boolean isDisproving() {
         return disproving;
     }
 
-    /** @param disproving the disproving to set */
+    /** 
+	 * Set the disproving state.
+	 * @param disproving the disproving to set 
+	 */
     public void setDisproving(boolean disproving) {
         this.disproving = disproving;
         setDisproveCards(new ArrayList<Card>());
     }
 
-    /** @return the suggested */
+    /** 
+	 * Check if a player has already suggested this turn.
+	 * @return the suggested 
+	 */
     public boolean isSuggested() {
         return suggested;
     }
 
-    /** @param suggested the suggested to set */
+    /** 
+	 * Set that a player has suggested this turn.
+	 * @param suggested the suggested to set 
+	 */
     public void setSuggested(boolean suggested) {
         this.suggested = suggested;
     }
