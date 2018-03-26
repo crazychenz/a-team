@@ -619,32 +619,36 @@ public class CLI {
             }
 
             if (line.equalsIgnoreCase("help")) {
-                termout.println(
-                        "\n"
-                                + "chat <message>\n"
-                                + "    Send a message to all players\n"
-                                + "config <"
-                                + cli.clientState.getAvailableSuspects().toString()
-                                + ">\n"
-                                + "    Configure the client\n"
-                                + "start\n"
-                                + "    Start the game\n"
-                                + "move <north|south|east|west|secret>\n"
-                                + "    Move in the given direction\n"
-                                + "done\n"
-                                + "    End your turn\n"
-                                + "cards\n"
-                                + "    Display your cards and face up cards\n"
-                                + "board\n"
-                                + "    Display the location of all weapons and suspects\n"
-                                + "accuse <cards>\n"
-                                + "    Accuse a suspect, location, and weapon combination were the who, where, and what of the crime to win the game!\n"
-                                + "suggest <cards>\n"
-                                + "    Suggest that a suspect and weapon were used in your current location to commit the crime!\n"
-                                + "disprove <card>\n"
-                                + "    Disprove one of the cards from the suggestion!\n"
-                                + "exit|quit\n"
-                                + "    Exit clueless CLI\n");
+                if (cli.clientState.getGameState() != null) {
+                    termout.println(
+                            "\n"
+                                    + "chat <message>\n"
+                                    + "    Send a message to all players\n"
+                                    + "config <"
+                                    + cli.clientState.getAvailableSuspects().toString()
+                                    + ">\n"
+                                    + "    Configure the client\n"
+                                    + "start\n"
+                                    + "    Start the game\n"
+                                    + "move <north|south|east|west|secret>\n"
+                                    + "    Move in the given direction\n"
+                                    + "done\n"
+                                    + "    End your turn\n"
+                                    + "cards\n"
+                                    + "    Display your cards and face up cards\n"
+                                    + "board\n"
+                                    + "    Display the location of all weapons and suspects\n"
+                                    + "accuse <cards>\n"
+                                    + "    Accuse a suspect, location, and weapon combination were the who, where, and what of the crime to win the game!\n"
+                                    + "suggest <cards>\n"
+                                    + "    Suggest that a suspect and weapon were used in your current location to commit the crime!\n"
+                                    + "disprove <card>\n"
+                                    + "    Disprove one of the cards from the suggestion!\n"
+                                    + "exit|quit\n"
+                                    + "    Exit clueless CLI\n");
+                } else {
+                    termout.println("Connect to the server first!");
+                }
             } else {
                 String response = handleCommand(cli, line);
                 if (response != null) {
