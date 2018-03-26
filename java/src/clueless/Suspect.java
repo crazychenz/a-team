@@ -4,7 +4,10 @@ import java.io.Serializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// Nested Suspect Class
+/**
+ * Represents a Suspect piece on the GameBoard
+ * @author ateam
+ */
 public class Suspect implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(Suspect.class);
@@ -15,9 +18,10 @@ public class Suspect implements Serializable {
 
     private boolean active;
 
-    // public static ArrayList<Suspect> getCollection() {
-    //    return new ArrayList<Suspect>(enumMap.values());
-    // }
+	/**
+	 * Suspect Constructor
+	 * @param suspect SuspectCard that represents the Suspect piece.
+	 */
 
     public Suspect(SuspectCard suspect) {
         this.suspect = suspect;
@@ -28,7 +32,12 @@ public class Suspect implements Serializable {
         logger.debug("Creating suspect " + suspect.toString() + " in location " + start.toString());
     }
 
-    public boolean move(GameBoard board, DirectionsEnum direction) {
+	/**
+	 * Operation to move the Suspect piece to a Hallway or Room.
+	 * @param direction The direction the piece should move.
+	 * @return Returns true if piece moved, false for invalid movement request.
+	 */
+	public boolean move(DirectionsEnum direction) {
 
         if (!currentLocation.validDirection(direction)) {
             return false;
@@ -46,56 +55,63 @@ public class Suspect implements Serializable {
         return true;
     }
 
-    public void moveForSuggestion(GameBoard board, RoomCard dest) {
+	/**
+	 * Move a Suspect piece due to a suggestion sequence.
+	 * @param dest Room to move a Suspect piece to.
+	 */
+	public void moveForSuggestion(RoomCard dest) {
         currentLocation.removeSuspect(this);
         Room room = Room.getById(dest.getId());
         room.placeSuspect(this);
         setCurrent_location(room);
     }
 
-    public SuspectCard getSuspect() {
+	/**
+	 * Get the SuspectCard that represents this Suspect piece.
+	 * @return SuspectCard
+	 */
+	public SuspectCard getSuspect() {
         return suspect;
     }
 
-    public boolean getActive() {
+	/**
+	 * Get whether this Suspect is tracked by a Player.
+	 * @return true is tracked by Player, otherwise false
+	 */
+	public boolean getActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+	/**
+	 * Set whether this Suspect is tracked by Player
+	 * @param active true if tracked, false if untracked
+	 */
+	public void setActive(boolean active) {
         this.active = active;
     }
 
-    /** @return the start_location */
+    /** 
+	 * Get the start location of the player
+	 * @return the start_location 
+	 */
     public Location getStart_location() {
         return startLocation;
     }
 
-    /** @param start_location the start_location to set */
     private void setStart_location(Location start_location) {
         this.startLocation = start_location;
     }
 
-    /** @return the current_location */
+    /** 
+	 * Get the current location of the player
+	 * @return the current_location 
+	 */
     public Location getCurrent_location() {
         return currentLocation;
     }
 
-    /** @param current_location the current_location to set */
     private void setCurrent_location(Location current_location) {
         this.currentLocation = current_location;
     }
 
-    /*private void writeObject(final ObjectOutputStream out) throws IOException {
-    	out.writeInt(suspect.getUid());
-    	out.writeInt(currentLocation.getUid());
-    }
-
-    private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	suspect = CardsEnum.getByUid(in.readInt());
-    	currentLocation = CardsEnum.getByUid(in.readInt());
-    }
-
-    private void readObjectNoData() throws ObjectStreamException {
-    	throw new InvalidObjectException("Stream data required.");
-    }*/
 }

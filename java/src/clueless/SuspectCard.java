@@ -2,16 +2,23 @@ package clueless;
 
 import java.util.ArrayList;
 
+/**
+ * Represents all possible SuspectCards
+ * @author ateam
+ */
 public class SuspectCard extends Card {
 
-    public static final SuspectCard SUSPECT_PLUM,
-            SUSPECT_PEACOCK,
-            SUSPECT_WHITE,
-            SUSPECT_SCARLET,
-            SUSPECT_GREEN,
-            SUSPECT_MUSTARD;
+	/**
+	 * Enumeration of a possible SuspectCards
+	 */
+	public static final SuspectCard SUSPECT_PLUM,
+        SUSPECT_PEACOCK,
+		SUSPECT_WHITE,
+		SUSPECT_SCARLET,
+		SUSPECT_GREEN,
+		SUSPECT_MUSTARD;
 
-    public static final ArrayList<SuspectCard> allCards = new ArrayList<>();
+	public static final ArrayList<SuspectCard> allCards = new ArrayList<>();
 
     static {
         // Note: The suspect ids are ordered according to the rules.

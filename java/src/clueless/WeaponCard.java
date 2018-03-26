@@ -2,16 +2,23 @@ package clueless;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a WeaponCard.
+ * @author ateam
+ */
 public class WeaponCard extends Card {
 
-    public static final WeaponCard WEAPON_LEADPIPE,
-            WEAPON_REVOLVER,
-            WEAPON_ROPE,
-            WEAPON_DAGGER,
-            WEAPON_WRENCH,
-            WEAPON_CANDLESTICK;
+	/**
+	 * Enumeration of all possible WeaponCards
+	 */
+	public static final WeaponCard WEAPON_LEADPIPE,
+		WEAPON_REVOLVER,
+		WEAPON_ROPE,
+		WEAPON_DAGGER,
+		WEAPON_WRENCH,
+		WEAPON_CANDLESTICK;
 
-    public static final ArrayList<WeaponCard> allCards = new ArrayList<>();
+	public static final ArrayList<WeaponCard> allCards = new ArrayList<>();
 
     static {
         allCards.add(WEAPON_LEADPIPE = new WeaponCard(0x21, "Pipe"));
