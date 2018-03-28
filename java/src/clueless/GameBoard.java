@@ -20,10 +20,10 @@ public class GameBoard {
         faceUpCards = new ArrayList<Card>();
     }
 
-    public void dealCards(PlayerMgr players, long seed) {
+    public void dealCards(PlayerMgr players, long seed, int difficulty) {
         Dealer dealer = new Dealer(seed);
         envelope = dealer.populateEnvelope();
-        dealer.dealCards(players, faceUpCards);
+        dealer.dealCards(players, faceUpCards, difficulty);
     }
 
     public ArrayList<Card> getFaceUpCards() {

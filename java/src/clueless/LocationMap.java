@@ -4,15 +4,14 @@ import java.util.HashSet;
 
 /**
  * Represents all tracked Locations on the GameBoard
+ *
  * @author ateam
  */
 public class LocationMap {
     private HashSet<Location> locations = new HashSet<>();
 
-	/**
-	 * Default Constructor
-	 */
-	public LocationMap() {
+    /** Default Constructor */
+    public LocationMap() {
         locations.addAll(Hallway.allHallways);
         locations.addAll(Room.allRooms);
 

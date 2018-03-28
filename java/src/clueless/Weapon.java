@@ -5,9 +5,10 @@ import java.io.Serializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/** 
+/**
  * Represents a Weapon piece.
- * @author ateam 
+ *
+ * @author ateam
  */
 public class Weapon implements Serializable {
 
@@ -16,19 +17,21 @@ public class Weapon implements Serializable {
     private WeaponCard weapon;
     private Room current_location;
 
-	/**
-	 * Constructor for Weapon
-	 * @param weapon WeaponCard that matches this Weapon piece
-	 */
-	public Weapon(WeaponCard weapon) {
+    /**
+     * Constructor for Weapon
+     *
+     * @param weapon WeaponCard that matches this Weapon piece
+     */
+    public Weapon(WeaponCard weapon) {
         this.setWeapon(weapon);
         logger.debug("Creating weapon " + weapon.toString());
     }
 
-    /** 
-	 * Fetch WeaponCard representing this Weapon type.
-	 * @return WeaponCard 
-	 */
+    /**
+     * Fetch WeaponCard representing this Weapon type.
+     *
+     * @return WeaponCard
+     */
     public WeaponCard getWeapon() {
         return weapon;
     }
@@ -37,20 +40,22 @@ public class Weapon implements Serializable {
         this.weapon = weapon;
     }
 
-    /** 
-	 * Fetch the current Room location of the Weapon piece.
-	 * @return the current_location (possibly null)
-	 * @todo Make sure Weapon currentLocation is never null.
-	 */
+    /**
+     * Fetch the current Room location of the Weapon piece.
+     *
+     * @return the current_location (possibly null)
+     * @todo Make sure Weapon currentLocation is never null.
+     */
     public Room getCurrent_location() {
         return current_location;
     }
 
-	/**
-	 * Move Weapon to a Room for a suggestion sequence.
-	 * @param dest The Room to move the Weapon piece to.
-	 */
-	public void moveForSuggestion(RoomCard dest) {
+    /**
+     * Move Weapon to a Room for a suggestion sequence.
+     *
+     * @param dest The Room to move the Weapon piece to.
+     */
+    public void moveForSuggestion(RoomCard dest) {
 
         if (current_location != null) {
             // TODO: Make weapons always exist in a room.

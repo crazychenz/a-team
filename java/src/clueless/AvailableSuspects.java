@@ -11,25 +11,22 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Represents a list of all untracked Suspects.
+ *
  * @author ateam
  */
 public class AvailableSuspects implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(AvailableSuspects.class);
 
-	/**
-	 * List of all untracked Suspects
-	 */
-	public ArrayList<SuspectCard> list;
+    /** List of all untracked Suspects */
+    public ArrayList<SuspectCard> list;
 
-	/**
-	 * Default Constructor
-	 */
-	public AvailableSuspects() {
+    /** Default Constructor */
+    public AvailableSuspects() {
         list = new ArrayList<SuspectCard>();
     }
 
-	@Override
+    @Override
     public String toString() {
         if (list.isEmpty()) {
             return "";

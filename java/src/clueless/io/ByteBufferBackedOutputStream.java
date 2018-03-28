@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Class for writing a ByteBuffer to an OutputStream
+ *
  * @author ateam
  */
 public class ByteBufferBackedOutputStream extends OutputStream {
@@ -17,11 +18,12 @@ public class ByteBufferBackedOutputStream extends OutputStream {
 
     ByteBuffer buf;
 
-	/**
-	 * Constructor
-	 * @param buf Buffer to send to OutputStream (for writing)
-	 */
-	public ByteBufferBackedOutputStream(ByteBuffer buf) {
+    /**
+     * Constructor
+     *
+     * @param buf Buffer to send to OutputStream (for writing)
+     */
+    public ByteBufferBackedOutputStream(ByteBuffer buf) {
         this.buf = buf;
     }
 

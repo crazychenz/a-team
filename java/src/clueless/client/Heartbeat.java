@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Client heartbeat generator.
+ *
  * @author ateam
  */
 public class Heartbeat implements Runnable {
@@ -15,12 +16,13 @@ public class Heartbeat implements Runnable {
     Client client;
     long duration;
 
-	/**
-	 * Constructor
-	 * @param c The client to send heartbeat from.
-	 * @param d Duration between heartbeats.
-	 */
-	public Heartbeat(Client c, long d) {
+    /**
+     * Constructor
+     *
+     * @param c The client to send heartbeat from.
+     * @param d Duration between heartbeats.
+     */
+    public Heartbeat(Client c, long d) {
         duration = d;
         client = c;
     }

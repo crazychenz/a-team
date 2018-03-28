@@ -1,9 +1,10 @@
 /** */
 package clueless.io;
 
-/** 
+/**
  * Enumeration of all possible MessageTypes
- * @author ateam 
+ *
+ * @author ateam
  * @todo Embed this into Message class
  */
 public enum MessagesEnum {

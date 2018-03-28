@@ -10,7 +10,10 @@ public class Game {
 
     private GameBoard board;
     private boolean gameStarted;
-    public boolean classicMode = false;
+    private int difficulty =
+            0; // 0 (easy), 1 (medium), 2 (hard) for setting number of face up cards.  Probably
+    // should be an enum
+    // TODO make this a server command line argument configurable or make it configurable by clients
     public PlayerMgr players;
 
     private long prngSeed;
@@ -85,7 +88,7 @@ public class Game {
                 // move from non-active player
                 else {
                     logger.info("Non-active player tried to move!");
-                    return Message.failedMove("Non-active player tried to move!");
+                    return Message.serverMessage("Non-active player tried to move!");
                 }
                 break;
             case MESSAGE_CLIENT_SUGGEST:
@@ -115,8 +118,13 @@ public class Game {
                     if (handleAccuse((Suggestion) msg.getMessageData())) {
                         // Win!
                         // End the game, alert everybody
+                        // @todo Perhaps a client ID or username would be better?
                         gameStarted = false;
-                        Message endMessage = Message.winMessage(players.current().getSuspect());
+                        Message endMessage =
+                                Message.serverMessage(
+                                        "The game has been won by "
+                                                + players.current().getSuspect()
+                                                + "!");
                         endMessage.setBroadcast(true);
                         return endMessage;
                     } else {
@@ -124,14 +132,22 @@ public class Game {
                         // Don't allow the player to continue making moves, but they must remain to
                         // disprove suggestions
                         players.current().setPlaying(false);
-                        players.setNextPlayer();
+                        if (!players.setNextPlayer()) {
+                            logger.info("No more active players!  Game is ending!");
+                            gameStarted = false;
+                            Message endMessage =
+                                    Message.serverMessage(
+                                            "All players have made incorrect accusations! The game is over!");
+                            endMessage.setBroadcast(true);
+                            return endMessage;
+                        }
                         logger.info("Bad accusation!");
-                        return Message.failedMove(
+                        return Message.serverMessage(
                                 "Bad accusation!  You must sit out the rest of the game.");
                     }
                 }
                 logger.info("Non-active player tried to accuse!");
-                return Message.failedMove("Non-active player tried to accuse!");
+                return Message.serverMessage("Non-active player tried to accuse!");
             case MESSAGE_CLIENT_END_TURN:
                 players.setNextPlayer();
                 break;
@@ -181,7 +197,7 @@ public class Game {
                 return gameStarted;
             }
 
-            board.dealCards(players, prngSeed);
+            board.dealCards(players, prngSeed, difficulty);
             gameStarted = true;
             // TODO: Make scarlet the activePlayerRef
             // TODO: All users should be using peice nearest to them

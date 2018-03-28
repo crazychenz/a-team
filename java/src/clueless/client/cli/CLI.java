@@ -534,6 +534,8 @@ public class CLI {
         logger.info("Client UUID: " + client.uuid);
 
         try {
+            // logger.info("argmap address " + argMap.get("address"));
+            // logger.info("argmap port " + argMap.get("port"));
             client.connect(argMap.get("address"), argMap.get("port"));
 
             // Do the initial available suspect fetch

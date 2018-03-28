@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Represents a location on the GameBoard
+ *
  * @author ateam
  */
 public class Location {
@@ -17,12 +18,13 @@ public class Location {
 
     private final HashMap<DirectionsEnum, Location> adjacentRooms;
 
-	/**
-	 * Constructor
-	 * @param id Unique ID of the location
-	 * @param name String name of the Location
-	 */
-	public Location(int id, String name) {
+    /**
+     * Constructor
+     *
+     * @param id Unique ID of the location
+     * @param name String name of the Location
+     */
+    public Location(int id, String name) {
 
         // this.setLocation(location);
         adjacentRooms = new HashMap<>();
@@ -30,92 +32,97 @@ public class Location {
         this.name = name;
     }
 
-	/**
-	 * Fetch unique id of Location
-	 * @return unique id of Location
-	 */
-	public int getId() {
+    /**
+     * Fetch unique id of Location
+     *
+     * @return unique id of Location
+     */
+    public int getId() {
         return id;
     }
 
-	/**
-	 * Fetch the String name of location
-	 * @return String name of location
-	 */
-	public String getName() {
+    /**
+     * Fetch the String name of location
+     *
+     * @return String name of location
+     */
+    public String getName() {
         return name;
     }
 
-	/**
-	 * Set an adjacent link to this Location
-	 * @param direction Direction of the link
-	 * @param location Location linked to this Location
-	 */
-	public void setAdjacentRoom(DirectionsEnum direction, Location location) {
+    /**
+     * Set an adjacent link to this Location
+     *
+     * @param direction Direction of the link
+     * @param location Location linked to this Location
+     */
+    public void setAdjacentRoom(DirectionsEnum direction, Location location) {
         adjacentRooms.put(direction, location);
     }
 
-	/**
-	 * Check if a DirectionEnum has a valid link to this Location
-	 * @param direction DirectionEnum to check validity of
-	 * @return true if link is valid, false is link is invalid
-	 */
-	public boolean validDirection(DirectionsEnum direction) {
+    /**
+     * Check if a DirectionEnum has a valid link to this Location
+     *
+     * @param direction DirectionEnum to check validity of
+     * @return true if link is valid, false is link is invalid
+     */
+    public boolean validDirection(DirectionsEnum direction) {
         return adjacentRooms.containsKey(direction);
     }
 
-	/**
-	 * Check if location is available to place a piece.
-	 * 
-	 * This method should be treated as an abstract method that must
-	 * be overridden by a sub-class.
-	 * 
-	 * @return true if available, false if unavailable.
-	 * @todo maybe belongs in an interface?
-	 */
+    /**
+     * Check if location is available to place a piece.
+     *
+     * <p>This method should be treated as an abstract method that must be overridden by a
+     * sub-class.
+     *
+     * @return true if available, false if unavailable.
+     * @todo maybe belongs in an interface?
+     */
     public boolean available() {
         return false;
     }
 
-	/**
-	 * Place a Suspect piece into this Location.
-	 * 
-	 * This method should be treated as an abstract method that must
-	 * be overridden by a sub-class.
-	 * 
-	 * @param suspect Suspect to place
-	 * @todo maybe belongs in an interface?
-	 */
+    /**
+     * Place a Suspect piece into this Location.
+     *
+     * <p>This method should be treated as an abstract method that must be overridden by a
+     * sub-class.
+     *
+     * @param suspect Suspect to place
+     * @todo maybe belongs in an interface?
+     */
     public void placeSuspect(Suspect suspect) {
         return;
     }
 
-	/**
-	 * Remove a Suspect piece from this Location
-	 * 
-	 * This method should be treated as an abstract method that must
-	 * be overridden by a sub-class.
-	 * 
-	 * @param suspect Suspect to remove
-	 * @todo maybe belongs in an interface?
-	 */
+    /**
+     * Remove a Suspect piece from this Location
+     *
+     * <p>This method should be treated as an abstract method that must be overridden by a
+     * sub-class.
+     *
+     * @param suspect Suspect to remove
+     * @todo maybe belongs in an interface?
+     */
     public void removeSuspect(Suspect suspect) {
         return;
     }
 
-	/**
-	 * Fetch an adjacently linked Location
-	 * @param direction DirectionEnum to fetch link of.
-	 * @return The Location linked in the DirectionEnum direction.
-	 */
-	public Location getAdjacentRoom(DirectionsEnum direction) {
+    /**
+     * Fetch an adjacently linked Location
+     *
+     * @param direction DirectionEnum to fetch link of.
+     * @return The Location linked in the DirectionEnum direction.
+     */
+    public Location getAdjacentRoom(DirectionsEnum direction) {
         if (!validDirection(direction)) {
             return null;
         }
         return adjacentRooms.get(direction);
     }
 
-	@Override
+    @Override
     public String toString() {
         String toReturn = "";
         /* TODO: Disabled until we stabilize the refactor.
