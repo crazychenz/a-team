@@ -20,7 +20,7 @@ public class SuspectMap {
     }
 
     private void createSuspects() {
-        for (SuspectCard card : SuspectCard.allCards) {
+        for (SuspectCard card : SuspectCard.cards()) {
             Suspect suspect;
             suspect = new Suspect(card);
             suspects.put(card, suspect);

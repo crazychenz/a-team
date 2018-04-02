@@ -1,6 +1,7 @@
 package clueless;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Represents a WeaponCard.
@@ -21,14 +22,24 @@ public class WeaponCard extends Card {
 
     static {
         allCards.add(WEAPON_LEADPIPE = new WeaponCard(0x21, "Pipe"));
+        Card.register(WEAPON_LEADPIPE);
         allCards.add(WEAPON_REVOLVER = new WeaponCard(0x22, "Revolver"));
+        Card.register(WEAPON_REVOLVER);
         allCards.add(WEAPON_ROPE = new WeaponCard(0x23, "Rope"));
+        Card.register(WEAPON_ROPE);
         allCards.add(WEAPON_DAGGER = new WeaponCard(0x24, "Dagger"));
+        Card.register(WEAPON_DAGGER);
         allCards.add(WEAPON_WRENCH = new WeaponCard(0x25, "Wrench"));
+        Card.register(WEAPON_WRENCH);
         allCards.add(WEAPON_CANDLESTICK = new WeaponCard(0x26, "Candlestick"));
+        Card.register(WEAPON_CANDLESTICK);
     }
 
     private WeaponCard(int id, String name) {
         super(id, name);
+    }
+
+    public static Iterable<WeaponCard> cards() {
+        return Collections.unmodifiableList(allCards);
     }
 }

@@ -14,7 +14,7 @@ public class WeaponMap {
 
     /** Default Constructor, creates all weapon instances. */
     public WeaponMap() {
-        for (WeaponCard card : WeaponCard.allCards) {
+        for (WeaponCard card : WeaponCard.cards()) {
             Weapon weapon = new Weapon(card);
             weapons.put(card, weapon);
         }

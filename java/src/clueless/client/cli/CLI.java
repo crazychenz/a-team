@@ -446,7 +446,7 @@ public class CLI {
                         logger.info("Suggesting " + card1 + " " + card2);
                         Card ce1 = suggestStrToEnum.get(card1);
                         Card ce2 = suggestStrToEnum.get(card2);
-                        Card location = RoomCard.getById(clientState.getMyLocation());
+                        Card location = RoomCard.fetch(clientState.getMyLocation());
                         if (ce1 == null) {
                             logger.error("Missing ce1");
                         }
