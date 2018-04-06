@@ -210,6 +210,37 @@ public class CLI {
         }
 
         switch (pl.word()) {
+            case "help":
+                if (cli.clientState.getGameState() != null) {
+                    return Message.info(
+                            "\n"
+                                    + "chat <message>\n"
+                                    + "    Send a message to all players\n"
+                                    + "config <"
+                                    + cli.clientState.getAvailableSuspects().toString()
+                                    + ">\n"
+                                    + "    Configure the client\n"
+                                    + "start\n"
+                                    + "    Start the game\n"
+                                    + "move <north|south|east|west|secret>\n"
+                                    + "    Move in the given direction\n"
+                                    + "done\n"
+                                    + "    End your turn\n"
+                                    + "cards\n"
+                                    + "    Display your cards and face up cards\n"
+                                    + "board\n"
+                                    + "    Display the location of all weapons and suspects\n"
+                                    + "accuse <cards>\n"
+                                    + "    Accuse a suspect, location, and weapon combination were the who, where, and what of the crime to win the game!\n"
+                                    + "suggest <cards>\n"
+                                    + "    Suggest that a suspect and weapon were used in your current location to commit the crime!\n"
+                                    + "disprove <card>\n"
+                                    + "    Disprove one of the cards from the suggestion!\n"
+                                    + "exit|quit\n"
+                                    + "    Exit clueless CLI\n");
+                } else {
+                    return Message.info("Connect to the server first!");
+                }
             case "chat":
                 try {
                     String chatMsg = cmd.split(" ", 2)[1];
@@ -328,36 +359,34 @@ public class CLI {
                     return Message.error("Must config first!");
                 } else if (!clientState.getGameState().isGameActive()) {
                     return Message.error("Must start first!");
-                } else {
-                    /*String toReturn = "\n";
-                    toReturn += "\nBoard:\n";
-                    for (Entry<CardsEnum, CardsEnum> entry :
-                            clientState.getGameState().getSuspectLocations().entrySet()) {
-                        toReturn +=
-                                "Suspect: "
-                                        + entry.getKey()
-                                        + "\t"
-                                        + "Location: "
-                                        + entry.getValue()
-                                        + "\n";
-                    }
-
-                    toReturn += "\nWeapons:\n";
-                    for (Entry<CardsEnum, CardsEnum> entry :
-                            clientState.getGameState().getWeaponLocations().entrySet()) {
-                        toReturn +=
-                                "Weapon: "
-                                        + entry.getKey()
-                                        + "\t"
-                                        + "Location: "
-                                        + entry.getValue()
-                                        + "\n";
-                    }*/
-
-                    BoardBuilder bb = new BoardBuilder(clientState);
-                    System.out.println(bb.generateBoard());
                 }
-                break;
+                /*String toReturn = "\n";
+                toReturn += "\nBoard:\n";
+                for (Entry<CardsEnum, CardsEnum> entry :
+                		clientState.getGameState().getSuspectLocations().entrySet()) {
+                	toReturn +=
+                			"Suspect: "
+                					+ entry.getKey()
+                					+ "\t"
+                					+ "Location: "
+                					+ entry.getValue()
+                					+ "\n";
+                }
+
+                toReturn += "\nWeapons:\n";
+                for (Entry<CardsEnum, CardsEnum> entry :
+                		clientState.getGameState().getWeaponLocations().entrySet()) {
+                	toReturn +=
+                			"Weapon: "
+                					+ entry.getKey()
+                					+ "\t"
+                					+ "Location: "
+                					+ entry.getValue()
+                					+ "\n";
+                }*/
+
+                BoardBuilder bb = new BoardBuilder(clientState);
+                return Message.info(bb.generateBoard());
             case "accuse":
                 try {
                     if (!clientState.isConfigured()) {
@@ -545,22 +574,47 @@ public class CLI {
         return null;
     }
 
-    public CLI() {
-        // Where client side state lives
-        clientState = new ClientState();
+    public void sendMessage(Message msg) {
+        try {
+            client.sendMessage(msg);
+        } catch (Exception e) {
+            logger.error("Failed to send Message: " + msg.getMessageID());
+        }
+    }
 
-        // Initialize watchdog thread
-        watchdog = new Watchdog(10000);
-        watchdog.pulse();
+    public CLI() {
+        this(null, null, null);
+    }
+
+    public CLI(EventHandler evtHandler, ClientState stateParam, Watchdog dogParam) {
+
+        if (stateParam == null) {
+            // Where client side state lives
+            clientState = new ClientState();
+        } else {
+            clientState = stateParam;
+        }
+
+        if (dogParam == null) {
+            // Initialize watchdog thread
+            watchdog = new Watchdog(10000);
+            watchdog.pulse();
+        } else {
+            watchdog = dogParam;
+        }
         watchdogThread = new Thread(watchdog);
         // TODO start thread outside of constructor
         watchdogThread.start();
 
         // Client side event handler (for CLI user interface)
-        evtHandler = new CLIEventHandler(clientState, watchdog);
+        if (evtHandler == null) {
+            this.evtHandler = new CLIEventHandler(clientState, watchdog);
+        } else {
+            this.evtHandler = evtHandler;
+        }
 
         // Initialize the Client link.
-        client = new Client(evtHandler);
+        client = new Client(this.evtHandler);
         logger.info("Client UUID: " + client.uuid);
 
         try {
@@ -650,42 +704,9 @@ public class CLI {
                 System.exit(0);
             }
 
-            if (line.equalsIgnoreCase("help")) {
-                if (cli.clientState.getGameState() != null) {
-                    termout.println(
-                            "\n"
-                                    + "chat <message>\n"
-                                    + "    Send a message to all players\n"
-                                    + "config <"
-                                    + cli.clientState.getAvailableSuspects().toString()
-                                    + ">\n"
-                                    + "    Configure the client\n"
-                                    + "start\n"
-                                    + "    Start the game\n"
-                                    + "move <north|south|east|west|secret>\n"
-                                    + "    Move in the given direction\n"
-                                    + "done\n"
-                                    + "    End your turn\n"
-                                    + "cards\n"
-                                    + "    Display your cards and face up cards\n"
-                                    + "board\n"
-                                    + "    Display the location of all weapons and suspects\n"
-                                    + "accuse <cards>\n"
-                                    + "    Accuse a suspect, location, and weapon combination were the who, where, and what of the crime to win the game!\n"
-                                    + "suggest <cards>\n"
-                                    + "    Suggest that a suspect and weapon were used in your current location to commit the crime!\n"
-                                    + "disprove <card>\n"
-                                    + "    Disprove one of the cards from the suggestion!\n"
-                                    + "exit|quit\n"
-                                    + "    Exit clueless CLI\n");
-                } else {
-                    termout.println("Connect to the server first!");
-                }
-            } else {
-                String response = handleCommand(cli, line);
-                if (response != null) {
-                    termout.println(response);
-                }
+            String response = handleCommand(cli, line);
+            if (response != null) {
+                termout.println(response);
             }
         }
     }

@@ -50,19 +50,20 @@ public class ClientState {
      *
      * @param gameState the gameState to set
      */
-    public void setGameState(GameStatePulse gameState) {
+    public String setGameState(GameStatePulse gameState) {
+        String retval = null;
         this.gameState = gameState;
 
         if (!gameState.isGameActive()) {
             setAvailableSuspects(gameState.getAvailableSuspects());
-            return;
+            return null;
         }
 
         if (gameState.getActiveSuspect().equals(mySuspect)) {
             setMyTurn(true);
             if (!alerted) {
                 logger.debug(getMySuspect());
-                System.out.println("You are the active player!  Perform an action.\n");
+                retval = "You are the active player!  Perform an action.\n";
                 setMoved(false); // reset move so the player can move again when their turn begins
                 setSuggested(false);
                 alerted = true;
@@ -83,6 +84,8 @@ public class ClientState {
 
         setCards(gameState.getCards());
         setFaceUpCards(gameState.getFaceUpCards());
+
+        return retval;
     }
 
     /**

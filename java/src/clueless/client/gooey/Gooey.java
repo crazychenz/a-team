@@ -5,14 +5,19 @@
  */
 package clueless.client.gooey;
 
+import clueless.client.cli.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /** @author chenz */
 public class Gooey extends Application {
+
+    private static final Logger logger = LogManager.getLogger(Gooey.class);
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -31,6 +36,11 @@ public class Gooey extends Application {
 
     /** @param args the command line arguments */
     public static void main(String[] args) {
+        logger.info("Initializing the CLI environment.");
+        CLI.init(args);
+
+        // logger.info("Create a new CLI object.");
+
         launch(args);
     }
 }

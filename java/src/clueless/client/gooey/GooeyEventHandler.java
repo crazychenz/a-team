@@ -1,4 +1,4 @@
-package clueless.client.cli;
+package clueless.client.gooey;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,17 +10,22 @@ import clueless.io.*;
 import clueless.GameStatePulse;
 import clueless.Suggestion;
 import clueless.Card;
+import javafx.application.Platform;
 
-public class CLIEventHandler extends EventHandler {
+public class GooeyEventHandler extends EventHandler {
 
-    private static final Logger logger = LogManager.getLogger(CLIEventHandler.class);
+    private static final Logger logger = LogManager.getLogger(GooeyEventHandler.class);
 
     ClientState clientState;
     Watchdog watchdog;
+	GooeyScene scene;
+	boolean alerted;
 
-    CLIEventHandler(ClientState state, Watchdog wd) {
+    GooeyEventHandler(ClientState state, Watchdog wd, GooeyScene scene) {
         clientState = state;
         watchdog = wd;
+		this.scene = scene;
+		alerted = false;
     }
 
 	@Override
@@ -28,14 +33,28 @@ public class CLIEventHandler extends EventHandler {
         switch (msg.getMessageID()) {
             case MESSAGE_CHAT_FROM_SERVER:
             case MESSAGE_CHAT_FROM_CLIENT:
-                logger.info("chat: " + msg.getMessageData());
+                logger.info("chat: " + msg.asString());
+				
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						scene.addToLogList("chat: " + msg.asString());
+					}
+				});
+				
                 break;
             case MESSAGE_PULSE:
                 logger.trace("Got a watchdog pulse.");
                 GameStatePulse gameState = (GameStatePulse) msg.getMessageData();
+				
                 String statusStr = clientState.setGameState(gameState);
 				if (statusStr != null) {
-					System.out.println(statusStr);
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							scene.addToLogList(statusStr);
+						}
+					});
 				}
                 watchdog.pulse();
                 break;

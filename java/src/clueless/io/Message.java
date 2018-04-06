@@ -134,6 +134,15 @@ public class Message implements Serializable {
     }
 
     /**
+     * Get the object from message as a String
+     *
+     * @return String
+     */
+    public String asString() {
+        return (String) messageData;
+    }
+
+    /**
      * Serialize a Message object to a ByteBuffer
      *
      * @param msg
