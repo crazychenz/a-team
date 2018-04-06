@@ -68,6 +68,9 @@
     <target name="jar" depends="compile">
         <jar manifest="manifest.mf" destfile="${dist.dir}\clueless.jar" basedir="${build.dir}">
             <fileset dir="." includes="log4j2.xml" />
+            <zipfileset dir="${src.dir}/clueless/client/gooey" 
+                        includes="GooeyScene.fxml" 
+                        fullpath="clueless/client/gooey/GooeyScene.fxml" />
             <zipfileset src="${lib.dir}\ST4-4.0.8.jar" includes="**/*" excludes="**/META-INF" />
             <zipfileset src="${lib.dir}\ascii-utf-themes-0.0.1.jar" includes="**/*" excludes="**/META-INF" />
             <zipfileset src="${lib.dir}\asciitable-0.3.2.jar" includes="**/*" excludes="**/META-INF" />

@@ -1,4 +1,5 @@
 import clueless.client.cli.*;
+import clueless.client.gooey.*;
 import clueless.server.*;
 import java.io.PrintStream;
 import org.apache.logging.log4j.Level;
@@ -26,6 +27,7 @@ public class EntryPoint {
         out.println("\nMutually Exclusive Arguments:");
         out.println("   --server-only    Run this process as dedicated server.");
         out.println("   --cli-client     Start the CLI Client");
+        out.println("   --gui-client     Start the GUI Client");
         out.println("");
     }
 
@@ -54,6 +56,11 @@ public class EntryPoint {
     public static void startCliClient(String[] args) {
         logger.info("Starting CLI Client");
         CLI.main(args);
+    }
+
+    public static void startGooeyClient(String[] args) {
+        logger.info("Starting Gooey Client");
+        Gooey.main(args);
     }
 
     public static void main(String[] args) {
@@ -90,6 +97,14 @@ public class EntryPoint {
         for (String arg : args) {
             if (arg.equals("--cli-client")) {
                 startCliClient(args);
+                return;
+            }
+        }
+
+        // Check if we're using a CLI Client
+        for (String arg : args) {
+            if (arg.equals("--gui-client")) {
+                startGooeyClient(args);
                 return;
             }
         }

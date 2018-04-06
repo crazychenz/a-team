@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="650.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clueless.client.gooey.GooeyScene">
+   <children>
+      <Button layoutX="11.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleExitAction" text="Exit" />
+      <TextField fx:id="cliField" layoutX="30.0" layoutY="601.0" onAction="#handleCliAction" prefHeight="27.0" prefWidth="695.0" />
+      <ListView layoutX="30.0" layoutY="383.0" prefHeight="200.0" prefWidth="695.0" />
+   </children>
+</AnchorPane>
