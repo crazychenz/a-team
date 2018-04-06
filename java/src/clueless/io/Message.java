@@ -371,4 +371,24 @@ public class Message implements Serializable {
     public static Message serverRespondSuggestion(Card card) {
         return new Message(MessagesEnum.MESSAGE_SERVER_RESPONSE_SUGGEST, card);
     }
+	
+	/**
+     * Generate info message
+     *
+     * @param infostr String to give back as info
+     * @return info message
+     */
+    public static Message info(String infostr) {
+        return new Message(MessagesEnum.MESSAGE_INFO, infostr);
+    }
+	
+	/**
+     * Generate error message
+     *
+     * @param errorstr String to give back as error
+     * @return error message
+     */
+    public static Message error(String errorstr) {
+        return new Message(MessagesEnum.MESSAGE_ERROR, errorstr);
+    }
 }
