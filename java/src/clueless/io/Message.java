@@ -371,8 +371,8 @@ public class Message implements Serializable {
     public static Message serverRespondSuggestion(Card card) {
         return new Message(MessagesEnum.MESSAGE_SERVER_RESPONSE_SUGGEST, card);
     }
-	
-	/**
+
+    /**
      * Generate info message
      *
      * @param infostr String to give back as info
@@ -381,8 +381,8 @@ public class Message implements Serializable {
     public static Message info(String infostr) {
         return new Message(MessagesEnum.MESSAGE_INFO, infostr);
     }
-	
-	/**
+
+    /**
      * Generate error message
      *
      * @param errorstr String to give back as error

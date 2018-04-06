@@ -46,7 +46,6 @@ public class GooeyScene implements Initializable {
 
     @FXML
     private void handleCliAction(ActionEvent event) {
-
         System.out.println("CLI Command Entered: " + cliField.getText());
     }
 

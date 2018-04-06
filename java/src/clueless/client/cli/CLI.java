@@ -198,18 +198,18 @@ public class CLI {
         return argMap;
     }
 
-	public static Message processCommand(CLI cli, String cmd) {
-		Client client = cli.client;
+    public static Message processCommand(CLI cli, String cmd) {
+        Client client = cli.client;
         ClientState clientState = cli.clientState;
-		Message retval = null;
+        Message retval = null;
 
-		ParsedLine pl;
+        ParsedLine pl;
         pl = parser.parse(cmd, 0);
         if (null == pl.word()) {
             return null;
         }
-		
-		switch (pl.word()) {
+
+        switch (pl.word()) {
             case "chat":
                 try {
                     String chatMsg = cmd.split(" ", 2)[1];
@@ -233,14 +233,15 @@ public class CLI {
 
                     if (pl.words().size() == 2) {
                         if (suspectStrToEnum.get(pl.words().get(1)) == null) {
-                            return Message.error("Problem selecting that suspect." + "  Please try again!");
+                            return Message.error(
+                                    "Problem selecting that suspect." + "  Please try again!");
                         }
 
                         logger.info("Selected " + suspectStrToEnum.get(pl.words().get(1)));
                         String card = pl.words().get(1);
                         SuspectCard suspect = (SuspectCard) suspectStrToEnum.get(card);
                         retval = Message.clientConfig(suspect);
-						// TODO: This is untrue until the Server acknowledges it.
+                        // TODO: This is untrue until the Server acknowledges it.
                         clientState.setConfigured(true);
                         String myCard = pl.words().get(1);
                         SuspectCard mySuspect = (SuspectCard) suspectStrToEnum.get(myCard);
@@ -374,19 +375,22 @@ public class CLI {
                     if (pl.words().size() == 4) {
 
                         if (accuseStrToEnum.get(pl.words().get(1)) == null) {
-                            return Message.error("Problem selecting card \""
-                                    + pl.words().get(1)
-                                    + "\". Please try again!");
+                            return Message.error(
+                                    "Problem selecting card \""
+                                            + pl.words().get(1)
+                                            + "\". Please try again!");
                         }
                         if (accuseStrToEnum.get(pl.words().get(2)) == null) {
-                            return Message.error("Problem selecting card \""
-                                    + pl.words().get(2)
-                                    + "\". Please try again!");
+                            return Message.error(
+                                    "Problem selecting card \""
+                                            + pl.words().get(2)
+                                            + "\". Please try again!");
                         }
                         if (accuseStrToEnum.get(pl.words().get(3)) == null) {
-                            return Message.error("Problem selecting card \""
-                                    + pl.words().get(3)
-                                    + "\". Please try again!");
+                            return Message.error(
+                                    "Problem selecting card \""
+                                            + pl.words().get(3)
+                                            + "\". Please try again!");
                         }
                         String card1 = pl.words().get(1);
                         String card2 = pl.words().get(2);
@@ -404,7 +408,8 @@ public class CLI {
                         }
 
                     } else {
-                        return Message.error("Must specify a suspect, location, and weapon to accuse!");
+                        return Message.error(
+                                "Must specify a suspect, location, and weapon to accuse!");
                     }
                 } catch (Exception e) {
                     logger.error("failed making accusation");
@@ -463,7 +468,7 @@ public class CLI {
                         // CardWrapper cards = new CardWrapper(cardsToSend);
                         Suggestion cards = new Suggestion(ce1, ce2, location);
                         retval = Message.suggestion(cards);
-						// TODO: Not true until confirmed by server
+                        // TODO: Not true until confirmed by server
                         clientState.setSuggested(true);
 
                     } else {
@@ -493,11 +498,13 @@ public class CLI {
                     }
 
                     if (pl.words().size() != 2) {
-                        return Message.error("Must specify a direction to move in.  Please try again!");
+                        return Message.error(
+                                "Must specify a direction to move in.  Please try again!");
                     }
 
                     if (directionsStrToEnum.get(pl.words().get(1)) == null) {
-                        return Message.error("Problem moving in that direction.  Please try again!");
+                        return Message.error(
+                                "Problem moving in that direction.  Please try again!");
                     }
 
                     logger.info("Moving direction: " + directionsStrToEnum.get(pl.words().get(1)));
@@ -505,7 +512,7 @@ public class CLI {
                     String dirStr = pl.words().get(1);
                     DirectionsEnum dir = directionsStrToEnum.get(dirStr);
                     retval = Message.moveClient(dir);
-					// TODO: Not true until confirmed by server
+                    // TODO: Not true until confirmed by server
                     clientState.setMoved(true);
                 } catch (Exception e) {
                     logger.error("failed moving");
@@ -515,322 +522,26 @@ public class CLI {
                 return Message.error("Please enter a valid command!");
         }
         return retval;
-	}
-	
-    public static String handleCommand(CLI cli, String line) {
-        logger.debug(cli.clientState.getMySuspect() + ": " + line);
-        Client client = cli.client;
-        ClientState clientState = cli.clientState;
+    }
 
-        ParsedLine pl;
-        pl = parser.parse(line, 0);
-        if (null == pl.word()) {
+    public static String handleCommand(CLI cli, String line) {
+        Client client = cli.client;
+        Message msg = CLI.processCommand(cli, line);
+        if (msg == null) {
             return null;
         }
-
-        switch (pl.word()) {
-            case "chat":
-                try {
-                    String chatMsg = line.split(" ", 2)[1];
-                    Message msg = Message.chatMessage(chatMsg);
-                    client.sendMessage(msg);
-                } catch (Exception e) {
-                    logger.error("failed chat");
-                }
-                break;
-            case "done":
-                try {
-                    client.sendMessage(Message.endTurn());
-                } catch (Exception e) {
-                    logger.error("failed chat");
-                }
-                break;
-            case "config":
-                try {
-                    if (clientState.isConfigured()) {
-                        return "You've already selected a suspect!";
-                    }
-
-                    if (pl.words().size() == 2) {
-                        if (suspectStrToEnum.get(pl.words().get(1)) == null) {
-                            return "Problem selecting that suspect." + "  Please try again!";
-                        }
-
-                        logger.info("Selected " + suspectStrToEnum.get(pl.words().get(1)));
-                        String card = pl.words().get(1);
-                        SuspectCard suspect = (SuspectCard) suspectStrToEnum.get(card);
-                        client.sendMessage(Message.clientConfig(suspect));
-                        clientState.setConfigured(true);
-                        String myCard = pl.words().get(1);
-                        SuspectCard mySuspect = (SuspectCard) suspectStrToEnum.get(myCard);
-                        clientState.setMySuspect(mySuspect);
-                    }
-                } catch (Exception e) {
-                    logger.error("failed config");
-                }
-                break;
-            case "start":
-                try {
-                    if (!clientState.isConfigured()) {
-                        return "Must config first!";
-                    }
-
-                    client.sendMessage(Message.startGame());
-
-                } catch (Exception e) {
-                    logger.error("failed starting game");
-                }
-                break;
-            case "disprove":
-                try {
-                    if (!clientState.isConfigured()) {
-                        return "Must config first!";
-                    }
-
-                    if (!clientState.getGameState().isGameActive()) {
-                        return "Must start first!";
-                    }
-
-                    if (!clientState.isDisproving()) {
-                        return "Must be actively disproving!";
-                    }
-
-                    if (pl.words().size() == 2) {
-                        HashMap<String, Card> disproveStrToEnum = new HashMap<String, Card>();
-
-                        for (Card card : clientState.getDisproveCards()) {
-                            disproveStrToEnum.put(card.getName(), card);
-                        }
-
-                        if (disproveStrToEnum.get(pl.words().get(1)) == null) {
-                            return "Problem selecting that card." + "  Please try again!";
-                        }
-
-                        String card1 = pl.words().get(1);
-                        logger.info("Disproving " + card1);
-                        Card ce1 = disproveStrToEnum.get(card1);
-
-                        client.sendMessage(Message.clientRespondSuggestion(ce1));
-                        clientState.setDisproving(false);
-                    } else if (pl.words().size() == 1
-                            && clientState.getDisproveCards().size() == 0) {
-                        client.sendMessage(Message.clientRespondSuggestion(null));
-                    } else {
-                        return "Must pick a card to disprove the suggestion!";
-                    }
-                } catch (Exception e) {
-                    logger.error("failed making suggestion");
-                }
-                break;
-            case "cards":
-                if (!clientState.isConfigured()) {
-                    return "Must config first!";
-                } else if (!clientState.getGameState().isGameActive()) {
-                    return "Must start first!";
-                }
-
-                String toReturn = "";
-                toReturn += "\nYour cards:\n";
-                for (Card card : clientState.getCards()) {
-                    toReturn += card.getName() + "\n";
-                }
-
-                toReturn += "\n\nFace Up Cards:\n";
-                for (Card card : clientState.getFaceUpCards()) {
-                    toReturn += card.getName() + "\n";
-                }
-                return toReturn;
-
-            case "board":
-                if (!clientState.isConfigured()) {
-                    return "Must config first!";
-                } else if (!clientState.getGameState().isGameActive()) {
-                    return "Must start first!";
-                } else {
-                    /*String toReturn = "\n";
-                    toReturn += "\nBoard:\n";
-                    for (Entry<CardsEnum, CardsEnum> entry :
-                            clientState.getGameState().getSuspectLocations().entrySet()) {
-                        toReturn +=
-                                "Suspect: "
-                                        + entry.getKey()
-                                        + "\t"
-                                        + "Location: "
-                                        + entry.getValue()
-                                        + "\n";
-                    }
-
-                    toReturn += "\nWeapons:\n";
-                    for (Entry<CardsEnum, CardsEnum> entry :
-                            clientState.getGameState().getWeaponLocations().entrySet()) {
-                        toReturn +=
-                                "Weapon: "
-                                        + entry.getKey()
-                                        + "\t"
-                                        + "Location: "
-                                        + entry.getValue()
-                                        + "\n";
-                    }*/
-
-                    BoardBuilder bb = new BoardBuilder(clientState);
-                    System.out.println(bb.generateBoard());
-                }
-                break;
-            case "accuse":
-                try {
-                    if (!clientState.isConfigured()) {
-                        return "Must config first!";
-                    }
-
-                    if (!clientState.getGameState().isGameActive()) {
-                        return "Must start first!";
-                    }
-
-                    if (!clientState.isMyTurn()) {
-                        return "Must be the active player!";
-                    }
-
-                    if (pl.words().size() == 4) {
-
-                        if (accuseStrToEnum.get(pl.words().get(1)) == null) {
-                            return "Problem selecting card \""
-                                    + pl.words().get(1)
-                                    + "\". Please try again!";
-                        }
-                        if (accuseStrToEnum.get(pl.words().get(2)) == null) {
-                            return "Problem selecting card \""
-                                    + pl.words().get(2)
-                                    + "\". Please try again!";
-                        }
-                        if (accuseStrToEnum.get(pl.words().get(3)) == null) {
-                            return "Problem selecting card \""
-                                    + pl.words().get(3)
-                                    + "\". Please try again!";
-                        }
-                        String card1 = pl.words().get(1);
-                        String card2 = pl.words().get(2);
-                        String card3 = pl.words().get(3);
-                        logger.info("Accusing " + card1 + card2 + card3);
-                        try {
-                            Card ce1 = accuseStrToEnum.get(card1);
-                            Card ce2 = accuseStrToEnum.get(card2);
-                            Card ce3 = accuseStrToEnum.get(card3);
-
-                            Suggestion suggestion = new Suggestion(ce1, ce2, ce3);
-                            client.sendMessage(Message.accusation(suggestion));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                    } else {
-                        return "Must specify a suspect, location, and weapon to accuse!";
-                    }
-                } catch (Exception e) {
-                    logger.error("failed making accusation");
-                }
-                break;
-            case "suggest":
-                try {
-                    if (!clientState.isConfigured()) {
-                        return "Must config first!";
-                    }
-
-                    if (!clientState.getGameState().isGameActive()) {
-                        return "Must start first!";
-                    }
-
-                    if (!clientState.isMyTurn()) {
-                        return "Must be the active player!";
-                    }
-
-                    if (clientState.isSuggested()) {
-                        return "Already made a suggestion this turn!";
-                    }
-
-                    if ((clientState.getMyLocation() != null)
-                            && Hallway.isHallwayId(clientState.getMyLocation())) {
-                        return "Cannot make a suggestion in a hallway!";
-                    }
-
-                    if (pl.words().size() == 3) {
-
-                        if (suggestStrToEnum.get(pl.words().get(1)) == null) {
-                            return "Problem selecting that card." + "  Please try again!";
-                        }
-                        if (suggestStrToEnum.get(pl.words().get(2)) == null) {
-                            return "Problem selecting that card." + "  Please try again!";
-                        }
-                        String card1 = pl.words().get(1);
-                        String card2 = pl.words().get(2);
-                        logger.info("Suggesting " + card1 + " " + card2);
-                        Card ce1 = suggestStrToEnum.get(card1);
-                        Card ce2 = suggestStrToEnum.get(card2);
-                        Card location = RoomCard.fetch(clientState.getMyLocation());
-                        if (ce1 == null) {
-                            logger.error("Missing ce1");
-                        }
-                        if (ce2 == null) {
-                            logger.error("Missing ce2");
-                        }
-                        if (location == null) {
-                            logger.error("Missing location");
-                        }
-                        // ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
-                        // cardsToSend.add(ce1);
-                        // cardsToSend.add(ce2);
-                        // cardsToSend.add(location);
-                        // CardWrapper cards = new CardWrapper(cardsToSend);
-                        Suggestion cards = new Suggestion(ce1, ce2, location);
-                        client.sendMessage(Message.suggestion(cards));
-                        clientState.setSuggested(true);
-
-                    } else {
-                        return "Must specify a suspect and a weapon to suggest!";
-                    }
-                } catch (Exception e) {
-                    logger.error("failed making suggestion");
-                    e.printStackTrace();
-                }
-                break;
-            case "move":
-                try {
-                    if (!clientState.isConfigured()) {
-                        return "Must config first!";
-                    }
-
-                    if (!clientState.getGameState().isGameActive()) {
-                        return "Must start first!";
-                    }
-
-                    if (!clientState.isMyTurn()) {
-                        return "Must be the active player!";
-                    }
-
-                    if (clientState.isMoved()) {
-                        return "Already moved this turn!";
-                    }
-
-                    if (pl.words().size() != 2) {
-                        return "Must specify a direction to move in." + "  Please try again!";
-                    }
-
-                    if (directionsStrToEnum.get(pl.words().get(1)) == null) {
-                        return "Problem moving in that direction." + "  Please try again!";
-                    }
-
-                    logger.info("Moving direction: " + directionsStrToEnum.get(pl.words().get(1)));
-
-                    String dirStr = pl.words().get(1);
-                    DirectionsEnum dir = directionsStrToEnum.get(dirStr);
-                    client.sendMessage(Message.moveClient(dir));
-                    clientState.setMoved(true);
-                } catch (Exception e) {
-                    logger.error("failed moving");
-                }
-                break;
-            default:
-                return "Please enter a valid command!";
+        if (msg.getMessageID() == MessagesEnum.MESSAGE_ERROR) {
+            return (String) msg.getMessageData();
+        } else if (msg.getMessageID() == MessagesEnum.MESSAGE_INFO) {
+            return (String) msg.getMessageData();
         }
+
+        try {
+            client.sendMessage(msg);
+        } catch (Exception e) {
+            logger.error("Failed to send Message: " + msg.getMessageID());
+        }
+
         return null;
     }
 
