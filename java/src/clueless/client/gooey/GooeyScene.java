@@ -10,6 +10,7 @@ import clueless.client.cli.*;
 import clueless.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +39,17 @@ public class GooeyScene implements Initializable {
     @FXML private AnchorPane anchorPane;
     @FXML private TextField cliField;
     @FXML private ListView logList;
+
+    @FXML private ImageView board;
+    @FXML private ImageView mustard;
+    @FXML private ImageView scarlet;
+    @FXML private ImageView plum;
+    @FXML private ImageView peacock;
+    @FXML private ImageView green;
+    @FXML private ImageView white;
+
+    private HashMap<String, Image> imgByName;
+    private HashMap<String, ImageView> viewByName;
 
     private ArrayList<String> logArray;
 
@@ -110,10 +123,48 @@ public class GooeyScene implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // anchorPane.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE,
         // CornerRadii.EMPTY, Insets.EMPTY)));
+        board.setImage(imgByName.get("board"));
+        board.toBack();
+
+        mustard.setImage(imgByName.get("mustard"));
+        white.setImage(imgByName.get("white"));
+        peacock.setImage(imgByName.get("peacock"));
+        plum.setImage(imgByName.get("plum"));
+        green.setImage(imgByName.get("green"));
+        scarlet.setImage(imgByName.get("scarlet"));
+
+        mustard.setLayoutX(0);
+        mustard.setLayoutY(0);
     }
 
     public GooeyScene() {
         logArray = new ArrayList<>();
+
+        viewByName = new HashMap<>();
+        viewByName.put("mustard", mustard);
+        viewByName.put("white", white);
+        viewByName.put("scarlet", scarlet);
+        viewByName.put("plum", plum);
+        viewByName.put("peacock", peacock);
+        viewByName.put("green", green);
+
+        Image img;
+        String prefix = "clueless/client/gooey/sprites/";
+        imgByName = new HashMap<>();
+        img = new Image(prefix + "board.png", 600, 600, false, false);
+        imgByName.put("board", img);
+        img = new Image(prefix + "mustard.jpg", 40, 40, false, false);
+        imgByName.put("mustard", img);
+        img = new Image(prefix + "peacock.png", 40, 40, false, false);
+        imgByName.put("peacock", img);
+        img = new Image(prefix + "plum.png", 40, 40, false, false);
+        imgByName.put("plum", img);
+        img = new Image(prefix + "green.png", 40, 40, false, false);
+        imgByName.put("green", img);
+        img = new Image(prefix + "white.png", 40, 40, false, false);
+        imgByName.put("white", img);
+        img = new Image(prefix + "scarlet.jpg", 40, 40, false, false);
+        imgByName.put("scarlet", img);
 
         clientState = new ClientState();
         watchdog = new Watchdog(10000);

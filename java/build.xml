@@ -46,10 +46,19 @@
 
     <!-- Compiles the java code (including the usage of library for JUnit -->
     <target name="compile" depends="style">
+
         <javac debug="true" includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}">
             <classpath refid="lib-classpath" />
             <compilerarg value="-Xlint:unchecked" />
         </javac>
+
+        <copy file="${src.dir}/clueless/client/gooey/GooeyScene.fxml" 
+              tofile="${build.dir}/clueless/client/gooey/GooeyScene.fxml" />
+
+        <copy todir="${build.dir}/clueless/client/gooey/sprites">
+            <fileset dir="${src.dir}/clueless/client/gooey/sprites" />
+        </copy>
+
     </target>
 
     <!-- Creates Javadoc -->
@@ -58,7 +67,7 @@
             <classpath refid="lib-classpath" />
             <!-- Define which files / directory should get included, we include all -->
              <fileset dir="${src.dir}">
-                <include name="**" />
+                <include name="**/*.java" />
                 <exclude name="**/info" />
              </fileset>
         </javadoc>
@@ -68,9 +77,9 @@
     <target name="jar" depends="compile">
         <jar manifest="manifest.mf" destfile="${dist.dir}\clueless.jar" basedir="${build.dir}">
             <fileset dir="." includes="log4j2.xml" />
-            <zipfileset dir="${src.dir}/clueless/client/gooey" 
+            <!-- zipfileset dir="${src.dir}/clueless/client/gooey" 
                         includes="GooeyScene.fxml" 
-                        fullpath="clueless/client/gooey/GooeyScene.fxml" />
+                        fullpath="clueless/client/gooey/GooeyScene.fxml" / -->
             <zipfileset src="${lib.dir}\ST4-4.0.8.jar" includes="**/*" excludes="**/META-INF" />
             <zipfileset src="${lib.dir}\ascii-utf-themes-0.0.1.jar" includes="**/*" excludes="**/META-INF" />
             <zipfileset src="${lib.dir}\asciitable-0.3.2.jar" includes="**/*" excludes="**/META-INF" />
