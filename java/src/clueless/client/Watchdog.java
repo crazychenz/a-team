@@ -18,8 +18,9 @@ public class Watchdog implements Runnable {
     /**
      * Default constructor
      *
+     * <p>TODO: Let the eventhandler handle a watchdog timeout
+     *
      * @param timeout The timeout before the Watchdog kills the process
-     * @todo Let the eventhandler handle a watchdog timeout
      */
     public Watchdog(long timeout) {
         this.timeout = timeout;

@@ -76,8 +76,9 @@ public class Location {
      * <p>This method should be treated as an abstract method that must be overridden by a
      * sub-class.
      *
+     * <p>TODO: maybe belongs in an interface?
+     *
      * @return true if available, false if unavailable.
-     * @todo maybe belongs in an interface?
      */
     public boolean available() {
         return false;
@@ -89,8 +90,9 @@ public class Location {
      * <p>This method should be treated as an abstract method that must be overridden by a
      * sub-class.
      *
+     * <p>TODO: maybe belongs in an interface?
+     *
      * @param suspect Suspect to place
-     * @todo maybe belongs in an interface?
      */
     public void placeSuspect(Suspect suspect) {
         return;
@@ -102,8 +104,9 @@ public class Location {
      * <p>This method should be treated as an abstract method that must be overridden by a
      * sub-class.
      *
+     * <p>TODO: maybe belongs in an interface?
+     *
      * @param suspect Suspect to remove
-     * @todo maybe belongs in an interface?
      */
     public void removeSuspect(Suspect suspect) {
         return;

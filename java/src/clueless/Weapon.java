@@ -43,8 +43,9 @@ public class Weapon implements Serializable {
     /**
      * Fetch the current Room location of the Weapon piece.
      *
+     * <p>TODO: Make sure Weapon currentLocation is never null.
+     *
      * @return the current_location (possibly null)
-     * @todo Make sure Weapon currentLocation is never null.
      */
     public Room getCurrent_location() {
         return current_location;

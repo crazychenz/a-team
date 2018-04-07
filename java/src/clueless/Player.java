@@ -99,7 +99,7 @@ public class Player extends ListItem implements Comparable {
     /**
      * Fetch the UUID of the client controlling Player.
      *
-     * @return
+     * @return Returns player's UUID as a String
      */
     public String getUuid() {
         return uuid;

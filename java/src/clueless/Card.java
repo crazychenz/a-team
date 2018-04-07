@@ -68,9 +68,10 @@ public class Card implements Serializable {
     /**
      * Checks for Card equality by comparing IDs
      *
+     * <p>TODO: This shouldn't be needed if we normalize objects on serialization
+     *
      * @param card Card to check equality against
      * @return true if equal, false if different.
-     * @todo This shouldn't be needed if we normalize objects on serialization
      */
     public boolean equals(Card card) {
         return getId() == card.getId();

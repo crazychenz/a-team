@@ -145,9 +145,9 @@ public class Message implements Serializable {
     /**
      * Serialize a Message object to a ByteBuffer
      *
-     * @param msg
-     * @return
-     * @throws Exception
+     * @param msg Message object to serialize
+     * @return Serialized message in ByteBuffer
+     * @throws Exception if serialization fails
      */
     public static ByteBuffer toBuffer(Message msg) throws Exception {
         ByteBufferBackedOutputStream bbos;
@@ -173,9 +173,9 @@ public class Message implements Serializable {
     /**
      * Parse a Message object from a ByteBuffer
      *
-     * @param buf
-     * @return
-     * @throws Exception
+     * @param buf Serialized message to parse
+     * @return Parsed message object
+     * @throws Exception if parsing goes bad
      */
     public static Message fromBuffer(ByteBuffer buf) throws Exception {
         ByteBufferBackedInputStream bbis;
@@ -199,9 +199,8 @@ public class Message implements Serializable {
      * Generate clientConnect message
      *
      * @return clientConnect message
-     * @throws Exception
      */
-    public static Message clientConnect() throws Exception {
+    public static Message clientConnect() {
         logger.trace("Connecting to Game");
         return new Message(MessagesEnum.MESSAGE_CLIENT_CONNECTED, "");
     }
@@ -210,9 +209,8 @@ public class Message implements Serializable {
      * Generate startGame message
      *
      * @return startGame message
-     * @throws Exception
      */
-    public static Message startGame() throws Exception {
+    public static Message startGame() {
         logger.trace("Client wants to start the game");
         return new Message(MessagesEnum.MESSAGE_CLIENT_START_GAME, "");
     }
@@ -222,9 +220,8 @@ public class Message implements Serializable {
      *
      * @param direction Direction the client is moving
      * @return moveClient message
-     * @throws Exception
      */
-    public static Message moveClient(DirectionsEnum direction) throws Exception {
+    public static Message moveClient(DirectionsEnum direction) {
         logger.trace("Client is moving");
         return new Message(MessagesEnum.MESSAGE_CLIENT_MOVE, direction);
     }
@@ -234,9 +231,8 @@ public class Message implements Serializable {
      *
      * @param suspect SuspectCard client would like to register
      * @return clientConfig message
-     * @throws Exception
      */
-    public static Message clientConfig(SuspectCard suspect) throws Exception {
+    public static Message clientConfig(SuspectCard suspect) {
         logger.trace("Configuring client");
         return new Message(MessagesEnum.MESSAGE_CLIENT_CONFIG, suspect);
     }
@@ -246,9 +242,8 @@ public class Message implements Serializable {
      *
      * @param chatMessage String message to send to all clients
      * @return chatMessage message
-     * @throws Exception
      */
-    public static Message chatMessage(String chatMessage) throws Exception {
+    public static Message chatMessage(String chatMessage) {
         logger.trace("Sending chat to others");
         return new Message(MessagesEnum.MESSAGE_CHAT_FROM_CLIENT, chatMessage);
     }
@@ -256,7 +251,7 @@ public class Message implements Serializable {
     /**
      * Generate winMessage message
      *
-     * @param winningSuspect Winning suspect
+     * @param message Winning suspect
      * @return winMessage message
      */
     public static Message serverMessage(String message) {
@@ -267,9 +262,8 @@ public class Message implements Serializable {
      * Generate endTurn message
      *
      * @return endTurn message
-     * @throws Exception
      */
-    public static Message endTurn() throws Exception {
+    public static Message endTurn() {
         logger.trace("Ending turn");
         return new Message(MessagesEnum.MESSAGE_CLIENT_END_TURN, "");
     }
@@ -278,9 +272,8 @@ public class Message implements Serializable {
      * Generate clientPulse message (client-side)
      *
      * @return clientPulse message
-     * @throws Exception
      */
-    public static Message clientPulse() throws Exception {
+    public static Message clientPulse() {
         logger.trace("Sending watchdog pulse");
         return new Message(MessagesEnum.MESSAGE_PULSE, "");
     }
@@ -290,9 +283,8 @@ public class Message implements Serializable {
      *
      * @param pulsePayload The GameStatePulse payload object
      * @return serverPulse message
-     * @throws Exception
      */
-    public static Message serverPulse(GameStatePulse pulsePayload) throws Exception {
+    public static Message serverPulse(GameStatePulse pulsePayload) {
         return new Message(MessagesEnum.MESSAGE_PULSE, pulsePayload);
     }
 
@@ -301,9 +293,8 @@ public class Message implements Serializable {
      *
      * @param suggestion Suggestion object of accusation
      * @return accusation message
-     * @throws Exception
      */
-    public static Message accusation(Suggestion suggestion) throws Exception {
+    public static Message accusation(Suggestion suggestion) {
         return new Message(MessagesEnum.MESSAGE_CLIENT_ACCUSE, suggestion);
     }
 
@@ -312,18 +303,18 @@ public class Message implements Serializable {
      *
      * @param suggestion Suggestion object of suggestion sequence
      * @return suggestion message
-     * @throws Exception
      */
-    public static Message suggestion(Suggestion suggestion) throws Exception {
+    public static Message suggestion(Suggestion suggestion) {
         return new Message(MessagesEnum.MESSAGE_CLIENT_SUGGEST, suggestion);
     }
 
     /**
      * Generate failedConfig message (server-side)
      *
+     * <p>TODO: This should be more structured
+     *
      * @param message Failed config description to client
      * @return failedConfig message
-     * @todo This should be more structured
      */
     public static Message failedConfig(String message) {
         return new Message(MessagesEnum.MESSAGE_SERVER_FAIL_CONFIG, message);
@@ -344,7 +335,7 @@ public class Message implements Serializable {
      *
      * @param cards Suggestion being disproven
      * @param playerToDisprove Player object to disprove
-     * @return
+     * @return Message object
      */
     public static Message relaySuggestion(Suggestion cards, Player playerToDisprove) {
         return new Message(MessagesEnum.MESSAGE_SERVER_RELAY_SUGGEST, cards, playerToDisprove.uuid);
@@ -353,9 +344,10 @@ public class Message implements Serializable {
     /**
      * Generate sendGameStatePulse message (server-side)
      *
+     * <p>TODO: Duplicate of serverPulse?
+     *
      * @param gsp GameStatePulse payload to send to client
      * @return sendGameStatePulse message
-     * @todo Duplicate of serverPulse?
      */
     public static Message sendGameStatePulse(GameStatePulse gsp) {
         return new Message(MessagesEnum.MESSAGE_PULSE, gsp);

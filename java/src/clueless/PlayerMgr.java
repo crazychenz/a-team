@@ -36,7 +36,7 @@ public class PlayerMgr {
     /**
      * Returns the number of currently tracked players.
      *
-     * @return
+     * @return Returns the number of currently tracked players.
      */
     public int count() {
         return activePlayerArray.size();

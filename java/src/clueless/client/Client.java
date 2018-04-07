@@ -71,7 +71,7 @@ public class Client implements Runnable {
      * Send a message object to server
      *
      * @param msg Message to send to server
-     * @throws Exception
+     * @throws Exception when serialization fails
      */
     public void sendMessage(Message msg) throws Exception {
         ByteBuffer buf;
@@ -122,7 +122,7 @@ public class Client implements Runnable {
     /**
      * Disconnect client from server.
      *
-     * @throws Exception
+     * @throws Exception when thread gets interrupted
      */
     public void disconnect() throws Exception {
         thread.interrupt();

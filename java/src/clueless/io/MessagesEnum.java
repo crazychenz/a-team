@@ -4,8 +4,9 @@ package clueless.io;
 /**
  * Enumeration of all possible MessageTypes
  *
+ * <p>TODO: Embed this into Message class
+ *
  * @author ateam
- * @todo Embed this into Message class
  */
 public enum MessagesEnum {
     MESSAGE_PULSE(0x50),

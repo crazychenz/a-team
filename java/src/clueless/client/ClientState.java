@@ -49,6 +49,7 @@ public class ClientState {
      * Set the game state
      *
      * @param gameState the gameState to set
+     * @return Returns null or String message for user
      */
     public String setGameState(GameStatePulse gameState) {
         String retval = null;
@@ -91,8 +92,9 @@ public class ClientState {
     /**
      * Fetch available suspects
      *
+     * <p>TODO: AvailableSuspects wrapper should be striped at this point
+     *
      * @return the availableSuspects
-     * @todo AvailableSuspects wrapper should be striped at this point
      */
     public AvailableSuspects getAvailableSuspects() {
         return availableSuspects;

@@ -60,7 +60,7 @@ public class Dealer {
      *
      * @param numUsers Number of Players being dealt cards
      * @param difficulty 0 (easy), 1 (medium), 2 (hard) difficulty to specify how many face up cards
-     * @return
+     * @return number of cards faceup
      */
     public static int FaceUpCardsByPlayerCount(int numUsers, int difficulty) {
         if (difficulty == 0) {

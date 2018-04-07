@@ -3,8 +3,9 @@ package clueless;
 /**
  * Represents an item in a (internally) linked list.
  *
+ * <p>Note: This linked list ListItem is modeled off the Linux Kernel list.h
+ *
  * @author ateam
- * @note This linked list ListItem is modeled off the Linux Kernel list.h
  */
 public abstract class ListItem {
 
