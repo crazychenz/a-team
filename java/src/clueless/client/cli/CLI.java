@@ -30,18 +30,22 @@ public class CLI {
     private static Object[] suggestNodes;
 
     // Client Specific Properties
-    private Client client;
     private ClientState clientState;
-    private EventHandler evtHandler;
-    private Watchdog watchdog;
-    private Thread watchdogThread;
-    private Heartbeat heartbeat;
-    private Thread heartbeatThread;
 
     // Terminal Properties
     private static Terminal terminal;
     private static LineReader reader;
     private static PrintWriter termout;
+
+    public CLI() {
+        clientState = new ClientState();
+    }
+
+    public void startup() {
+        String addr = argMap.get("address");
+        String port = argMap.get("port");
+        clientState.startup(new CLIEventHandler(clientState), addr, port);
+    }
 
     public static Object[] buildSuspectNodes(HashMap<String, Card> map) {
         Object[] nodes = new Object[map.size() + 1];
@@ -150,7 +154,6 @@ public class CLI {
     }
 
     public static String handleCommand(CLI cli, String line) {
-        Client client = cli.client;
         Message msg = ClientCommand.processCommand(cli.clientState, line);
         if (msg == null) {
             return null;
@@ -162,7 +165,7 @@ public class CLI {
         }
 
         try {
-            client.sendMessage(msg);
+            cli.clientState.sendMessage(msg);
         } catch (Exception e) {
             logger.error("Failed to send Message: " + msg.getMessageID());
         }
@@ -172,63 +175,10 @@ public class CLI {
 
     public void sendMessage(Message msg) {
         try {
-            client.sendMessage(msg);
+            clientState.sendMessage(msg);
         } catch (Exception e) {
             logger.error("Failed to send Message: " + msg.getMessageID());
         }
-    }
-
-    public CLI() {
-        this(null, null, null);
-    }
-
-    public CLI(EventHandler evtHandler, ClientState stateParam, Watchdog dogParam) {
-
-        if (stateParam == null) {
-            // Where client side state lives
-            clientState = new ClientState();
-        } else {
-            clientState = stateParam;
-        }
-
-        if (dogParam == null) {
-            // Initialize watchdog thread
-            watchdog = new Watchdog(10000);
-            watchdog.pulse();
-        } else {
-            watchdog = dogParam;
-        }
-        watchdogThread = new Thread(watchdog);
-        // TODO start thread outside of constructor
-        watchdogThread.start();
-
-        // Client side event handler (for CLI user interface)
-        if (evtHandler == null) {
-            this.evtHandler = new CLIEventHandler(clientState, watchdog);
-        } else {
-            this.evtHandler = evtHandler;
-        }
-
-        // Initialize the Client link.
-        client = new Client(this.evtHandler);
-        logger.info("Client UUID: " + client.uuid);
-
-        try {
-            // logger.info("argmap address " + argMap.get("address"));
-            // logger.info("argmap port " + argMap.get("port"));
-            client.connect(argMap.get("address"), argMap.get("port"));
-
-            // Do the initial available suspect fetch
-            client.sendMessage(Message.clientConnect());
-        } catch (Exception e) {
-            logger.error("Exception in connect client.");
-        }
-
-        // Init heartbeat thread (duration half length of watchdog timeout)
-        heartbeat = new Heartbeat(client, 1000);
-        heartbeatThread = new Thread(heartbeat);
-        // TODO start thread outside of constructor
-        heartbeatThread.start();
     }
 
     public static void doInteractiveSession(CLI cli) {
@@ -321,6 +271,7 @@ public class CLI {
 
         // Create an instance of our CLI state
         CLI cli = new CLI();
+        cli.startup();
 
         // Start interactive loop
         doInteractiveSession(cli);

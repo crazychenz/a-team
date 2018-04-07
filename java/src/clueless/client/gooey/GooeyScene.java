@@ -28,10 +28,10 @@ public class GooeyScene implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(GooeyScene.class);
 
+    private Client client;
     private ClientState clientState;
-    private Watchdog watchdog;
-    private GooeyEventHandler evtHandler;
-    private CLI cli;
+    private Heartbeat heartbeat;
+    private Thread heartbeatThread;
 
     private HashMap<String, PieceStack> stacks;
 
@@ -112,7 +112,7 @@ public class GooeyScene implements Initializable {
 
         // If its a message for the server, send it!
         try {
-            cli.sendMessage(msg);
+            clientState.sendMessage(msg);
         } catch (Exception e) {
             logger.error("Failed to send Message: " + msg.getMessageID());
         }
@@ -180,9 +180,12 @@ public class GooeyScene implements Initializable {
         imgByName.put("scarlet", img);
 
         clientState = new ClientState();
-        watchdog = new Watchdog(10000);
-        watchdog.pulse();
-        evtHandler = new GooeyEventHandler(clientState, watchdog, this);
-        cli = new CLI(evtHandler, clientState, watchdog);
+
+        startup("127.0.0.1", "2323");
+    }
+
+    public void startup(String addr, String port) {
+        EventHandler evtHdlr = new GooeyEventHandler(clientState, this);
+        clientState.startup(evtHdlr, addr, port);
     }
 }

@@ -1,6 +1,7 @@
 package clueless.client;
 
 import clueless.*;
+import clueless.io.Message;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +13,15 @@ import org.apache.logging.log4j.Logger;
  * @author ateam
  */
 public class ClientState {
+
+    private static final Logger logger = LogManager.getLogger(ClientState.class);
+
+    private EventHandler evtHdlr;
+    private Client client;
+    private Watchdog watchdog;
+    private Thread watchdogThread;
+    private Heartbeat heartbeat;
+    private Thread heartbeatThread;
 
     private AvailableSuspects availableSuspects;
     private boolean configured = false;
@@ -27,13 +37,62 @@ public class ClientState {
     private ArrayList<Card> disproveCards;
     private boolean disproving = false;
 
-    private static final Logger logger = LogManager.getLogger(ClientState.class);
+    public ClientState() {
+        this(10000);
+    }
 
     /** Default constructor */
-    public ClientState() {
+    public ClientState(long wdTimeout) {
         setCards(new ArrayList<Card>());
         setFaceUpCards(new ArrayList<Card>());
         setDisproveCards(new ArrayList<Card>());
+
+        // Default to noop evthdlr
+        this.evtHdlr = new EventHandler();
+
+        watchdog = new Watchdog(wdTimeout);
+        watchdog.pulse();
+        watchdogThread = new Thread(watchdog);
+    }
+
+    public void pulse() {
+        watchdog.pulse();
+    }
+
+    public void startup(EventHandler evtHdlr, String addr, String port) {
+        this.evtHdlr = evtHdlr;
+
+        // Initialize the Client link.
+        client = new Client(evtHdlr);
+        logger.info("Client UUID: " + client.uuid);
+
+        try {
+            logger.trace("argmap address " + addr);
+            logger.trace("argmap port " + port);
+            client.connect(addr, port);
+
+            // Do the initial available suspect fetch
+            client.sendMessage(Message.clientConnect());
+        } catch (Exception e) {
+            logger.error("Exception in connect client.");
+        }
+
+        // Start watchdog (must be done outside constructor)
+        watchdogThread.start();
+
+        // Heartbeat timeout should be at least half of watchdog timeout
+        heartbeat = new Heartbeat(client, 1000);
+        heartbeatThread = new Thread(heartbeat);
+        // Start heartbeat (must be done outside constructor)
+        heartbeatThread.start();
+    }
+
+    public void sendMessage(Message msg) {
+        try {
+            client.sendMessage(msg);
+        } catch (Exception e) {
+            logger.error("Failed to send Message: " + msg.getMessageID());
+        }
     }
 
     /**

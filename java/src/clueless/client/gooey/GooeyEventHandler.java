@@ -17,13 +17,11 @@ public class GooeyEventHandler extends EventHandler {
     private static final Logger logger = LogManager.getLogger(GooeyEventHandler.class);
 
     ClientState clientState;
-    Watchdog watchdog;
 	GooeyScene scene;
 	boolean alerted;
 
-    GooeyEventHandler(ClientState state, Watchdog wd, GooeyScene scene) {
+    GooeyEventHandler(ClientState state, GooeyScene scene) {
         clientState = state;
-        watchdog = wd;
 		this.scene = scene;
 		alerted = false;
     }
@@ -56,7 +54,7 @@ public class GooeyEventHandler extends EventHandler {
 						}
 					});
 				}
-                watchdog.pulse();
+                clientState.pulse();
                 break;
             case MESSAGE_SERVER_FAIL_CONFIG:
                 logger.info(msg);

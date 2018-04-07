@@ -16,11 +16,9 @@ public class CLIEventHandler extends EventHandler {
     private static final Logger logger = LogManager.getLogger(CLIEventHandler.class);
 
     ClientState clientState;
-    Watchdog watchdog;
 
-    CLIEventHandler(ClientState state, Watchdog wd) {
+    CLIEventHandler(ClientState state) {
         clientState = state;
-        watchdog = wd;
     }
 
 	@Override
@@ -37,7 +35,7 @@ public class CLIEventHandler extends EventHandler {
 				if (statusStr != null) {
 					System.out.println(statusStr);
 				}
-                watchdog.pulse();
+                clientState.pulse();
                 break;
             case MESSAGE_SERVER_FAIL_CONFIG:
                 logger.info(msg);

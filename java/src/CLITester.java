@@ -44,15 +44,21 @@ public class CLITester {
         CLI.init(args);
 
         // Create all possible clients.
-        CLI cli1 = new CLI();
+        CLI plum = new CLI();
+        plum.startup();
         CLI peacock = new CLI();
+        peacock.startup();
         CLI scarlet = new CLI();
+        scarlet.startup();
         CLI white = new CLI();
+        white.startup();
         CLI green = new CLI();
+        green.startup();
         CLI mustard = new CLI();
+        mustard.startup();
 
         // Register Everyone
-        resp = CLI.handleCommand(cli1, "config Plum\n");
+        resp = CLI.handleCommand(plum, "config Plum\n");
         assert_null(resp, "Configure Player #1");
         resp = CLI.handleCommand(peacock, "config Peacock\n");
         assert_null(resp, "Configure Player #2");
@@ -115,7 +121,7 @@ public class CLITester {
         sleep(1000);
 
         // Kill all the clients
-        resp = CLI.handleCommand(cli1, "exit\n");
+        resp = CLI.handleCommand(plum, "exit\n");
         resp = CLI.handleCommand(peacock, "exit\n");
         resp = CLI.handleCommand(scarlet, "exit\n");
         resp = CLI.handleCommand(white, "exit\n");
