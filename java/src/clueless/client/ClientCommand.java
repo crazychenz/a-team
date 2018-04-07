@@ -19,7 +19,7 @@ public class ClientCommand {
 
     private static final Logger logger = LogManager.getLogger(ClientCommand.class);
 
-    private static DefaultParser parser;
+    private static DefaultParser parser = new DefaultParser();;
 
     // TODO: These should be made immutable
     public static HashMap<String, DirectionsEnum> directionsStrToEnum;
@@ -395,7 +395,6 @@ public class ClientCommand {
         directionsStrToEnum = new HashMap<>();
         buildDirectionMap(directionsStrToEnum);
 
-        parser = new DefaultParser();
         parser.setEofOnUnclosedQuote(true);
     }
 

@@ -15,7 +15,6 @@ import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
-import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
@@ -44,8 +43,6 @@ public class CLI {
     private static LineReader reader;
     private static PrintWriter termout;
 
-    private static DefaultParser parser;
-
     public static Object[] buildSuspectNodes(HashMap<String, Card> map) {
         Object[] nodes = new Object[map.size() + 1];
         nodes[0] = "config";
@@ -56,59 +53,6 @@ public class CLI {
         }
 
         return nodes;
-    }
-
-    /*public Object[] buildDisproveNodes(HashMap<String, CardsEnum> map) {
-        Object[] nodes = new Object[map.size() + 1];
-        nodes[0] = "disprove";
-        int i = 1;
-        for (String suspect : map.keySet()) {
-            nodes[i] = node(suspect);
-            i += 1;
-        }
-
-        return nodes;
-    }
-
-    public static void buildDisproveMap(HashMap<String, CardsEnum> map) {
-        if (clientState.isDisproving()) {
-            for (Card card : clientState.getDisproveCards()) {
-                map.put(card.getCardEnum().getLabel(), card.getCardEnum());
-            }
-        }
-    }*/
-
-    public static void buildCardsMap(
-            HashMap<String, Card> map, boolean suspects, boolean locations, boolean weapons) {
-        if (suspects) {
-            map.put("Green", SuspectCard.SUSPECT_GREEN);
-            map.put("Mustard", SuspectCard.SUSPECT_MUSTARD);
-            map.put("Peacock", SuspectCard.SUSPECT_PEACOCK);
-            map.put("Plum", SuspectCard.SUSPECT_PLUM);
-            map.put("Scarlet", SuspectCard.SUSPECT_SCARLET);
-            map.put("White", SuspectCard.SUSPECT_WHITE);
-        }
-
-        if (locations) {
-            map.put("Ballroom", RoomCard.LOCATION_BALLROOM);
-            map.put("Billiard", RoomCard.LOCATION_BILLIARDROOM);
-            map.put("Conservatory", RoomCard.LOCATION_CONSERVATORY);
-            map.put("Dining", RoomCard.LOCATION_DININGROOM);
-            map.put("Hall", RoomCard.LOCATION_HALL);
-            map.put("Kitchen", RoomCard.LOCATION_KITCHEN);
-            map.put("Library", RoomCard.LOCATION_LIBRARY);
-            map.put("Lounge", RoomCard.LOCATION_LOUNGE);
-            map.put("Study", RoomCard.LOCATION_STUDY);
-        }
-
-        if (weapons) {
-            map.put("Revolver", WeaponCard.WEAPON_REVOLVER);
-            map.put("Pipe", WeaponCard.WEAPON_LEADPIPE);
-            map.put("Rope", WeaponCard.WEAPON_ROPE);
-            map.put("Candlestick", WeaponCard.WEAPON_CANDLESTICK);
-            map.put("Wrench", WeaponCard.WEAPON_WRENCH);
-            map.put("Dagger", WeaponCard.WEAPON_DAGGER);
-        }
     }
 
     public static Object[] buildAccuseNodes(HashMap<String, Card> map) {
@@ -135,13 +79,25 @@ public class CLI {
         return nodes;
     }
 
-    public static void buildDirectionMap(HashMap<String, DirectionsEnum> map) {
-        map.put("north", DirectionsEnum.DIRECTION_NORTH);
-        map.put("south", DirectionsEnum.DIRECTION_SOUTH);
-        map.put("east", DirectionsEnum.DIRECTION_EAST);
-        map.put("west", DirectionsEnum.DIRECTION_WEST);
-        map.put("secret", DirectionsEnum.DIRECTION_SECRET);
+    /*public Object[] buildDisproveNodes(HashMap<String, CardsEnum> map) {
+        Object[] nodes = new Object[map.size() + 1];
+        nodes[0] = "disprove";
+        int i = 1;
+        for (String suspect : map.keySet()) {
+            nodes[i] = node(suspect);
+            i += 1;
+        }
+
+        return nodes;
     }
+
+    public static void buildDisproveMap(HashMap<String, CardsEnum> map) {
+        if (clientState.isDisproving()) {
+            for (Card card : clientState.getDisproveCards()) {
+                map.put(card.getCardEnum().getLabel(), card.getCardEnum());
+            }
+        }
+    }*/
 
     public static Object[] buildDirectionNodes(HashMap<String, DirectionsEnum> map) {
         Object[] nodes = new Object[map.size() + 1];
@@ -302,12 +258,7 @@ public class CLI {
                         node("board"),
                         node("disprove"));
 
-        reader =
-                LineReaderBuilder.builder()
-                        .terminal(terminal)
-                        .completer(completer)
-                        .parser(parser)
-                        .build();
+        reader = LineReaderBuilder.builder().terminal(terminal).completer(completer).build();
 
         // Display minimum guidance
         termout.println("Type 'exit' or 'quit' to return to shell.");
@@ -360,9 +311,6 @@ public class CLI {
         accuseNodes = buildAccuseNodes(ClientCommand.accuseStrToEnum);
         suggestNodes = buildSuggestNodes(ClientCommand.suggestStrToEnum);
         directionNodes = buildDirectionNodes(ClientCommand.directionsStrToEnum);
-
-        parser = new DefaultParser();
-        parser.setEofOnUnclosedQuote(true);
     }
 
     public static void main(String[] args) {
