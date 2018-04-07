@@ -33,6 +33,8 @@ public class GooeyScene implements Initializable {
     private GooeyEventHandler evtHandler;
     private CLI cli;
 
+    private HashMap<String, PieceStack> stacks;
+
     @FXML private Label label;
     @FXML private Canvas canvas;
     @FXML private Pane pane;
@@ -90,7 +92,7 @@ public class GooeyScene implements Initializable {
         addToLogList(cmd);
 
         // Attempt to parse command
-        Message msg = CLI.processCommand(cli, cmd);
+        Message msg = ClientCommand.processCommand(clientState, cmd);
         if (msg == null) {
             // Nothing to do if there is no message
             return;
@@ -139,6 +141,17 @@ public class GooeyScene implements Initializable {
 
     public GooeyScene() {
         logArray = new ArrayList<>();
+
+        stacks = new HashMap<>();
+        stacks.put("study", new PieceStack());
+        stacks.put("hall", new PieceStack());
+        stacks.put("lounge", new PieceStack());
+        stacks.put("library", new PieceStack());
+        stacks.put("billiard", new PieceStack());
+        stacks.put("dinnig", new PieceStack());
+        stacks.put("conservatory", new PieceStack());
+        stacks.put("ballroom", new PieceStack());
+        stacks.put("kitchen", new PieceStack());
 
         viewByName = new HashMap<>();
         viewByName.put("mustard", mustard);
