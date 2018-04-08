@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry excluding="clueless/LocationEnum.java|clueless/LocationId.java" kind="src" path="java/src"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/log4j-api-2.10.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/log4j-core-2.10.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/jline-3.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/jeromq-0.4.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/asciitable-0.3.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/skb-interfaces-0.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/ascii-utf-themes-0.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/ST4-4.0.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/tombo/git/a-team/java/lib/junit-4.12.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
