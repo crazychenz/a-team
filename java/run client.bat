@@ -1,0 +1,1 @@
+java -DlogFilename=client.log -Dlog4j.configurationFile=log4j2.xml -jar dist/clueless.jar --enable-logger --cli-client

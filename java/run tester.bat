@@ -1,0 +1,1 @@
+java -cp dist/clueless.jar;lib/* -Dlog4j.configurationFile=log4j2.xml -DlogFilename=clienttester.log CLITester
