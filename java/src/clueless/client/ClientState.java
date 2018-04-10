@@ -31,6 +31,7 @@ public class ClientState {
     private boolean alerted = false;
     private boolean moved = false;
     private boolean suggested = false;
+    private boolean movedBySuggestion = false;
     private Integer myLocation;
     private ArrayList<Card> cards;
     private ArrayList<Card> faceUpCards;
@@ -41,7 +42,11 @@ public class ClientState {
         this(10000);
     }
 
-    /** Default constructor */
+    /**
+     * Default constructor
+     *
+     * @param wdTimeout the watchdog timeout interval
+     */
     public ClientState(long wdTimeout) {
         setCards(new ArrayList<Card>());
         setFaceUpCards(new ArrayList<Card>());
@@ -138,6 +143,15 @@ public class ClientState {
         // Bleh
         for (Entry<SuspectCard, Integer> entry : gameState.getSuspectLocations().entrySet()) {
             if (entry.getKey().equals(mySuspect)) {
+                // Check if we were moved by a suggestion, so the player does not have to move on
+                // their next
+                // turn to make a suggestion
+                if (getMyLocation() != 0) {
+                    if ((getMyLocation().compareTo(entry.getValue()) != 0) && !isMyTurn()) {
+                        setMovedBySuggestion(true);
+                    }
+                }
+
                 setMyLocation(entry.getValue());
             }
         }
@@ -417,5 +431,23 @@ public class ClientState {
      */
     public void setSuggested(boolean suggested) {
         this.suggested = suggested;
+    }
+
+    /**
+     * Check if a player was moved by another player's suggestion
+     *
+     * @return the movedBySuggestion
+     */
+    public boolean isMovedBySuggestion() {
+        return movedBySuggestion;
+    }
+
+    /**
+     * Set that a player was moved by a suggestion this turn
+     *
+     * @param movedBySuggestion the movedBySuggestion to set
+     */
+    public void setMovedBySuggestion(boolean movedBySuggestion) {
+        this.movedBySuggestion = movedBySuggestion;
     }
 }

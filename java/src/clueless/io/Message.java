@@ -279,16 +279,6 @@ public class Message implements Serializable {
     }
 
     /**
-     * Generate serverPulse message (server-side)
-     *
-     * @param pulsePayload The GameStatePulse payload object
-     * @return serverPulse message
-     */
-    public static Message serverPulse(GameStatePulse pulsePayload) {
-        return new Message(MessagesEnum.MESSAGE_PULSE, pulsePayload);
-    }
-
-    /**
      * Generate accusation message (client-side)
      *
      * @param suggestion Suggestion object of accusation

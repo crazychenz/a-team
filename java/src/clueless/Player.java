@@ -17,6 +17,7 @@ public class Player extends ListItem implements Comparable {
     private String username;
     private ArrayList<Card> cards;
     public String uuid;
+    private long lastPulseTime = 0;
 
     // Indicates whether a player can move or suggest (due to bad accusation).
     private boolean playing;
@@ -108,5 +109,16 @@ public class Player extends ListItem implements Comparable {
     @Override
     public int compareTo(Object o) {
         return suspect.getId() - ((Player) o).suspect.getId();
+    }
+
+    /** @return the lastPulseTime */
+    public long getPulseTime() {
+        return lastPulseTime;
+    }
+
+    /** 
+     */
+    public void setPulseTime() {
+        this.lastPulseTime = System.currentTimeMillis();
     }
 }

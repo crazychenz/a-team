@@ -13,6 +13,7 @@ import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZMQException;
 
 public class Server implements Runnable {
 
@@ -60,15 +61,24 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-        socket.bind("tcp://*:2323");
+        try {
+            socket.bind("tcp://*:2323");
+        } catch (ZMQException e) {
+            // Address already in use
+            // Not sure how to force it to be unbound
+        }
 
         Poller items = zmqContext.poller(1);
         items.register(socket, Poller.POLLIN);
 
         // while (!Thread.currentThread().isInterrupted()) {
         while (true) {
-            if (items.poll(2000) < 0) {
-                return; //  Interrupted
+            try {
+                if (items.poll(2000) < 0) {
+                    return; //  Interrupted
+                }
+            } catch (Exception e) {
+                // Seeing some ClosedSelectorException
             }
 
             if (items.pollin(0)) {
@@ -108,11 +118,42 @@ public class Server implements Runnable {
                     e.printStackTrace();
                 }
             }
+
+            for (Player player : gameState.players.getArray()) {
+                logger.trace("Checking on " + player.uuid);
+                if (player.getPulseTime() != 0
+                        && (System.currentTimeMillis() - player.getPulseTime() > 5000)) {
+                    // this player has stopped pulsing. end the game for now
+                    // We could add the cards to the face up pile
+                    gameState.endGame();
+
+                    for (Player notifyPlayer : gameState.players.getArray()) {
+                        logger.trace("Sending broadcast to " + player.uuid);
+                        try {
+                            sendMessage(
+                                    notifyPlayer.uuid,
+                                    Message.error(
+                                            "Game is over! "
+                                                    + player.getSuspect().getName()
+                                                    + " has disconnected!"));
+                        } catch (Exception e) {
+                            logger.error("Failed to send game over message.");
+                            e.printStackTrace();
+                        }
+                    }
+                    try {
+                        disconnect();
+                    } catch (Exception e) {
+                        logger.error("error disconnecting server");
+                    }
+                }
+            }
         }
     }
 
     public void disconnect() throws Exception {
         socket.close();
+        zmqContext.close();
         return;
     }
 }

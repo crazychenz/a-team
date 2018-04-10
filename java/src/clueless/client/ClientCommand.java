@@ -79,6 +79,18 @@ public class ClientCommand {
                 break;
             case "done":
                 try {
+                    if (!clientState.isConfigured()) {
+                        return Message.error("Must config first!");
+                    }
+
+                    if (!clientState.getGameState().isGameActive()) {
+                        return Message.error("Must start first!");
+                    }
+
+                    if (!clientState.isMyTurn()) {
+                        return Message.error("Must be the active player!");
+                    }
+
                     return Message.endTurn();
                 } catch (Exception e) {
                     logger.error("failed chat");
@@ -188,31 +200,6 @@ public class ClientCommand {
                 } else if (!clientState.getGameState().isGameActive()) {
                     return Message.error("Must start first!");
                 }
-                /*String toReturn = "\n";
-                toReturn += "\nBoard:\n";
-                for (Entry<CardsEnum, CardsEnum> entry :
-                		clientState.getGameState().getSuspectLocations().entrySet()) {
-                	toReturn +=
-                			"Suspect: "
-                					+ entry.getKey()
-                					+ "\t"
-                					+ "Location: "
-                					+ entry.getValue()
-                					+ "\n";
-                }
-
-                toReturn += "\nWeapons:\n";
-                for (Entry<CardsEnum, CardsEnum> entry :
-                		clientState.getGameState().getWeaponLocations().entrySet()) {
-                	toReturn +=
-                			"Weapon: "
-                					+ entry.getKey()
-                					+ "\t"
-                					+ "Location: "
-                					+ entry.getValue()
-                					+ "\n";
-                }*/
-
                 BoardBuilder bb = new BoardBuilder(clientState);
                 return Message.info(bb.generateBoard());
             case "accuse":
@@ -295,6 +282,12 @@ public class ClientCommand {
                         return Message.error("Cannot make a suggestion in a hallway!");
                     }
 
+                    if ((clientState.getMyLocation() != null)
+                            && (!clientState.isMovedBySuggestion() && !clientState.isMoved())) {
+                        return Message.error(
+                                "Must move to another room before making a suggestion!");
+                    }
+
                     if (pl.words().size() == 3) {
 
                         if (suggestStrToEnum.get(pl.words().get(1)) == null) {
@@ -318,15 +311,11 @@ public class ClientCommand {
                         if (location == null) {
                             logger.error("Missing location");
                         }
-                        // ArrayList<CardsEnum> cardsToSend = new ArrayList<CardsEnum>();
-                        // cardsToSend.add(ce1);
-                        // cardsToSend.add(ce2);
-                        // cardsToSend.add(location);
-                        // CardWrapper cards = new CardWrapper(cardsToSend);
                         Suggestion cards = new Suggestion(ce1, ce2, location);
                         retval = Message.suggestion(cards);
                         // TODO: Not true until confirmed by server
                         clientState.setSuggested(true);
+                        clientState.setMovedBySuggestion(false);
 
                     } else {
                         return Message.error("Must specify a suspect and a weapon to suggest!");

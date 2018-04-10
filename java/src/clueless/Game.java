@@ -149,11 +149,16 @@ public class Game {
                 logger.info("Non-active player tried to accuse!");
                 return Message.serverMessage("Non-active player tried to accuse!");
             case MESSAGE_CLIENT_END_TURN:
-                players.setNextPlayer();
+                if (players.current().uuid.equals(msg.getFromUuid())) {
+                    players.setNextPlayer();
+                }
                 break;
             case MESSAGE_PULSE:
                 // return echo request
                 player = players.byUuid(msg.getFromUuid());
+                if (player != null) {
+                    player.setPulseTime();
+                }
                 return Message.sendGameStatePulse(
                         new GameStatePulse(gameStarted, board, players, player));
             case MESSAGE_CLIENT_RESPONSE_SUGGEST:
@@ -207,6 +212,10 @@ public class Game {
             // players.setNextPlayer();
         }
         return gameStarted;
+    }
+
+    public void endGame() {
+        this.gameStarted = false;
     }
 
     // TODO: Seems out of scope

@@ -35,11 +35,11 @@ public class RoomCard extends Card {
         Card.register(LOCATION_HALL);
         allCards.add(LOCATION_STUDY = new RoomCard(0xA6, "Study"));
         Card.register(LOCATION_STUDY);
-        allCards.add(LOCATION_DININGROOM = new RoomCard(0xA7, "Dining Room"));
+        allCards.add(LOCATION_DININGROOM = new RoomCard(0xA7, "DiningRoom"));
         Card.register(LOCATION_DININGROOM);
         allCards.add(LOCATION_LOUNGE = new RoomCard(0xA8, "Lounge"));
         Card.register(LOCATION_LOUNGE);
-        allCards.add(LOCATION_BILLIARDROOM = new RoomCard(0xA9, "Billiard Room"));
+        allCards.add(LOCATION_BILLIARDROOM = new RoomCard(0xA9, "BilliardRoom"));
         Card.register(LOCATION_BILLIARDROOM);
     }
 
