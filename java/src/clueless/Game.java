@@ -187,7 +187,22 @@ public class Game {
                     response.setToUuid(players.getSuggestionPlayer().uuid.toString());
                     return response;
                 }
-
+            case MESSAGE_INTERNAL_SERVER_REMOVE_PLAYER:
+                Player playerToRemove = (Player) msg.getMessageData();
+                for (Suspect s : board.getAllSuspects()) {
+                    if (s.getSuspect().equals(playerToRemove.getSuspect())) {
+                        if (!s.getActive()) {
+                            logger.info("Suspect not active!");
+                        } else {
+                            s.setActive(false);
+                            players.getArray().remove(playerToRemove);
+                        }
+                    }
+                }
+                break;
+            case MESSAGE_INTERNAL_SERVER_END_GAME:
+                setGameStarted(false);
+                break;
             default:
                 break;
         }
@@ -203,7 +218,7 @@ public class Game {
             }
 
             board.dealCards(players, prngSeed, difficulty);
-            gameStarted = true;
+            setGameStarted(true);
             // TODO: Make scarlet the activePlayerRef
             // TODO: All users should be using peice nearest to them
             //       and all peices have a starting location
@@ -211,11 +226,15 @@ public class Game {
             //       therefore the turn ordering is always the same.
             // players.setNextPlayer();
         }
-        return gameStarted;
+        return getGameStarted();
     }
 
-    public void endGame() {
-        this.gameStarted = false;
+    private void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
+    }
+
+    public boolean getGameStarted() {
+        return gameStarted;
     }
 
     // TODO: Seems out of scope

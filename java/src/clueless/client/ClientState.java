@@ -32,11 +32,12 @@ public class ClientState {
     private boolean moved = false;
     private boolean suggested = false;
     private boolean movedBySuggestion = false;
-    private Integer myLocation;
+    private Integer myLocation = 0;
     private ArrayList<Card> cards;
     private ArrayList<Card> faceUpCards;
     private ArrayList<Card> disproveCards;
     private boolean disproving = false;
+    private Notebook notebook;
 
     public ClientState() {
         this(10000);
@@ -58,6 +59,8 @@ public class ClientState {
         watchdog = new Watchdog(wdTimeout);
         watchdog.pulse();
         watchdogThread = new Thread(watchdog);
+
+        setNotebook(new Notebook());
     }
 
     public void pulse() {
@@ -449,5 +452,15 @@ public class ClientState {
      */
     public void setMovedBySuggestion(boolean movedBySuggestion) {
         this.movedBySuggestion = movedBySuggestion;
+    }
+
+    /** @return the notebook */
+    public Notebook getNotebook() {
+        return notebook;
+    }
+
+    /** @param notebook the notebook to set */
+    public void setNotebook(Notebook notebook) {
+        this.notebook = notebook;
     }
 }

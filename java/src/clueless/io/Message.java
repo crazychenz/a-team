@@ -382,4 +382,23 @@ public class Message implements Serializable {
     public static Message error(String errorstr) {
         return new Message(MessagesEnum.MESSAGE_ERROR, errorstr);
     }
+
+    /**
+     * This message lets the Game know that a client has disconnected
+     *
+     * @param player The player object of the client who left
+     * @return internal message
+     */
+    public static Message internalRemovePlayer(Player player) {
+        return new Message(MessagesEnum.MESSAGE_INTERNAL_SERVER_REMOVE_PLAYER, player);
+    }
+
+    /**
+     * This message tells the Game to end
+     *
+     * @return internal message
+     */
+    public static Message internalGameEnd() {
+        return new Message(MessagesEnum.MESSAGE_INTERNAL_SERVER_END_GAME, "");
+    }
 }

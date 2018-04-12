@@ -119,32 +119,45 @@ public class Server implements Runnable {
                 }
             }
 
+            Player remove = null;
             for (Player player : gameState.players.getArray()) {
                 logger.trace("Checking on " + player.uuid);
                 if (player.getPulseTime() != 0
                         && (System.currentTimeMillis() - player.getPulseTime() > 5000)) {
-                    // this player has stopped pulsing. end the game for now
-                    // We could add the cards to the face up pile
-                    gameState.endGame();
+                    remove = player;
+                }
+            }
 
+            if (remove != null) {
+                logger.info("remove this guy " + remove.getSuspect());
+
+                // Remove the player
+                gameState.processMessage(Message.internalRemovePlayer(remove));
+
+                // If the game has started, end the game
+                // We could add the cards to the face up pile and continue the game
+                if (gameState.getGameStarted()) {
+                    gameState.processMessage(Message.internalGameEnd());
                     for (Player notifyPlayer : gameState.players.getArray()) {
-                        logger.trace("Sending broadcast to " + player.uuid);
+                        logger.trace("Sending broadcast to " + notifyPlayer.uuid);
                         try {
                             sendMessage(
                                     notifyPlayer.uuid,
                                     Message.error(
                                             "Game is over! "
-                                                    + player.getSuspect().getName()
+                                                    + remove.getSuspect().getName()
                                                     + " has disconnected!"));
                         } catch (Exception e) {
                             logger.error("Failed to send game over message.");
                             e.printStackTrace();
                         }
                     }
+
                     try {
                         disconnect();
+                        return;
                     } catch (Exception e) {
-                        logger.error("error disconnecting server");
+
                     }
                 }
             }

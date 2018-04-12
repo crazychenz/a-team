@@ -32,6 +32,7 @@ public class ClientCommand {
         Message retval = null;
 
         ParsedLine pl;
+        // This doesn't handle apostrophies
         pl = parser.parse(cmd, 0);
         if (null == pl.word()) {
             return null;
@@ -64,6 +65,10 @@ public class ClientCommand {
                                     + "    Suggest that a suspect and weapon were used in your current location to commit the crime!\n"
                                     + "disprove <card>\n"
                                     + "    Disprove one of the cards from the suggestion!\n"
+                                    + "note <card> <note>\n"
+                                    + "    Make a note on the card, either as a result from a suggestion or from your great deductive skills!\n"
+                                    + "note\n"
+                                    + "    View notes on all cards!\n"
                                     + "exit|quit\n"
                                     + "    Exit clueless CLI\n");
                 } else {
@@ -193,7 +198,33 @@ public class ClientCommand {
                     toReturn += card.getName() + "\n";
                 }
                 return Message.info(toReturn);
+            case "note":
+                if (!clientState.isConfigured()) {
+                    return Message.error("Must config first!");
+                } else if (!clientState.getGameState().isGameActive()) {
+                    return Message.error("Must start first!");
+                }
 
+                if (pl.words().size() >= 3) {
+                    // Reuse accuseStrToEnum since it has all the cards
+                    if (accuseStrToEnum.get(pl.words().get(1)) == null) {
+                        return Message.error(
+                                "Problem selecting card \""
+                                        + pl.words().get(1)
+                                        + "\". Please try again!");
+                    }
+
+                    String card1 = pl.words().get(1);
+                    Card noteCard = accuseStrToEnum.get(card1);
+                    clientState.getNotebook().makeNote(noteCard, pl.line());
+                } else if (pl.words().size() == 2) {
+                    return Message.error("Please enter a note to make about the card!");
+                } else if (pl.words().size() == 1) {
+                    return Message.info(clientState.getNotebook().getNotes());
+                } else {
+                    return Message.error("Please enter a card to make notes about!");
+                }
+                break;
             case "board":
                 if (!clientState.isConfigured()) {
                     return Message.error("Must config first!");
@@ -359,6 +390,7 @@ public class ClientCommand {
                     DirectionsEnum dir = directionsStrToEnum.get(dirStr);
                     retval = Message.moveClient(dir);
                     // TODO: Not true until confirmed by server
+                    // If the server returns failed move, this gets reset.  Should be fine as is
                     clientState.setMoved(true);
                 } catch (Exception e) {
                     logger.error("failed moving");
@@ -386,26 +418,6 @@ public class ClientCommand {
 
         parser.setEofOnUnclosedQuote(true);
     }
-
-    /*public Object[] buildDisproveNodes(HashMap<String, CardsEnum> map) {
-        Object[] nodes = new Object[map.size() + 1];
-        nodes[0] = "disprove";
-        int i = 1;
-        for (String suspect : map.keySet()) {
-            nodes[i] = node(suspect);
-            i += 1;
-        }
-
-        return nodes;
-    }
-
-    public static void buildDisproveMap(HashMap<String, CardsEnum> map) {
-        if (clientState.isDisproving()) {
-            for (Card card : clientState.getDisproveCards()) {
-                map.put(card.getCardEnum().getLabel(), card.getCardEnum());
-            }
-        }
-    }*/
 
     public static void buildCardsMap(
             HashMap<String, Card> map, boolean suspects, boolean locations, boolean weapons) {

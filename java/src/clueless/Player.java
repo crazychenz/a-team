@@ -116,8 +116,7 @@ public class Player extends ListItem implements Comparable {
         return lastPulseTime;
     }
 
-    /** 
-     */
+    /** */
     public void setPulseTime() {
         this.lastPulseTime = System.currentTimeMillis();
     }

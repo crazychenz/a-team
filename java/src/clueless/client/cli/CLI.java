@@ -206,7 +206,8 @@ public class CLI {
                         node("chat"),
                         node("cards"),
                         node("board"),
-                        node("disprove"));
+                        node("disprove"),
+                        node("note"));
 
         reader = LineReaderBuilder.builder().terminal(terminal).completer(completer).build();
 
