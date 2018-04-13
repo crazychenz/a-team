@@ -5,6 +5,7 @@
  */
 package clueless.client.gooey;
 
+import clueless.*;
 import clueless.client.*;
 import clueless.client.cli.*;
 import clueless.io.*;
@@ -16,7 +17,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
@@ -33,27 +33,17 @@ public class GooeyScene implements Initializable {
     private Heartbeat heartbeat;
     private Thread heartbeatThread;
 
-    private HashMap<String, PieceStack> stacks;
-
-    @FXML private Label label;
-    @FXML private Canvas canvas;
-    @FXML private Pane pane;
     @FXML private AnchorPane anchorPane;
     @FXML private TextField cliField;
     @FXML private ListView logList;
 
-    @FXML private ImageView board;
-    @FXML private ImageView mustard;
-    @FXML private ImageView scarlet;
-    @FXML private ImageView plum;
-    @FXML private ImageView peacock;
-    @FXML private ImageView green;
-    @FXML private ImageView white;
+    @FXML private Pane boardPane;
 
     private HashMap<String, Image> imgByName;
-    private HashMap<String, ImageView> viewByName;
 
     private ArrayList<String> logArray;
+
+    public HashMap<Integer, GooeySpace> spaces;
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -121,51 +111,57 @@ public class GooeyScene implements Initializable {
     @FXML
     private void onLoad(ActionEvent event) {}
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // anchorPane.setBackground(new Background(new BackgroundFill(Color.CORNFLOWERBLUE,
-        // CornerRadii.EMPTY, Insets.EMPTY)));
-        board.setImage(imgByName.get("board"));
-        board.toBack();
-
-        mustard.setImage(imgByName.get("mustard"));
-        white.setImage(imgByName.get("white"));
-        peacock.setImage(imgByName.get("peacock"));
-        plum.setImage(imgByName.get("plum"));
-        green.setImage(imgByName.get("green"));
-        scarlet.setImage(imgByName.get("scarlet"));
-
-        mustard.setLayoutX(0);
-        mustard.setLayoutY(0);
+    private void addRoom(Location location, double x, double y) {
+        String name = location.getName();
+        GooeyRoom room = new GooeyRoom(boardPane, name, x, y);
+        spaces.put(location.getId(), room);
     }
 
-    public GooeyScene() {
-        logArray = new ArrayList<>();
+    private void addHall(Location location, double x, double y) {
+        String name = location.getName();
+        GooeyHallway room = new GooeyHallway(boardPane, name, x, y);
+        spaces.put(location.getId(), room);
+    }
 
-        stacks = new HashMap<>();
-        stacks.put("study", new PieceStack());
-        stacks.put("hall", new PieceStack());
-        stacks.put("lounge", new PieceStack());
-        stacks.put("library", new PieceStack());
-        stacks.put("billiard", new PieceStack());
-        stacks.put("dinnig", new PieceStack());
-        stacks.put("conservatory", new PieceStack());
-        stacks.put("ballroom", new PieceStack());
-        stacks.put("kitchen", new PieceStack());
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
 
-        viewByName = new HashMap<>();
-        viewByName.put("mustard", mustard);
-        viewByName.put("white", white);
-        viewByName.put("scarlet", scarlet);
-        viewByName.put("plum", plum);
-        viewByName.put("peacock", peacock);
-        viewByName.put("green", green);
+        // All initial dynamic scene graph stuff must be done here.
 
+        // Rooms
+        addRoom(Room.LOCATION_STUDY, 0, 0);
+        addRoom(Room.LOCATION_HALL, 150, 0);
+        addRoom(Room.LOCATION_LOUNGE, 300, 0);
+        addRoom(Room.LOCATION_LIBRARY, 0, 150);
+        addRoom(Room.LOCATION_BILLIARDROOM, 150, 150);
+        addRoom(Room.LOCATION_DININGROOM, 300, 150);
+        addRoom(Room.LOCATION_CONSERVATORY, 0, 300);
+        addRoom(Room.LOCATION_BALLROOM, 150, 300);
+        addRoom(Room.LOCATION_KITCHEN, 300, 300);
+
+        // Hallways
+        addHall(Hallway.HALLWAY_STUDY_HALL, 100, 25);
+        addHall(Hallway.HALLWAY_HALL_LOUNGE, 250, 25);
+        addHall(Hallway.HALLWAY_STUDY_LIBRARY, 25, 100);
+        addHall(Hallway.HALLWAY_HALL_BILLIARD, 175, 100);
+        addHall(Hallway.HALLWAY_LOUNGE_DINING, 325, 100);
+        addHall(Hallway.HALLWAY_LIBRARY_BILLIARD, 100, 175);
+        addHall(Hallway.HALLWAY_DINING_BILLIARD, 250, 175);
+        addHall(Hallway.HALLWAY_CONSERVATORY_LIBRARY, 25, 250);
+        addHall(Hallway.HALLWAY_BALL_BILLIARD, 175, 250);
+        addHall(Hallway.HALLWAY_DINING_KITCHEN, 325, 250);
+        addHall(Hallway.HALLWAY_BALL_CONSERVATORY, 100, 325);
+        addHall(Hallway.HALLWAY_KITCHEN_BALL, 250, 325);
+
+        // spaces.add(new GooeySpace(boardPane, "game", 300, 30, 0));
+    }
+
+    private void loadImages() {
         Image img;
         String prefix = "clueless/client/gooey/sprites/";
         imgByName = new HashMap<>();
-        img = new Image(prefix + "board.png", 600, 600, false, false);
-        imgByName.put("board", img);
+        // img = new Image(prefix + "board.png", 600, 600, false, false);
+        // imgByName.put("board", img);
         img = new Image(prefix + "mustard.jpg", 40, 40, false, false);
         imgByName.put("mustard", img);
         img = new Image(prefix + "peacock.png", 40, 40, false, false);
@@ -178,9 +174,16 @@ public class GooeyScene implements Initializable {
         imgByName.put("white", img);
         img = new Image(prefix + "scarlet.jpg", 40, 40, false, false);
         imgByName.put("scarlet", img);
+    }
+
+    public GooeyScene() {
+        logArray = new ArrayList<>();
+
+        loadImages();
+
+        spaces = new HashMap<>();
 
         clientState = new ClientState();
-
         startup("127.0.0.1", "2323");
     }
 

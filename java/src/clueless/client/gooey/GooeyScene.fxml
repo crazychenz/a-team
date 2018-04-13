@@ -3,49 +3,14 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 
 <AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="650.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clueless.client.gooey.GooeyScene">
    <children>
-      <ImageView fx:id="board" fitHeight="450.0" fitWidth="500.0" layoutX="284.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@sprites/board.png" />
-         </image>
-      </ImageView>
       <Button layoutX="11.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleExitAction" text="Exit" />
       <TextField fx:id="cliField" layoutX="30.0" layoutY="601.0" onAction="#handleCliAction" prefHeight="27.0" prefWidth="695.0" />
       <ListView fx:id="logList" layoutX="30.0" layoutY="468.0" prefHeight="115.0" prefWidth="695.0" />
-      <ImageView fx:id="scarlet" fitHeight="30.0" fitWidth="30.0" layoutX="577.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@sprites/scarlet.jpg" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="green" fitHeight="30.0" fitWidth="30.0" layoutX="403.0" layoutY="434.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@sprites/green.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="white" fitHeight="30.0" fitWidth="30.0" layoutX="577.0" layoutY="434.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@sprites/white.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="plum" fitHeight="30.0" fitWidth="30.0" layoutX="284.0" layoutY="129.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@sprites/plum.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="peacock" fitHeight="30.0" fitWidth="30.0" layoutX="284.0" layoutY="310.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@sprites/peacock.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="mustard" fitHeight="30.0" fitWidth="30.0" layoutX="696.0" layoutY="129.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@sprites/mustard.jpg" />
-         </image>
-      </ImageView>
+      <Pane fx:id="boardPane" layoutX="336.0" layoutY="14.0" prefHeight="400.0" prefWidth="400.0" />
    </children>
 </AnchorPane>

@@ -27,19 +27,14 @@ public class Gooey extends Application {
         Scene scene = new Scene(root);
         scene.setOnKeyPressed(new KeyboardHandler());
 
-        // Create the initial Location
-        // Location origin = new Location();
-
         stage.setScene(scene);
         stage.show();
     }
 
     /** @param args the command line arguments */
     public static void main(String[] args) {
-        logger.info("Initializing the CLI environment.");
+        logger.info("Initializing the CLI environment (from gooey).");
         CLI.init(args);
-
-        // logger.info("Create a new CLI object.");
 
         launch(args);
     }
