@@ -55,7 +55,7 @@ public class Game {
                 break;
             case MESSAGE_CLIENT_CONFIG:
                 // Client picked a suspect (and username, any other configurables, etc)
-                SuspectCard pickedSuspect = (SuspectCard) msg.getMessageData();
+                SuspectCard pickedSuspect = msg.asSuspectCard();
                 for (Suspect s : board.getAllSuspects()) {
                     if (s.getSuspect().equals(pickedSuspect)) {
                         // BUG: I feel a race condition here.
@@ -75,7 +75,7 @@ public class Game {
                 player = players.current();
                 if (player.uuid.equals(msg.getFromUuid())) {
                     Suspect suspect = board.getSuspectByCard(player.getSuspect());
-                    DirectionsEnum dir = (DirectionsEnum) msg.getMessageData();
+                    DirectionsEnum dir = msg.asDirectionsEnum();
                     if (suspect.move(dir)) {
                         // valid move
                         // the person can now accuse or end their turn
@@ -98,7 +98,7 @@ public class Game {
                     logger.debug("Suggesting...");
                     players.setSuggestionPlayer();
 
-                    suggestion = (Suggestion) msg.getMessageData();
+                    suggestion = msg.asSuggestion();
                     logger.debug(suggestion);
 
                     board.getSuspectByCard(suggestion.getSuspect())
@@ -115,7 +115,7 @@ public class Game {
                 break;
             case MESSAGE_CLIENT_ACCUSE:
                 if (players.current().uuid.equals(msg.getFromUuid())) {
-                    if (handleAccuse((Suggestion) msg.getMessageData())) {
+                    if (handleAccuse(msg.asSuggestion())) {
                         // Win!
                         // End the game, alert everybody
                         // @todo Perhaps a client ID or username would be better?
@@ -162,7 +162,7 @@ public class Game {
                 return Message.sendGameStatePulse(
                         new GameStatePulse(gameStarted, board, players, player));
             case MESSAGE_CLIENT_RESPONSE_SUGGEST:
-                Card proof = (Card) msg.getMessageData();
+                Card proof = msg.asCard();
                 if (proof != null) {
                     // The disproving player was able to disprove
                     // Let the suggesting player know
@@ -188,7 +188,7 @@ public class Game {
                     return response;
                 }
             case MESSAGE_INTERNAL_SERVER_REMOVE_PLAYER:
-                Player playerToRemove = (Player) msg.getMessageData();
+                Player playerToRemove = msg.asPlayer();
                 for (Suspect s : board.getAllSuspects()) {
                     if (s.getSuspect().equals(playerToRemove.getSuspect())) {
                         if (!s.getActive()) {

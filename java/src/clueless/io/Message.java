@@ -141,6 +141,57 @@ public class Message implements Serializable {
     public String asString() {
         return (String) messageData;
     }
+	
+	/**
+     * Get the object from message as a SuspectCard
+     *
+     * @return SuspectCard
+     */
+	public SuspectCard asSuspectCard() {
+		SuspectCard card = (SuspectCard) messageData;
+		// Normalize
+		return SuspectCard.fetch(card.getId());
+	}
+	
+	/**
+     * Get the object from message as a DirectionsEnum
+     *
+     * @return DirectionsEnum
+     */
+	public DirectionsEnum asDirectionsEnum() {
+		return (DirectionsEnum) messageData;
+	}
+	
+	/**
+     * Get the object from message as a Suggestion
+     *
+     * @return Suggestion
+     */
+	public Suggestion asSuggestion() {
+		Suggestion suggestion = (Suggestion) messageData;
+		suggestion.normalize();
+		return suggestion;
+	}
+	
+	/**
+     * Get the object from message as a Card
+     *
+     * @return Card
+     */
+	public Card asCard() {
+		Card card = (Card) messageData;
+		// Normalize
+		return Card.fetch(card.getId());
+	}
+	
+	/**
+     * Get the object from message as a Player
+     *
+     * @return Player
+     */
+	public Player asPlayer() {
+		return (Player) messageData;
+	}
 
     /**
      * Serialize a Message object to a ByteBuffer
