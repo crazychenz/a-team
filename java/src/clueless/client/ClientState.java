@@ -121,6 +121,7 @@ public class ClientState {
     public String setGameState(GameStatePulse gameState) {
         String retval = null;
         this.gameState = gameState;
+        this.gameState.normalize();
 
         if (!gameState.isGameActive()) {
             setAvailableSuspects(gameState.getAvailableSuspects());

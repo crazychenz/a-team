@@ -3,6 +3,7 @@ package clueless;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,6 +51,54 @@ public class GameStatePulse implements Serializable {
                 setCards(player.getCards());
             }
             setFaceUpCards(board.getFaceUpCards());
+        }
+    }
+
+    public void normalize() {
+        if (activeSuspect != null) {
+            activeSuspect = SuspectCard.fetch(activeSuspect.getId());
+        }
+
+        if (suspectLocations != null) {
+            HashMap<SuspectCard, Integer> _suspectLocations;
+            _suspectLocations = new HashMap<SuspectCard, Integer>();
+            for (Map.Entry<SuspectCard, Integer> entry : suspectLocations.entrySet()) {
+                SuspectCard card = (SuspectCard) entry.getKey();
+                card = SuspectCard.fetch(card.getId());
+                _suspectLocations.put(card, (Integer) entry.getValue());
+            }
+            suspectLocations = _suspectLocations;
+        }
+
+        if (weaponLocations != null) {
+            HashMap<WeaponCard, Integer> _weaponLocations;
+            _weaponLocations = new HashMap<WeaponCard, Integer>();
+            for (Map.Entry<WeaponCard, Integer> entry : weaponLocations.entrySet()) {
+                WeaponCard card = (WeaponCard) entry.getKey();
+                card = WeaponCard.fetch(card.getId());
+                _weaponLocations.put(card, (Integer) entry.getValue());
+            }
+            weaponLocations = _weaponLocations;
+        }
+
+        if (availableSuspects != null) {
+            availableSuspects.normalize();
+        }
+
+        if (cards != null) {
+            ArrayList<Card> _cards = new ArrayList<Card>();
+            for (Card card : cards) {
+                _cards.add(Card.fetch(card.getId()));
+            }
+            cards = _cards;
+        }
+
+        if (faceUpCards != null) {
+            ArrayList<Card> _faceUpCards = new ArrayList<Card>();
+            for (Card card : faceUpCards) {
+                _faceUpCards.add(Card.fetch(card.getId()));
+            }
+            faceUpCards = _faceUpCards;
         }
     }
 

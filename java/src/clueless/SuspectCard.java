@@ -43,8 +43,8 @@ public class SuspectCard extends Card {
     public static Iterable<SuspectCard> cards() {
         return Collections.unmodifiableList(allCards);
     }
-	
-	public static SuspectCard fetch(int id) {
-		return (SuspectCard) Card.fetch(id);
+
+    public static SuspectCard fetch(int id) {
+        return (SuspectCard) Card.fetch(id);
     }
 }

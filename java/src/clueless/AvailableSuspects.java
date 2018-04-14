@@ -26,6 +26,14 @@ public class AvailableSuspects implements Serializable {
         list = new ArrayList<SuspectCard>();
     }
 
+    public void normalize() {
+        ArrayList<SuspectCard> _list = new ArrayList<SuspectCard>();
+        for (SuspectCard card : list) {
+            _list.add(SuspectCard.fetch(card.getId()));
+        }
+        list = _list;
+    }
+
     @Override
     public String toString() {
         if (list.isEmpty()) {

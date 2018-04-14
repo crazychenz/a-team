@@ -42,4 +42,8 @@ public class WeaponCard extends Card {
     public static Iterable<WeaponCard> cards() {
         return Collections.unmodifiableList(allCards);
     }
+
+    public static WeaponCard fetch(int id) {
+        return (WeaponCard) Card.fetch(id);
+    }
 }

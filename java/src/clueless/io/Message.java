@@ -141,57 +141,65 @@ public class Message implements Serializable {
     public String asString() {
         return (String) messageData;
     }
-	
-	/**
+
+    /**
      * Get the object from message as a SuspectCard
      *
      * @return SuspectCard
      */
-	public SuspectCard asSuspectCard() {
-		SuspectCard card = (SuspectCard) messageData;
-		// Normalize
-		return SuspectCard.fetch(card.getId());
-	}
-	
-	/**
+    public SuspectCard asSuspectCard() {
+        SuspectCard card = (SuspectCard) messageData;
+        if (card != null) {
+            // Normalize
+            return SuspectCard.fetch(card.getId());
+        }
+        return card;
+    }
+
+    /**
      * Get the object from message as a DirectionsEnum
      *
      * @return DirectionsEnum
      */
-	public DirectionsEnum asDirectionsEnum() {
-		return (DirectionsEnum) messageData;
-	}
-	
-	/**
+    public DirectionsEnum asDirectionsEnum() {
+        return (DirectionsEnum) messageData;
+    }
+
+    /**
      * Get the object from message as a Suggestion
      *
      * @return Suggestion
      */
-	public Suggestion asSuggestion() {
-		Suggestion suggestion = (Suggestion) messageData;
-		suggestion.normalize();
-		return suggestion;
-	}
-	
-	/**
+    public Suggestion asSuggestion() {
+        Suggestion suggestion = (Suggestion) messageData;
+        if (suggestion != null) {
+            suggestion.normalize();
+        }
+        return suggestion;
+    }
+
+    /**
      * Get the object from message as a Card
      *
      * @return Card
      */
-	public Card asCard() {
-		Card card = (Card) messageData;
-		// Normalize
-		return Card.fetch(card.getId());
-	}
-	
-	/**
+    public Card asCard() {
+        Card card = (Card) messageData;
+        if (card != null) {
+            // Normalize
+            return Card.fetch(card.getId());
+        }
+        return card;
+    }
+
+    /**
      * Get the object from message as a Player
      *
      * @return Player
      */
-	public Player asPlayer() {
-		return (Player) messageData;
-	}
+    public Player asPlayer() {
+        return (Player) messageData;
+    }
 
     /**
      * Serialize a Message object to a ByteBuffer
