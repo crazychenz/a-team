@@ -96,10 +96,24 @@ public class GooeyEventHandler extends EventHandler {
                 logger.info(msg);
                 clientState.setConfigured(false);
                 clientState.setMySuspect(null);
+                Platform.runLater(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                scene.addToLogList("info: " + msg.asString());
+                            }
+                        });
                 break;
             case MESSAGE_SERVER_FAIL_MOVE:
                 logger.info(msg);
                 clientState.setMoved(false);
+                Platform.runLater(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                scene.addToLogList("info: " + msg.asString());
+                            }
+                        });
                 break;
             case MESSAGE_SERVER_RELAY_SUGGEST:
                 // TODO prompt the user that they need to disprove this suggestion if possible

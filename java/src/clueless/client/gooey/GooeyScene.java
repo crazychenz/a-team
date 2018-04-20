@@ -62,6 +62,36 @@ public class GooeyScene implements Initializable {
         System.exit(0);
     }
 
+    @FXML
+    private void handleMoveNorthAction(ActionEvent event) {
+        Message msg = ClientCommand.processCommand(clientState, "move north");
+        handleInternalMessage(msg);
+    }
+
+    @FXML
+    private void handleMoveWestAction(ActionEvent event) {
+        Message msg = ClientCommand.processCommand(clientState, "move west");
+        handleInternalMessage(msg);
+    }
+
+    @FXML
+    private void handleMoveSecretAction(ActionEvent event) {
+        Message msg = ClientCommand.processCommand(clientState, "move secret");
+        handleInternalMessage(msg);
+    }
+
+    @FXML
+    private void handleMoveEastAction(ActionEvent event) {
+        Message msg = ClientCommand.processCommand(clientState, "move east");
+        handleInternalMessage(msg);
+    }
+
+    @FXML
+    private void handleMoveSouthAction(ActionEvent event) {
+        Message msg = ClientCommand.processCommand(clientState, "move south");
+        handleInternalMessage(msg);
+    }
+
     public void addToLogList(String str) {
         logArray.add(str);
         logList.setItems(FXCollections.observableArrayList(logArray));
@@ -83,6 +113,13 @@ public class GooeyScene implements Initializable {
 
         // Attempt to parse command
         Message msg = ClientCommand.processCommand(clientState, cmd);
+        handleInternalMessage(msg);
+    }
+
+    @FXML
+    private void onLoad(ActionEvent event) {}
+
+    private void handleInternalMessage(Message msg) {
         if (msg == null) {
             // Nothing to do if there is no message
             return;
@@ -107,9 +144,6 @@ public class GooeyScene implements Initializable {
             logger.error("Failed to send Message: " + msg.getMessageID());
         }
     }
-
-    @FXML
-    private void onLoad(ActionEvent event) {}
 
     private void addRoom(Location location, double x, double y) {
         String name = location.getName();
