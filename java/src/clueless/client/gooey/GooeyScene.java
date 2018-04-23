@@ -20,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,10 +35,12 @@ public class GooeyScene implements Initializable {
     private Thread heartbeatThread;
 
     @FXML private AnchorPane anchorPane;
+    @FXML private ImageView cluelessLogo;
     @FXML private TextField cliField;
     @FXML private ListView logList;
 
     @FXML private Pane boardPane;
+    @FXML private ImageView boardOverlay;
 
     private HashMap<String, Image> imgByName;
 
@@ -145,9 +148,9 @@ public class GooeyScene implements Initializable {
         }
     }
 
-    private void addRoom(Location location, double x, double y) {
+    private void addRoom(Location location, double x, double y, Image img) {
         String name = location.getName();
-        GooeyRoom room = new GooeyRoom(boardPane, name, x, y);
+        GooeyRoom room = new GooeyRoom(boardPane, name, x, y, img);
         spaces.put(location.getId(), room);
     }
 
@@ -163,15 +166,15 @@ public class GooeyScene implements Initializable {
         // All initial dynamic scene graph stuff must be done here.
 
         // Rooms
-        addRoom(Room.LOCATION_STUDY, 0, 0);
-        addRoom(Room.LOCATION_HALL, 150, 0);
-        addRoom(Room.LOCATION_LOUNGE, 300, 0);
-        addRoom(Room.LOCATION_LIBRARY, 0, 150);
-        addRoom(Room.LOCATION_BILLIARDROOM, 150, 150);
-        addRoom(Room.LOCATION_DININGROOM, 300, 150);
-        addRoom(Room.LOCATION_CONSERVATORY, 0, 300);
-        addRoom(Room.LOCATION_BALLROOM, 150, 300);
-        addRoom(Room.LOCATION_KITCHEN, 300, 300);
+        addRoom(Room.LOCATION_STUDY, 0, 0, imgByName.get("study"));
+        addRoom(Room.LOCATION_HALL, 150, 0, imgByName.get("hall"));
+        addRoom(Room.LOCATION_LOUNGE, 300, 0, imgByName.get("lounge"));
+        addRoom(Room.LOCATION_LIBRARY, 0, 150, imgByName.get("library"));
+        addRoom(Room.LOCATION_BILLIARDROOM, 150, 150, imgByName.get("billiards"));
+        addRoom(Room.LOCATION_DININGROOM, 300, 150, imgByName.get("dining"));
+        addRoom(Room.LOCATION_CONSERVATORY, 0, 300, imgByName.get("conservatory"));
+        addRoom(Room.LOCATION_BALLROOM, 150, 300, imgByName.get("ballroom"));
+        addRoom(Room.LOCATION_KITCHEN, 300, 300, imgByName.get("kitchen"));
 
         // Hallways
         addHall(Hallway.HALLWAY_STUDY_HALL, 100, 25);
@@ -188,6 +191,33 @@ public class GooeyScene implements Initializable {
         addHall(Hallway.HALLWAY_KITCHEN_BALL, 250, 325);
 
         // spaces.add(new GooeySpace(boardPane, "game", 300, 30, 0));
+
+        /*// Instantiating the Light.Spot class
+        Light.Spot light = new Light.Spot();
+
+        // Setting the color of the light
+        light.setColor(Color.GRAY);
+        // light.setSpecularExponent(2);
+
+        // setting the position of the light
+        light.setX(200);
+        light.setY(200);
+        light.setZ(40);
+        light.setPointsAtX(200);
+        light.setPointsAtX(200);
+        light.setPointsAtZ(0);
+
+        // Instantiating the Lighting class
+        Lighting lighting = new Lighting();
+
+        // Setting the light source
+        lighting.setLight(light);
+        lighting.setSurfaceScale(-3.0);
+
+        //boardPane.setEffect(lighting);*/
+
+        boardOverlay.setImage(imgByName.get("overlay"));
+        cluelessLogo.setImage(imgByName.get("clueless"));
     }
 
     private void loadImages() {
@@ -208,6 +238,31 @@ public class GooeyScene implements Initializable {
         imgByName.put("white", img);
         img = new Image(prefix + "scarlet.jpg", 40, 40, false, false);
         imgByName.put("scarlet", img);
+
+        img = new Image(prefix + "overlay.png", 400, 400, false, false);
+        imgByName.put("overlay", img);
+
+        img = new Image(prefix + "kitchen.png", 100, 100, false, false);
+        imgByName.put("kitchen", img);
+        img = new Image(prefix + "ballroom.png", 100, 100, false, false);
+        imgByName.put("ballroom", img);
+        img = new Image(prefix + "conservatory.png", 100, 100, false, false);
+        imgByName.put("conservatory", img);
+        img = new Image(prefix + "library.png", 100, 100, false, false);
+        imgByName.put("library", img);
+        img = new Image(prefix + "hall.png", 100, 100, false, false);
+        imgByName.put("hall", img);
+        img = new Image(prefix + "study.png", 100, 100, false, false);
+        imgByName.put("study", img);
+        img = new Image(prefix + "dining.png", 100, 100, false, false);
+        imgByName.put("dining", img);
+        img = new Image(prefix + "lounge.png", 100, 100, false, false);
+        imgByName.put("lounge", img);
+        img = new Image(prefix + "billiards.png", 100, 100, false, false);
+        imgByName.put("billiards", img);
+
+        img = new Image(prefix + "clueless.png", 162, 39, false, false);
+        imgByName.put("clueless", img);
     }
 
     public GooeyScene() {

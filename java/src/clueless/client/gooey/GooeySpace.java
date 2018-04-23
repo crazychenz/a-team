@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Paint;
+import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +27,14 @@ public class GooeySpace {
     ArrayList<GooeyPiece> weapons;
 
     public GooeySpace(
-            Pane pane, String name, double x, double y, double w, double h, String color) {
+            Pane pane,
+            String name,
+            double x,
+            double y,
+            double w,
+            double h,
+            String color,
+            Image sprite) {
 
         suspects = new ArrayList<>();
         weapons = new ArrayList<>();
@@ -37,8 +44,14 @@ public class GooeySpace {
         this.pane = pane;
         this.rect = new Rectangle(w, h, Paint.valueOf(color));
         this.rect.setStroke(Paint.valueOf("black"));
-        this.label = new Label(name);
         this.pane.getChildren().add(this.rect);
+        if (sprite != null) {
+            this.view = new ImageView();
+            this.view.setImage(sprite);
+            this.pane.getChildren().add(this.view);
+            this.view.relocate(x, y);
+        }
+        this.label = new Label(name);
         this.pane.getChildren().add(this.label);
         this.label.relocate(x, y);
         this.rect.relocate(x, y);

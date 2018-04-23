@@ -11,6 +11,6 @@ import javafx.scene.layout.Pane;
 public class GooeyHallway extends GooeySpace {
 
     public GooeyHallway(Pane pane, String name, double x, double y) {
-        super(pane, "", x, y, 50, 50, "gray");
+        super(pane, "", x, y, 50, 50, "gray", null);
     }
 }

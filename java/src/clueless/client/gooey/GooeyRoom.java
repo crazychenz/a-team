@@ -5,11 +5,12 @@
  */
 package clueless.client.gooey;
 
+import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
 
 /** @author chenz */
 public class GooeyRoom extends GooeySpace {
-    public GooeyRoom(Pane pane, String name, double x, double y) {
-        super(pane, name, x, y, 100, 100, "white");
+    public GooeyRoom(Pane pane, String name, double x, double y, Image img) {
+        super(pane, name, x, y, 100, 100, "white", img);
     }
 }
