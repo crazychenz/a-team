@@ -24,7 +24,7 @@ public class Weapon implements Serializable {
      */
     public Weapon(WeaponCard weapon) {
         this.setWeapon(weapon);
-        logger.debug("Creating weapon " + weapon.toString());
+        logger.trace("Creating weapon " + weapon.toString());
     }
 
     /**

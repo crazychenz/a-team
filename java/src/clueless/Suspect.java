@@ -30,7 +30,7 @@ public class Suspect implements Serializable {
         this.setStart_location(start);
         this.setCurrent_location(start);
 
-        logger.debug("Creating suspect " + suspect.toString() + " in location " + start.toString());
+        logger.trace("Creating suspect " + suspect.toString() + " in location " + start.toString());
     }
 
     /**

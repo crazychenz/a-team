@@ -21,7 +21,13 @@ public class Hallway extends Location {
             HALLWAY_BALL_BILLIARD,
             HALLWAY_BALL_CONSERVATORY,
             HALLWAY_CONSERVATORY_LIBRARY,
-            HALLWAY_LIBRARY_BILLIARD;
+            HALLWAY_LIBRARY_BILLIARD,
+            HALLWAY_SCARLET_START,
+            HALLWAY_GREEN_START,
+            HALLWAY_MUSTARD_START,
+            HALLWAY_PLUM_START,
+            HALLWAY_PEACOCK_START,
+            HALLWAY_WHITE_START;
 
     static {
         allHallways.add(HALLWAY_STUDY_HALL = new Hallway(0xB1, "Study - Hall"));
@@ -36,6 +42,12 @@ public class Hallway extends Location {
         allHallways.add(HALLWAY_BALL_CONSERVATORY = new Hallway(0xBA, "Ballroom - Conservatory"));
         allHallways.add(HALLWAY_CONSERVATORY_LIBRARY = new Hallway(0xBB, "Conservatory - Library"));
         allHallways.add(HALLWAY_LIBRARY_BILLIARD = new Hallway(0xBC, "Library - Billiard Room"));
+        HALLWAY_SCARLET_START = new Hallway(0xC0, "Scarlet Start");
+        HALLWAY_GREEN_START = new Hallway(0xC1, "Green Start");
+        HALLWAY_MUSTARD_START = new Hallway(0xC2, "Mustard Start");
+        HALLWAY_PLUM_START = new Hallway(0xC3, "Plum Start");
+        HALLWAY_PEACOCK_START = new Hallway(0xC4, "Peacock Start");
+        HALLWAY_WHITE_START = new Hallway(0xC5, "White Start");
     }
 
     SuspectCard suspect;
@@ -44,7 +56,7 @@ public class Hallway extends Location {
 
     public Hallway(int id, String name) {
         super(id, name);
-        logger.debug("Creating hallway " + name);
+        logger.trace("Creating hallway " + name);
         suspect = null;
         this.id = id;
         this.name = name;

@@ -38,6 +38,7 @@ public class GooeyScene implements Initializable {
     @FXML private ImageView cluelessLogo;
     @FXML private TextField cliField;
     @FXML private ListView logList;
+    @FXML private TextArea notesArea;
 
     @FXML private Pane boardPane;
     @FXML private ImageView boardOverlay;
@@ -156,7 +157,13 @@ public class GooeyScene implements Initializable {
 
     private void addHall(Location location, double x, double y) {
         String name = location.getName();
-        GooeyHallway room = new GooeyHallway(boardPane, name, x, y);
+        GooeyHallway room = new GooeyHallway(boardPane, name, x, y, "gray");
+        spaces.put(location.getId(), room);
+    }
+
+    private void addStart(Location location, double x, double y) {
+        String name = location.getName();
+        GooeyHallway room = new GooeyHallway(boardPane, name, x, y, null);
         spaces.put(location.getId(), room);
     }
 
@@ -190,6 +197,14 @@ public class GooeyScene implements Initializable {
         addHall(Hallway.HALLWAY_BALL_CONSERVATORY, 100, 325);
         addHall(Hallway.HALLWAY_KITCHEN_BALL, 250, 325);
 
+        // Start Spots
+        addStart(Hallway.HALLWAY_SCARLET_START, 250, 0);
+        addStart(Hallway.HALLWAY_MUSTARD_START, 350, 100);
+        addStart(Hallway.HALLWAY_WHITE_START, 250, 350);
+        addStart(Hallway.HALLWAY_GREEN_START, 100, 350);
+        addStart(Hallway.HALLWAY_PEACOCK_START, 0, 250);
+        addStart(Hallway.HALLWAY_PLUM_START, 0, 100);
+
         // spaces.add(new GooeySpace(boardPane, "game", 300, 30, 0));
 
         /*// Instantiating the Light.Spot class
@@ -218,6 +233,8 @@ public class GooeyScene implements Initializable {
 
         boardOverlay.setImage(imgByName.get("overlay"));
         cluelessLogo.setImage(imgByName.get("clueless"));
+
+        addToLogList("Type 'exit' or 'quit' to return to shell.\n" + "Type 'help' for more info.");
     }
 
     private void loadImages() {
