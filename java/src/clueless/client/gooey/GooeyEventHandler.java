@@ -88,6 +88,17 @@ public class GooeyEventHandler extends EventHandler {
                                     GooeySpace space = scene.spaces.get(locationId);
                                     space.addWeapon(card);
                                 }
+                                if (gameState.isGameActive()) {
+                                    scene.clearCards();
+                                    // Populate the face up cards and my cards
+                                    for (Card card : gameState.getFaceUpCards()) {
+                                        scene.addOtherCard(card);
+                                    }
+
+                                    for (Card card : gameState.getCards()) {
+                                        scene.addMyCard(card);
+                                    }
+                                }
                             }
                         });
 

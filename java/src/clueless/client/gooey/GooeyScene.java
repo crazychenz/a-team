@@ -38,8 +38,11 @@ public class GooeyScene implements Initializable {
     @FXML private ImageView cluelessLogo;
     @FXML private TextField cliField;
     @FXML private ListView logList;
+    @FXML private TextArea notesArea;
 
     @FXML private Pane boardPane;
+    @FXML private Pane myCardPane;
+    @FXML private Pane otherCardPane;
     @FXML private ImageView boardOverlay;
 
     private HashMap<String, Image> imgByName;
@@ -47,6 +50,8 @@ public class GooeyScene implements Initializable {
     private ArrayList<String> logArray;
 
     public HashMap<Integer, GooeySpace> spaces;
+    public HashMap<Integer, GooeyCard> myCards;
+    public HashMap<Integer, GooeyCard> otherCards;
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -148,6 +153,23 @@ public class GooeyScene implements Initializable {
         }
     }
 
+    public void addOtherCard(Card card) {
+        int numCards = otherCards.size();
+        GooeyCard gcard = new GooeyCard(otherCardPane, card, numCards * 50, 20);
+        otherCards.put(card.getId(), gcard);
+    }
+
+    public void addMyCard(Card card) {
+        int numCards = myCards.size();
+        GooeyCard gcard = new GooeyCard(myCardPane, card, numCards * 50, 20);
+        myCards.put(card.getId(), gcard);
+    }
+
+    public void clearCards() {
+        otherCards.clear();
+        myCards.clear();
+    }
+
     private void addRoom(Location location, double x, double y, Image img) {
         String name = location.getName();
         GooeyRoom room = new GooeyRoom(boardPane, name, x, y, img);
@@ -157,6 +179,12 @@ public class GooeyScene implements Initializable {
     private void addHall(Location location, double x, double y) {
         String name = location.getName();
         GooeyHallway room = new GooeyHallway(boardPane, name, x, y);
+        spaces.put(location.getId(), room);
+    }
+    
+    private void addStart(Location location, double x, double y) {
+        String name = location.getName();
+        GooeyHallway room = new GooeyHallway(boardPane, name, x, y, null);
         spaces.put(location.getId(), room);
     }
 
@@ -190,6 +218,14 @@ public class GooeyScene implements Initializable {
         addHall(Hallway.HALLWAY_BALL_CONSERVATORY, 100, 325);
         addHall(Hallway.HALLWAY_KITCHEN_BALL, 250, 325);
 
+        // Start Spots
+        addStart(Hallway.HALLWAY_SCARLET_START, 250, 0);
+        addStart(Hallway.HALLWAY_MUSTARD_START, 350, 100);
+        addStart(Hallway.HALLWAY_WHITE_START, 250, 350);
+        addStart(Hallway.HALLWAY_GREEN_START, 100, 350);
+        addStart(Hallway.HALLWAY_PEACOCK_START, 0, 250);
+        addStart(Hallway.HALLWAY_PLUM_START, 0, 100);
+
         // spaces.add(new GooeySpace(boardPane, "game", 300, 30, 0));
 
         /*// Instantiating the Light.Spot class
@@ -218,6 +254,14 @@ public class GooeyScene implements Initializable {
 
         boardOverlay.setImage(imgByName.get("overlay"));
         cluelessLogo.setImage(imgByName.get("clueless"));
+
+        Label myCardsLabel = new Label("My Cards");
+        myCardPane.getChildren().add(myCardsLabel);
+
+        Label otherCardsLabel = new Label("Face Up Cards");
+        otherCardPane.getChildren().add(otherCardsLabel);
+        
+        addToLogList("Type 'exit' or 'quit' to return to shell.\n" + "Type 'help' for more info.");
     }
 
     private void loadImages() {
@@ -271,6 +315,9 @@ public class GooeyScene implements Initializable {
         loadImages();
 
         spaces = new HashMap<>();
+
+        myCards = new HashMap<Integer, GooeyCard>();
+        otherCards = new HashMap<Integer, GooeyCard>();
 
         clientState = new ClientState();
         startup("127.0.0.1", "2323");
