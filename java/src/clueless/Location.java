@@ -127,7 +127,7 @@ public class Location {
 
     @Override
     public String toString() {
-        String toReturn = "";
+        String toReturn = name;
         /* TODO: Disabled until we stabilize the refactor.
         boolean west = false;
         boolean east = false;

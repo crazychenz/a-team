@@ -79,27 +79,27 @@ public class SuspectMap {
      */
     public static Location getStartLocation(SuspectCard suspect) {
         if (suspect.equals(SuspectCard.SUSPECT_PLUM)) {
-            return Hallway.HALLWAY_STUDY_LIBRARY;
+            return Hallway.HALLWAY_PLUM_START;
         }
 
         if (suspect.equals(SuspectCard.SUSPECT_PEACOCK)) {
-            return Hallway.HALLWAY_CONSERVATORY_LIBRARY;
+            return Hallway.HALLWAY_PEACOCK_START;
         }
 
         if (suspect.equals(SuspectCard.SUSPECT_GREEN)) {
-            return Hallway.HALLWAY_BALL_CONSERVATORY;
+            return Hallway.HALLWAY_GREEN_START;
         }
 
         if (suspect.equals(SuspectCard.SUSPECT_WHITE)) {
-            return Hallway.HALLWAY_KITCHEN_BALL;
+            return Hallway.HALLWAY_WHITE_START;
         }
 
         if (suspect.equals(SuspectCard.SUSPECT_MUSTARD)) {
-            return Hallway.HALLWAY_LOUNGE_DINING;
+            return Hallway.HALLWAY_MUSTARD_START;
         }
 
         if (suspect.equals(SuspectCard.SUSPECT_SCARLET)) {
-            return Hallway.HALLWAY_HALL_LOUNGE;
+            return Hallway.HALLWAY_SCARLET_START;
         }
 
         // TODO: Throw exception

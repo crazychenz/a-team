@@ -82,6 +82,7 @@ public class GooeyPiece {
         this.x = x;
         this.y = y;
         this.view = new ImageView(getImageById(card.getId()));
+        this.view.setOpacity(0.7);
         this.label = new Label(card.getName());
         this.pane.getChildren().add(this.view);
         // this.pane.getChildren().add(this.label);

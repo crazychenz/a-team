@@ -366,20 +366,21 @@ public class ClientState {
      * @param card The card that disproves the suggestion
      * @param active Whether this client is the suggester or not.
      */
-    public void suggestResponse(Card card, boolean active) {
-
-        System.out.println("The suggestion has been completed!\n");
+    public String suggestResponse(Card card, boolean active) {
+        String toReturn = "";
+        toReturn += "The suggestion has been completed!\n";
 
         if (card == null) {
-            System.out.println("The suggestion was unable to be disproven!");
-            return;
+            toReturn += "The suggestion was unable to be disproven!";
+            return toReturn;
         }
 
         if (active) {
-            System.out.println("The following card was disproven: " + card.getName());
+            toReturn += "The following card was disproven: " + card.getName();
         } else {
-            System.out.println("The suggestion was disproved!");
+            toReturn += "The suggestion was disproved!";
         }
+        return toReturn;
     }
 
     /**

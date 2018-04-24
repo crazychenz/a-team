@@ -42,9 +42,11 @@ public class GooeySpace {
         this.x = x;
         this.y = y;
         this.pane = pane;
-        this.rect = new Rectangle(w, h, Paint.valueOf(color));
-        this.rect.setStroke(Paint.valueOf("black"));
-        this.pane.getChildren().add(this.rect);
+        if (color != null) {
+            this.rect = new Rectangle(w, h, Paint.valueOf(color));
+            this.rect.setStroke(Paint.valueOf("black"));
+            this.pane.getChildren().add(this.rect);
+        }
         if (sprite != null) {
             this.view = new ImageView();
             this.view.setImage(sprite);
@@ -54,7 +56,10 @@ public class GooeySpace {
         this.label = new Label(name);
         this.pane.getChildren().add(this.label);
         this.label.relocate(x, y);
-        this.rect.relocate(x, y);
+
+        if (color != null) {
+            this.rect.relocate(x, y);
+        }
     }
 
     public void clearPieces() {

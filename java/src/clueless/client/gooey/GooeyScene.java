@@ -178,10 +178,10 @@ public class GooeyScene implements Initializable {
 
     private void addHall(Location location, double x, double y) {
         String name = location.getName();
-        GooeyHallway room = new GooeyHallway(boardPane, name, x, y);
+        GooeyHallway room = new GooeyHallway(boardPane, name, x, y, "gray");
         spaces.put(location.getId(), room);
     }
-    
+
     private void addStart(Location location, double x, double y) {
         String name = location.getName();
         GooeyHallway room = new GooeyHallway(boardPane, name, x, y, null);
@@ -260,7 +260,7 @@ public class GooeyScene implements Initializable {
 
         Label otherCardsLabel = new Label("Face Up Cards");
         otherCardPane.getChildren().add(otherCardsLabel);
-        
+
         addToLogList("Type 'exit' or 'quit' to return to shell.\n" + "Type 'help' for more info.");
     }
 

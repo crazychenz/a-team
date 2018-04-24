@@ -37,7 +37,7 @@ public class Room extends Location {
 
     public Room(int id, String name) {
         super(id, name);
-        logger.debug("Creating room " + name);
+        logger.trace("Creating room " + name);
         weaponsInside = new ArrayList<>();
         suspectsInside = new ArrayList<>();
     }

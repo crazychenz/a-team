@@ -20,6 +20,38 @@ public class LocationMap {
         for (Room room : Room.allRooms) {
             addHallways(room);
         }
+
+        // Connect start locations to adjacent hallways (one-way)
+        addStartSpots();
+    }
+
+    private void addStartSpots() {
+        Hallway start;
+        Hallway hallway;
+
+        start = Hallway.HALLWAY_SCARLET_START;
+        hallway = Hallway.HALLWAY_HALL_LOUNGE;
+        start.setAdjacentRoom(DirectionsEnum.DIRECTION_SOUTH, hallway);
+
+        start = Hallway.HALLWAY_MUSTARD_START;
+        hallway = Hallway.HALLWAY_LOUNGE_DINING;
+        start.setAdjacentRoom(DirectionsEnum.DIRECTION_WEST, hallway);
+
+        start = Hallway.HALLWAY_WHITE_START;
+        hallway = Hallway.HALLWAY_KITCHEN_BALL;
+        start.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, hallway);
+
+        start = Hallway.HALLWAY_GREEN_START;
+        hallway = Hallway.HALLWAY_BALL_CONSERVATORY;
+        start.setAdjacentRoom(DirectionsEnum.DIRECTION_NORTH, hallway);
+
+        start = Hallway.HALLWAY_PEACOCK_START;
+        hallway = Hallway.HALLWAY_CONSERVATORY_LIBRARY;
+        start.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, hallway);
+
+        start = Hallway.HALLWAY_PLUM_START;
+        hallway = Hallway.HALLWAY_STUDY_LIBRARY;
+        start.setAdjacentRoom(DirectionsEnum.DIRECTION_EAST, hallway);
     }
 
     private void addHallways(Room location) {

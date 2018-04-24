@@ -127,12 +127,6 @@ public class GooeyEventHandler extends EventHandler {
                         });
                 break;
             case MESSAGE_SERVER_RELAY_SUGGEST:
-                // TODO prompt the user that they need to disprove this suggestion if possible
-                // They should only be given a choice of the cards they own that are in the
-                // suggestion
-                // If they own none of the cards, I think we should just tell them that, and they
-                // have to acknowledge
-                // It doesn't seem interactive enough to do it automagically
                 logger.info(msg);
                 clientState.disprove(
                         (Suggestion) msg.getMessageData(),
@@ -140,9 +134,17 @@ public class GooeyEventHandler extends EventHandler {
                 break;
             case MESSAGE_SERVER_RESPONSE_SUGGEST:
                 logger.info(msg);
-                clientState.suggestResponse(
-                        (Card) msg.getMessageData(),
-                        msg.getToUuid().equals(client.uuid.toString()));
+                String response =
+                        clientState.suggestResponse(
+                                (Card) msg.getMessageData(),
+                                msg.getToUuid().equals(client.uuid.toString()));
+                Platform.runLater(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                scene.addToLogList("info: " + response);
+                            }
+                        });
                 break;
             default:
                 logger.info("Message: " + msg);
