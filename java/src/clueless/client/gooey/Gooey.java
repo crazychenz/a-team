@@ -27,6 +27,12 @@ public class Gooey extends Application {
         Scene scene = new Scene(root);
         scene.setOnKeyPressed(new KeyboardHandler());
 
+        // Actually die when exiting from title bar
+        stage.setOnCloseRequest(
+                e -> {
+                    System.exit(0);
+                });
+
         stage.setScene(scene);
         stage.show();
     }

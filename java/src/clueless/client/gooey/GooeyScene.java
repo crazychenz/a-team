@@ -12,15 +12,19 @@ import clueless.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
+import javafx.util.Callback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,48 +58,207 @@ public class GooeyScene implements Initializable {
     public HashMap<Integer, GooeyCard> otherCards;
 
     @FXML
-    private void handleButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
-        // label.setText("Hello World!");
-
-        // anchorPane.getC
-
-        // Rectangle r = new Rectangle(25,25,250,250);
-        // r.setFill(Color.BLUE);
-        // pane.getChildren().add(r);
+    private void handleDone(ActionEvent event) {
+        String cmd = "done";
+        addToLogList(cmd);
+        Message msg = ClientCommand.processCommand(clientState, cmd);
+        handleInternalMessage(msg);
     }
 
     @FXML
-    private void handleExitAction(ActionEvent event) {
-        System.exit(0);
+    private void handleAccuse(ActionEvent event) {
+        Dialog<Suggestion> dialog = new Dialog<>();
+        dialog.setTitle("Accuse Dialog");
+        dialog.setHeaderText("Accuse suspect in room with weapon.");
+        dialog.setResizable(true);
+
+        Label suspectLabel = new Label("Suspect: ");
+        Label roomLabel = new Label("Room: ");
+        Label weaponLabel = new Label("Weapon: ");
+
+        ChoiceBox suspectChoice = new ChoiceBox();
+        for (SuspectCard card : SuspectCard.allCards) {
+            suspectChoice.getItems().add(card);
+        }
+        suspectChoice.getSelectionModel().selectFirst();
+
+        ChoiceBox roomChoice = new ChoiceBox();
+        for (RoomCard card : RoomCard.allCards) {
+            roomChoice.getItems().add(card);
+        }
+        roomChoice.getSelectionModel().selectFirst();
+
+        ChoiceBox weaponChoice = new ChoiceBox();
+        for (WeaponCard card : WeaponCard.allCards) {
+            weaponChoice.getItems().add(card);
+        }
+        weaponChoice.getSelectionModel().selectFirst();
+
+        GridPane grid = new GridPane();
+        grid.add(suspectLabel, 1, 1);
+        grid.add(suspectChoice, 2, 1);
+
+        grid.add(roomLabel, 1, 2);
+        grid.add(roomChoice, 2, 2);
+
+        grid.add(weaponLabel, 1, 3);
+        grid.add(weaponChoice, 2, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType buttonTypeAccuse = new ButtonType("Accuse", ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeAccuse);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+
+        dialog.setResultConverter(
+                new Callback<ButtonType, Suggestion>() {
+                    @Override
+                    public Suggestion call(ButtonType b) {
+                        if (b == buttonTypeAccuse) {
+                            return new Suggestion(
+                                    (SuspectCard) suspectChoice.getValue(),
+                                    (RoomCard) roomChoice.getValue(),
+                                    (WeaponCard) weaponChoice.getValue());
+                        }
+                        return null;
+                    }
+                });
+
+        Optional<Suggestion> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            Suggestion accusal = (Suggestion) result.get();
+            String cmd =
+                    "accuse "
+                            + accusal.getSuspect().getName()
+                            + " "
+                            + accusal.getRoom().getName()
+                            + " "
+                            + accusal.getWeapon().getName();
+            addToLogList(cmd);
+            Message msg = ClientCommand.processCommand(clientState, cmd);
+            handleInternalMessage(msg);
+        }
+    }
+
+    @FXML
+    private void handleSuggestion(ActionEvent event) {
+
+        Card roomCard = Card.fetch(clientState.getMyLocation());
+        if (roomCard == null) {
+            // No card means no room
+            return;
+        }
+        if (!(roomCard instanceof RoomCard)) {
+            // Suggestion is only allowed from within a room.
+            return;
+        }
+
+        Dialog<Suggestion> dialog = new Dialog<>();
+        dialog.setTitle("Suggestion Dialog");
+        dialog.setHeaderText("Suggest suspect with weapon.");
+        dialog.setResizable(true);
+
+        Label suspectLabel = new Label("Suspect: ");
+        Label roomLabel = new Label("Room: ");
+        Label weaponLabel = new Label("Weapon: ");
+
+        ChoiceBox suspectChoice = new ChoiceBox();
+        for (SuspectCard card : SuspectCard.allCards) {
+            suspectChoice.getItems().add(card);
+        }
+        suspectChoice.getSelectionModel().selectFirst();
+
+        Label roomValue = new Label(roomCard.getName());
+
+        ChoiceBox weaponChoice = new ChoiceBox();
+        for (WeaponCard card : WeaponCard.allCards) {
+            weaponChoice.getItems().add(card);
+        }
+        weaponChoice.getSelectionModel().selectFirst();
+
+        GridPane grid = new GridPane();
+
+        grid.add(roomLabel, 1, 1);
+        grid.add(roomValue, 2, 1);
+
+        grid.add(suspectLabel, 1, 2);
+        grid.add(suspectChoice, 2, 2);
+
+        grid.add(weaponLabel, 1, 3);
+        grid.add(weaponChoice, 2, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType buttonTypeSuggest = new ButtonType("Suggest", ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeSuggest);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+
+        dialog.setResultConverter(
+                new Callback<ButtonType, Suggestion>() {
+                    @Override
+                    public Suggestion call(ButtonType b) {
+                        if (b == buttonTypeSuggest) {
+                            return new Suggestion(
+                                    (SuspectCard) suspectChoice.getValue(),
+                                    (RoomCard) roomCard,
+                                    (WeaponCard) weaponChoice.getValue());
+                        }
+                        return null;
+                    }
+                });
+
+        Optional<Suggestion> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            Suggestion suggestion = (Suggestion) result.get();
+            String cmd =
+                    "suggest "
+                            + suggestion.getSuspect().getName()
+                            + " "
+                            + suggestion.getWeapon().getName();
+            addToLogList(cmd);
+            Message msg = ClientCommand.processCommand(clientState, cmd);
+            handleInternalMessage(msg);
+        }
     }
 
     @FXML
     private void handleMoveNorthAction(ActionEvent event) {
-        Message msg = ClientCommand.processCommand(clientState, "move north");
+        String cmd = "move north";
+        addToLogList(cmd);
+        Message msg = ClientCommand.processCommand(clientState, cmd);
         handleInternalMessage(msg);
     }
 
     @FXML
     private void handleMoveWestAction(ActionEvent event) {
+        String cmd = "move west";
+        addToLogList(cmd);
         Message msg = ClientCommand.processCommand(clientState, "move west");
         handleInternalMessage(msg);
     }
 
     @FXML
     private void handleMoveSecretAction(ActionEvent event) {
+        String cmd = "move secret";
+        addToLogList(cmd);
         Message msg = ClientCommand.processCommand(clientState, "move secret");
         handleInternalMessage(msg);
     }
 
     @FXML
     private void handleMoveEastAction(ActionEvent event) {
+        String cmd = "move east";
+        addToLogList(cmd);
         Message msg = ClientCommand.processCommand(clientState, "move east");
         handleInternalMessage(msg);
     }
 
     @FXML
     private void handleMoveSouthAction(ActionEvent event) {
+        String cmd = "move south";
+        addToLogList(cmd);
         Message msg = ClientCommand.processCommand(clientState, "move south");
         handleInternalMessage(msg);
     }
