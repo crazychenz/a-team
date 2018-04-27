@@ -4,7 +4,15 @@ import clueless.*;
 import clueless.client.*;
 import clueless.io.*;
 import java.util.Map;
+import java.util.Optional;
 import javafx.application.Platform;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +28,69 @@ public class GooeyEventHandler extends EventHandler {
         clientState = state;
         this.scene = scene;
         alerted = false;
+    }
+
+    private void handleDisprove(Suggestion suggestion, boolean active) {
+        if (active) {
+            clientState.setDisproving(true);
+            handleLocalDisprove(suggestion);
+            return;
+        }
+
+        scene.addToLogList("Suggestion " + suggestion + " being disproved.");
+    }
+
+    private void handleLocalDisprove(Suggestion suggestion) {
+
+        // Cherry pick the relevant cards to disapprove with.
+        boolean found = false;
+        ChoiceBox cardChoice = new ChoiceBox();
+        for (Card card : clientState.getCards()) {
+            if (suggestion.contains(card)) {
+                found = true;
+                clientState.disproveCards.add(card);
+                cardChoice.getItems().add(card);
+            }
+        }
+        cardChoice.getSelectionModel().selectFirst();
+
+        Dialog<Card> dialog = new Dialog<>();
+        dialog.setTitle("Disprove Dialog");
+        dialog.setHeaderText("Disprove suggestion with card in hand.");
+        dialog.setResizable(true);
+
+        Label cardLabel = new Label("Cards: ");
+
+        GridPane grid = new GridPane();
+        grid.add(cardLabel, 1, 1);
+        grid.add(cardChoice, 2, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType buttonTypeDisprove = new ButtonType("Disprove", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeDisprove);
+
+        dialog.setResultConverter(
+                new Callback<ButtonType, Card>() {
+                    @Override
+                    public Card call(ButtonType b) {
+                        return (Card) cardChoice.getValue();
+                    }
+                });
+
+        Optional<Card> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            Card card = (Card) result.get();
+            String cmd = "disprove " + card.getName();
+            scene.addToLogList(cmd);
+            Message msg = ClientCommand.processCommand(clientState, cmd);
+            scene.handleInternalMessage(msg);
+        } else {
+            String cmd = "disprove";
+            scene.addToLogList(cmd);
+            Message msg = ClientCommand.processCommand(clientState, cmd);
+            scene.handleInternalMessage(msg);
+        }
     }
 
     @Override
@@ -128,9 +199,18 @@ public class GooeyEventHandler extends EventHandler {
                 break;
             case MESSAGE_SERVER_RELAY_SUGGEST:
                 logger.info(msg);
-                clientState.disprove(
-                        (Suggestion) msg.getMessageData(),
-                        msg.getToUuid().equals(client.uuid.toString()));
+                Platform.runLater(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                handleDisprove(
+                                        (Suggestion) msg.getMessageData(),
+                                        msg.getToUuid().equals(client.uuid.toString()));
+                            }
+                        });
+                // clientState.disprove(
+                //        (Suggestion) msg.getMessageData(),
+                //        msg.getToUuid().equals(client.uuid.toString()));
                 break;
             case MESSAGE_SERVER_RESPONSE_SUGGEST:
                 logger.info(msg);

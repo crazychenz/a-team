@@ -290,7 +290,7 @@ public class GooeyScene implements Initializable {
     @FXML
     private void onLoad(ActionEvent event) {}
 
-    private void handleInternalMessage(Message msg) {
+    public void handleInternalMessage(Message msg) {
         if (msg == null) {
             // Nothing to do if there is no message
             return;

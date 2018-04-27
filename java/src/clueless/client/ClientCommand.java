@@ -161,7 +161,9 @@ public class ClientCommand {
                         }
 
                         if (disproveStrToEnum.get(pl.words().get(1)) == null) {
-                            return Message.error("Problem selecting that card.  Please try again!");
+                            return Message.error(
+                                    "Problem selecting that card.  Please try again!"
+                                            + disproveStrToEnum);
                         }
 
                         String card1 = pl.words().get(1);

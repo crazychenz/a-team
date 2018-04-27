@@ -35,7 +35,7 @@ public class ClientState {
     private Integer myLocation = 0;
     private ArrayList<Card> cards;
     private ArrayList<Card> faceUpCards;
-    private ArrayList<Card> disproveCards;
+    public ArrayList<Card> disproveCards;
     private boolean disproving = false;
     private Notebook notebook;
 
