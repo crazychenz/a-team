@@ -7,6 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="650.0" prefWidth="750.0" style="-fx-background-color: #361d07;" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clueless.client.gooey.GooeyScene">
    <children>
@@ -22,9 +23,14 @@
       <Pane fx:id="otherCardPane" layoutX="15.0" layoutY="300.0" prefHeight="150.0" prefWidth="300.0" style="-fx-background-color: #d3d3d3;" />
       <ImageView fx:id="boardOverlay" fitHeight="400.0" fitWidth="400.0" layoutX="336.0" layoutY="54.0" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="cluelessLogo" fitHeight="39.0" fitWidth="190.0" layoutX="455.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" />
-      <TextArea fx:id="notesArea" layoutX="343.0" layoutY="468.0" prefHeight="161.0" prefWidth="173.0" text="Notes Go Here" />
+      <TextArea fx:id="notesArea" layoutX="336.0" layoutY="468.0" prefHeight="161.0" prefWidth="180.0" text="Notes Go Here" />
       <Button layoutX="148.0" layoutY="17.0" mnemonicParsing="false" onAction="#handleAccuse" text="Accuse" />
       <Button layoutX="146.0" layoutY="51.0" mnemonicParsing="false" onAction="#handleSuggestion" text="Suggest" />
       <Button layoutX="148.0" layoutY="87.0" mnemonicParsing="false" onAction="#handleDone" text="Done" />
+      <TextArea fx:id="asciiNotebook" editable="false" layoutX="527.0" layoutY="468.0" prefHeight="161.0" prefWidth="209.0" text="         SWGMPV           SWGMPV&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX" wrapText="true">
+         <font>
+            <Font name="Monospaced Regular" size="10.0" />
+         </font>
+      </TextArea>
    </children>
 </AnchorPane>

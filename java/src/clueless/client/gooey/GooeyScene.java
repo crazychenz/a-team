@@ -43,6 +43,7 @@ public class GooeyScene implements Initializable {
     @FXML private TextField cliField;
     @FXML private ListView logList;
     @FXML private TextArea notesArea;
+    @FXML private TextArea asciiNotebook;
 
     @FXML private Pane boardPane;
     @FXML private Pane myCardPane;
