@@ -24,6 +24,7 @@ public class EntryPoint {
         out.println("Arguments:");
         out.println("   --help           This help message.");
         out.println("   --enable-logger  Enable version logging.");
+        out.println("   --seed           PRNG Seed (Server Only)");
         out.println("\nMutually Exclusive Arguments:");
         out.println("   --server-only    Run this process as dedicated server.");
         out.println("   --cli-client     Start the CLI Client");
@@ -36,9 +37,23 @@ public class EntryPoint {
 
         Server server;
         Thread serverThread;
+        Integer seed = null;
+        boolean hasSeed = false;
+
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--seed")) {
+                seed = new Integer(args[i + 1]);
+                hasSeed = true;
+                break;
+            }
+        }
 
         try {
-            server = new Server();
+            if (hasSeed) {
+                server = new Server(seed);
+            } else {
+                server = new Server();
+            }
             serverThread = new Thread(server);
             serverThread.start();
 

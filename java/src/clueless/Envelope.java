@@ -25,7 +25,7 @@ public class Envelope {
      * @param weapon WeaponCard or weapon of murderer.
      */
     public Envelope(SuspectCard suspect, RoomCard location, WeaponCard weapon) {
-        logger.debug("ENVELOPE: " + suspect + location + weapon);
+        logger.info("ENVELOPE: " + suspect + location + weapon);
         this.suspect = suspect;
         this.room = location;
         this.weapon = weapon;

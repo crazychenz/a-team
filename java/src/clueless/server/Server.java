@@ -29,6 +29,7 @@ public class Server implements Runnable {
 
     public Server(long seed) {
         // Grab a context object with one I/O thread.
+        logger.info("Server running with seed: " + seed);
         zmqContext = ZMQ.context(1);
         socket = zmqContext.socket(ZMQ.ROUTER);
         gameState = new Game(seed);

@@ -355,6 +355,9 @@ public class GooeyScene implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        // logList.setBackground(Background.EMPTY);
+        // notesArea.setStyle("-fx-text-inner-color: white; -fx-background-color: black;");
+        // asciiNotebook.setStyle("-fx-text-inner-color: white; -fx-background-color: black;");
         // All initial dynamic scene graph stuff must be done here.
 
         // Rooms
