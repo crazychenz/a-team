@@ -13,7 +13,7 @@
    <children>
       <Pane fx:id="actionPane" layoutX="10.0" layoutY="10.0" prefHeight="120.0" prefWidth="300.0" style="-fx-background-color: #d3d3d3;">
          <children>
-            <Button layoutX="15.0" layoutY="45.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="59.0" text="Start" />
+            <Button layoutX="15.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleStartAction" prefHeight="27.0" prefWidth="59.0" text="Start" />
             <Button layoutX="15.0" layoutY="75.0" mnemonicParsing="false" onAction="#handleAccuse" text="Accuse" />
             <Button layoutX="135.0" layoutY="15.0" mnemonicParsing="false" onAction="#handleMoveNorthAction" prefHeight="30.0" prefWidth="30.0" text="N" />
             <Button layoutX="15.0" layoutY="15.0" mnemonicParsing="false" onAction="#handleSuggestion" text="Suggest" />

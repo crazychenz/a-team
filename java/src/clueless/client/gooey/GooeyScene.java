@@ -242,6 +242,14 @@ public class GooeyScene implements Initializable {
     }
 
     @FXML
+    private void handleStartAction(ActionEvent event) {
+        String cmd = "start";
+        addToLogList(cmd);
+        Message msg = ClientCommand.processCommand(clientState, cmd);
+        handleInternalMessage(msg);
+    }
+
+    @FXML
     private void handleMoveNorthAction(ActionEvent event) {
         String cmd = "move north";
         addToLogList(cmd);
