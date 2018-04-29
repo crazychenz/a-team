@@ -46,7 +46,7 @@ public class GooeyScene implements Initializable {
     @FXML private TextArea notesArea;
     @FXML private TextArea asciiNotebook;
 
-    @FXML private Pane boardPane;
+    @FXML public Pane boardPane;
     @FXML private Pane myCardPane;
     @FXML private Pane otherCardPane;
     @FXML private ImageView boardOverlay;
@@ -214,8 +214,8 @@ public class GooeyScene implements Initializable {
                         return null;
                     }
                 });
-		
-		Bounds bounds = boardPane.localToScreen(boardPane.getBoundsInLocal());
+
+        Bounds bounds = boardPane.localToScreen(boardPane.getBoundsInLocal());
         dialog.setX(bounds.getMinX());
         dialog.setY(bounds.getMinY());
 

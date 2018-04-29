@@ -6,6 +6,7 @@ import clueless.io.*;
 import java.util.Map;
 import java.util.Optional;
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
@@ -77,6 +78,10 @@ public class GooeyEventHandler extends EventHandler {
                         return (Card) cardChoice.getValue();
                     }
                 });
+
+        Bounds bounds = scene.boardPane.localToScreen(scene.boardPane.getBoundsInLocal());
+        dialog.setX(bounds.getMinX());
+        dialog.setY(bounds.getMinY());
 
         Optional<Card> result = dialog.showAndWait();
         if (result.isPresent()) {
