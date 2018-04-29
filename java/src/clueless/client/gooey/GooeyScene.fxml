@@ -13,17 +13,17 @@
    <children>
       <Pane fx:id="actionPane" layoutX="10.0" layoutY="10.0" prefHeight="120.0" prefWidth="300.0" style="-fx-background-color: #d3d3d3;">
          <children>
-            <Button layoutX="14.0" layoutY="46.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="59.0" text="Start" />
-            <Button layoutX="16.0" layoutY="81.0" mnemonicParsing="false" onAction="#handleAccuse" text="Accuse" />
-            <Button layoutX="135.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleMoveNorthAction" prefHeight="30.0" prefWidth="30.0" text="N" />
-            <Button layoutX="14.0" layoutY="12.0" mnemonicParsing="false" onAction="#handleSuggestion" text="Suggest" />
-            <Button layoutX="134.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveSecretAction" prefHeight="30.0" prefWidth="30.0" text="x" />
-            <Button layoutX="135.0" layoutY="81.0" mnemonicParsing="false" onAction="#handleMoveSouthAction" prefHeight="30.0" prefWidth="30.0" text="S" />
-            <Button layoutX="168.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveEastAction" prefHeight="30.0" prefWidth="30.0" text="E" />
-            <Button layoutX="89.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveWestAction" prefHeight="30.0" prefWidth="41.0" text="W" />
-            <Button layoutX="245.0" layoutY="78.0" mnemonicParsing="false" onAction="#handleDone" text="Done" />
-            <Button layoutX="237.0" layoutY="46.0" mnemonicParsing="false" onAction="#handleConfig" text="Config" />
-            <TextField fx:id="suspectField" layoutX="214.0" layoutY="12.0" prefHeight="27.0" prefWidth="80.0" style="-fx-background-color: white;" />
+            <Button layoutX="15.0" layoutY="45.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="59.0" text="Start" />
+            <Button layoutX="15.0" layoutY="75.0" mnemonicParsing="false" onAction="#handleAccuse" text="Accuse" />
+            <Button layoutX="135.0" layoutY="15.0" mnemonicParsing="false" onAction="#handleMoveNorthAction" prefHeight="30.0" prefWidth="30.0" text="N" />
+            <Button layoutX="15.0" layoutY="15.0" mnemonicParsing="false" onAction="#handleSuggestion" text="Suggest" />
+            <Button layoutX="135.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveSecretAction" prefHeight="30.0" prefWidth="30.0" text="x" />
+            <Button layoutX="135.0" layoutY="75.0" mnemonicParsing="false" onAction="#handleMoveSouthAction" prefHeight="30.0" prefWidth="30.0" text="S" />
+            <Button layoutX="165.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveEastAction" prefHeight="30.0" prefWidth="30.0" text="E" />
+            <Button layoutX="105.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveWestAction" prefHeight="30.0" prefWidth="30.0" text="W" />
+            <Button layoutX="245.0" layoutY="75.0" mnemonicParsing="false" onAction="#handleDone" text="Done" />
+            <Button layoutX="240.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleConfig" text="Config" />
+            <TextField fx:id="suspectField" layoutX="210.0" layoutY="12.0" prefHeight="27.0" prefWidth="80.0" style="-fx-background-color: white;" />
          </children></Pane>
       <TextField fx:id="cliField" layoutX="10.0" layoutY="601.0" onAction="#handleCliAction" prefHeight="27.0" prefWidth="300.0" />
       <ListView fx:id="logList" layoutX="10.0" layoutY="468.0" prefHeight="115.0" prefWidth="300.0" />
