@@ -10,8 +10,11 @@ import clueless.RoomCard;
 import clueless.SuspectCard;
 import clueless.WeaponCard;
 import java.util.HashMap;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,6 +102,29 @@ public class GooeyCard {
         this.x = x;
         this.y = y;
         this.view = new ImageView(getImageById(card.getId()));
+        this.view.setClip(null);
+        // I cant get the cards to have a border.. lol. not sure what settings need to be set
+        this.view.setStyle(
+                "-fx-padding: 15; -fx-background-color: white; -fx-background-radius:5;");
+        this.view.setOnMousePressed(
+                new EventHandler<MouseEvent>() {
+
+                    @Override
+                    public void handle(MouseEvent arg0) {
+                        Alert alert = new Alert(AlertType.INFORMATION);
+                        alert.setTitle("Card Info");
+
+                        if (Card.fetch(card.getId()).getClass() == RoomCard.class) {
+                            alert.setHeaderText("Room: " + card.getName());
+                        } else if (Card.fetch(card.getId()).getClass() == WeaponCard.class) {
+                            alert.setHeaderText("Weapon: " + card.getName());
+                        } else {
+                            alert.setHeaderText("Suspect: " + card.getName());
+                        }
+                        alert.setResizable(false);
+                        alert.showAndWait();
+                    }
+                });
         this.label = new Label(card.getName());
         this.pane.getChildren().add(this.view);
         this.view.relocate(x, y);

@@ -56,7 +56,8 @@ public class GooeySpace {
         this.label = new Label(name);
         this.pane.getChildren().add(this.label);
         this.label.relocate(x, y);
-
+        // this.label.getGraphic().setStyle("-fx-text-fill: white; -fx-background-color: #d3d3d3;");
+        this.label.setStyle("-fx-text-fill: green; -fx-background-color: #d3d3d3;");
         if (color != null) {
             this.rect.relocate(x, y);
         }

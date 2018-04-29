@@ -104,7 +104,7 @@ public class GooeyEventHandler extends EventHandler {
                         new Runnable() {
                             @Override
                             public void run() {
-                                scene.addToLogList("chat: " + msg.asString());
+                                scene.addToLogList("(chat) " + msg.asString());
                             }
                         });
 

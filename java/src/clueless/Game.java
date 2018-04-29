@@ -47,15 +47,23 @@ public class Game {
             case MESSAGE_CHAT_FROM_CLIENT:
                 // Chat from client
                 logger.info("Chat from client: " + msg.getMessageData());
-                msg.setBroadcast(true);
-                return msg;
+
+                String messageWithUsername =
+                        players.byUuid(msg.getFromUuid()).getUsername() + ": " + msg.asString();
+
+                Message override = Message.chatMessage(messageWithUsername);
+                override.setBroadcast(true);
+                return override;
             case MESSAGE_CHAT_FROM_SERVER:
                 // This shouldn't happen
                 logger.info("Chat from server: " + msg.getMessageData());
                 break;
             case MESSAGE_CLIENT_CONFIG:
                 // Client picked a suspect (and username, any other configurables, etc)
-                SuspectCard pickedSuspect = msg.asSuspectCard();
+                Configuration config = msg.asConfigData();
+                SuspectCard pickedSuspect = config.getSuspectCard();
+                String username = config.getUsername();
+
                 for (Suspect s : board.getAllSuspects()) {
                     if (s.getSuspect().equals(pickedSuspect)) {
                         // BUG: I feel a race condition here.
@@ -67,7 +75,7 @@ public class Game {
                         }
                     }
                 }
-                players.add(pickedSuspect, msg.getFromUuid());
+                players.add(pickedSuspect, msg.getFromUuid(), username);
                 // TODO: Develop acknowledgement
                 break;
             case MESSAGE_CLIENT_MOVE:

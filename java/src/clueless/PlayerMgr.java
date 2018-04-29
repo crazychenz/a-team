@@ -81,11 +81,11 @@ public class PlayerMgr {
      * @param suspect The SuspectCard that this player will represent.
      * @param fromUuid The string UUID of the client representing this Player.
      */
-    public void add(SuspectCard suspect, String fromUuid) {
+    public void add(SuspectCard suspect, String fromUuid, String username) {
         logger.info("Adding new player");
 
         // Create the Player and add to the ArrayList.
-        Player newPlayer = new Player(suspect, fromUuid);
+        Player newPlayer = new Player(suspect, fromUuid, username);
         activePlayerArray.add(newPlayer);
 
         // Sort the players according to the SuspectCard id value.

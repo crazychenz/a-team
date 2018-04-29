@@ -147,13 +147,8 @@ public class Message implements Serializable {
      *
      * @return SuspectCard
      */
-    public SuspectCard asSuspectCard() {
-        SuspectCard card = (SuspectCard) messageData;
-        if (card != null) {
-            // Normalize
-            return SuspectCard.fetch(card.getId());
-        }
-        return card;
+    public Configuration asConfigData() {
+        return (Configuration) messageData;
     }
 
     /**
@@ -291,9 +286,10 @@ public class Message implements Serializable {
      * @param suspect SuspectCard client would like to register
      * @return clientConfig message
      */
-    public static Message clientConfig(SuspectCard suspect) {
+    public static Message clientConfig(SuspectCard suspect, String username) {
         logger.trace("Configuring client");
-        return new Message(MessagesEnum.MESSAGE_CLIENT_CONFIG, suspect);
+        return new Message(
+                MessagesEnum.MESSAGE_CLIENT_CONFIG, new Configuration(suspect, username));
     }
 
     /**

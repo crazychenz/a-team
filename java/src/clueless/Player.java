@@ -28,15 +28,16 @@ public class Player extends ListItem implements Comparable {
      * @param suspect - SuspectCard that Player represents.
      * @param uuid - String UUID of the Client playing Player
      */
-    public Player(SuspectCard suspect, String uuid) {
+    public Player(SuspectCard suspect, String uuid, String username) {
         super();
-        setupPlayer(suspect, uuid);
+        setupPlayer(suspect, uuid, username);
     }
 
-    private void setupPlayer(SuspectCard suspect, String uuid) {
+    private void setupPlayer(SuspectCard suspect, String uuid, String username) {
         this.suspect = suspect;
         cards = new ArrayList<>();
         this.uuid = uuid;
+        setUsername(username);
         playing = true;
     }
 
@@ -119,5 +120,15 @@ public class Player extends ListItem implements Comparable {
     /** */
     public void setPulseTime() {
         this.lastPulseTime = System.currentTimeMillis();
+    }
+
+    /** @return the username */
+    public String getUsername() {
+        return username;
+    }
+
+    /** @param username the username to set */
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

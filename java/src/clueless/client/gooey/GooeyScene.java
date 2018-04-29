@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
@@ -41,13 +41,14 @@ public class GooeyScene implements Initializable {
     @FXML private AnchorPane anchorPane;
     @FXML private ImageView cluelessLogo;
     @FXML private TextField cliField;
-    @FXML private ListView logList;
+    @FXML private ListView<String> logList;
     @FXML private TextArea notesArea;
     @FXML private TextArea asciiNotebook;
 
     @FXML private Pane boardPane;
     @FXML private Pane myCardPane;
     @FXML private Pane otherCardPane;
+    @FXML private Pane actionPane;
     @FXML private ImageView boardOverlay;
 
     private HashMap<String, Image> imgByName;
@@ -67,6 +68,12 @@ public class GooeyScene implements Initializable {
     }
 
     @FXML
+    private void handleExit(ActionEvent event) {
+        Platform.exit();
+        System.exit(0);
+    }
+
+    @FXML
     private void handleAccuse(ActionEvent event) {
         Dialog<Suggestion> dialog = new Dialog<>();
         dialog.setTitle("Accuse Dialog");
@@ -77,19 +84,19 @@ public class GooeyScene implements Initializable {
         Label roomLabel = new Label("Room: ");
         Label weaponLabel = new Label("Weapon: ");
 
-        ChoiceBox suspectChoice = new ChoiceBox();
+        ChoiceBox<SuspectCard> suspectChoice = new ChoiceBox<SuspectCard>();
         for (SuspectCard card : SuspectCard.allCards) {
             suspectChoice.getItems().add(card);
         }
         suspectChoice.getSelectionModel().selectFirst();
 
-        ChoiceBox roomChoice = new ChoiceBox();
+        ChoiceBox<RoomCard> roomChoice = new ChoiceBox<RoomCard>();
         for (RoomCard card : RoomCard.allCards) {
             roomChoice.getItems().add(card);
         }
         roomChoice.getSelectionModel().selectFirst();
 
-        ChoiceBox weaponChoice = new ChoiceBox();
+        ChoiceBox<WeaponCard> weaponChoice = new ChoiceBox<WeaponCard>();
         for (WeaponCard card : WeaponCard.allCards) {
             weaponChoice.getItems().add(card);
         }
@@ -118,9 +125,9 @@ public class GooeyScene implements Initializable {
                     public Suggestion call(ButtonType b) {
                         if (b == buttonTypeAccuse) {
                             return new Suggestion(
-                                    (SuspectCard) suspectChoice.getValue(),
-                                    (RoomCard) roomChoice.getValue(),
-                                    (WeaponCard) weaponChoice.getValue());
+                                    suspectChoice.getValue(),
+                                    roomChoice.getValue(),
+                                    weaponChoice.getValue());
                         }
                         return null;
                     }
@@ -128,7 +135,7 @@ public class GooeyScene implements Initializable {
 
         Optional<Suggestion> result = dialog.showAndWait();
         if (result.isPresent()) {
-            Suggestion accusal = (Suggestion) result.get();
+            Suggestion accusal = result.get();
             String cmd =
                     "accuse "
                             + accusal.getSuspect().getName()
@@ -164,7 +171,7 @@ public class GooeyScene implements Initializable {
         Label roomLabel = new Label("Room: ");
         Label weaponLabel = new Label("Weapon: ");
 
-        ChoiceBox suspectChoice = new ChoiceBox();
+        ChoiceBox<SuspectCard> suspectChoice = new ChoiceBox<SuspectCard>();
         for (SuspectCard card : SuspectCard.allCards) {
             suspectChoice.getItems().add(card);
         }
@@ -172,7 +179,7 @@ public class GooeyScene implements Initializable {
 
         Label roomValue = new Label(roomCard.getName());
 
-        ChoiceBox weaponChoice = new ChoiceBox();
+        ChoiceBox<WeaponCard> weaponChoice = new ChoiceBox<WeaponCard>();
         for (WeaponCard card : WeaponCard.allCards) {
             weaponChoice.getItems().add(card);
         }
@@ -202,9 +209,9 @@ public class GooeyScene implements Initializable {
                     public Suggestion call(ButtonType b) {
                         if (b == buttonTypeSuggest) {
                             return new Suggestion(
-                                    (SuspectCard) suspectChoice.getValue(),
+                                    suspectChoice.getValue(),
                                     (RoomCard) roomCard,
-                                    (WeaponCard) weaponChoice.getValue());
+                                    weaponChoice.getValue());
                         }
                         return null;
                     }
@@ -212,7 +219,7 @@ public class GooeyScene implements Initializable {
 
         Optional<Suggestion> result = dialog.showAndWait();
         if (result.isPresent()) {
-            Suggestion suggestion = (Suggestion) result.get();
+            Suggestion suggestion = result.get();
             String cmd =
                     "suggest "
                             + suggestion.getSuspect().getName()
@@ -428,6 +435,9 @@ public class GooeyScene implements Initializable {
         Label otherCardsLabel = new Label("Face Up Cards");
         otherCardPane.getChildren().add(otherCardsLabel);
 
+        Label actionLabel = new Label("Actions");
+        actionPane.getChildren().add(actionLabel);
+
         addToLogList("Type 'exit' or 'quit' to return to shell.\n" + "Type 'help' for more info.");
     }
 
@@ -493,5 +503,63 @@ public class GooeyScene implements Initializable {
     public void startup(String addr, String port) {
         EventHandler evtHdlr = new GooeyEventHandler(clientState, this);
         clientState.startup(evtHdlr, addr, port);
+    }
+
+    @FXML
+    private void handleConfig(ActionEvent event) {
+        Dialog<Configuration> dialog = new Dialog<>();
+        dialog.setTitle("Configuration");
+        dialog.setHeaderText("Pick a username and suspect!");
+        dialog.setResizable(true);
+
+        Label usernameLabel = new Label("Username: ");
+        Label suspectLabel = new Label("Suspect: ");
+
+        TextField usernameText = new TextField();
+
+        ChoiceBox<SuspectCard> suspectChoice = new ChoiceBox<SuspectCard>();
+        for (SuspectCard card : SuspectCard.allCards) {
+            suspectChoice.getItems().add(card);
+        }
+        suspectChoice.getSelectionModel().selectFirst();
+
+        GridPane grid = new GridPane();
+
+        grid.add(usernameLabel, 1, 1);
+        grid.add(usernameText, 2, 1);
+
+        grid.add(suspectLabel, 1, 2);
+        grid.add(suspectChoice, 2, 2);
+
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType buttonTypeOk = new ButtonType("Ok", ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+
+        dialog.setResultConverter(
+                new Callback<ButtonType, Configuration>() {
+                    @Override
+                    public Configuration call(ButtonType b) {
+                        if (b == buttonTypeOk) {
+                            Configuration config =
+                                    new Configuration(
+                                            suspectChoice.getValue(), usernameText.getText());
+                            return config;
+                        } else {
+                            return null;
+                        }
+                    }
+                });
+
+        Optional<Configuration> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            Configuration config = result.get();
+            String cmd = "config " + config.getSuspectCard().getName() + " " + config.getUsername();
+            addToLogList(cmd);
+            Message msg = ClientCommand.processCommand(clientState, cmd);
+            handleInternalMessage(msg);
+        }
     }
 }

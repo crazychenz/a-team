@@ -47,7 +47,7 @@ public class ClientCommand {
                                     + "    Send a message to all players\n"
                                     + "config <"
                                     + clientState.getAvailableSuspects().toString()
-                                    + ">\n"
+                                    + "> <username>\n"
                                     + "    Configure the client\n"
                                     + "start\n"
                                     + "    Start the game\n"
@@ -107,7 +107,7 @@ public class ClientCommand {
                         return Message.error("You've already selected a suspect!");
                     }
 
-                    if (pl.words().size() == 2) {
+                    if (pl.words().size() == 3) {
                         if (suspectStrToEnum.get(pl.words().get(1)) == null) {
                             return Message.error(
                                     "Problem selecting that suspect." + "  Please try again!");
@@ -116,7 +116,7 @@ public class ClientCommand {
                         logger.info("Selected " + suspectStrToEnum.get(pl.words().get(1)));
                         String card = pl.words().get(1);
                         SuspectCard suspect = (SuspectCard) suspectStrToEnum.get(card);
-                        retval = Message.clientConfig(suspect);
+                        retval = Message.clientConfig(suspect, pl.words().get(2));
                         // TODO: This is untrue until the Server acknowledges it.
                         clientState.setConfigured(true);
                         String myCard = pl.words().get(1);
