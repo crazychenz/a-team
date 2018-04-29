@@ -11,12 +11,20 @@
 
 <AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="650.0" prefWidth="750.0" style="-fx-background-color: #361d07;" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clueless.client.gooey.GooeyScene">
    <children>
-      <Pane fx:id="actionPane" layoutX="10.0" layoutY="10.0" prefHeight="120.0" prefWidth="300.0" style="-fx-background-color: #d3d3d3;" />
-      <Button layoutX="50.0" layoutY="25.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" onAction="#handleMoveNorthAction" text="N" />
-      <Button layoutX="15.0" layoutY="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" onAction="#handleMoveWestAction" text="W" />
-      <Button layoutX="50.0" layoutY="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" onAction="#handleMoveSecretAction" text="x" />
-      <Button layoutX="85.0" layoutY="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" onAction="#handleMoveEastAction" text="E" />
-      <Button layoutX="50.0" layoutY="95.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" onAction="#handleMoveSouthAction" text="S" />
+      <Pane fx:id="actionPane" layoutX="10.0" layoutY="10.0" prefHeight="120.0" prefWidth="300.0" style="-fx-background-color: #d3d3d3;">
+         <children>
+            <Button layoutX="14.0" layoutY="46.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="59.0" text="Start" />
+            <Button layoutX="16.0" layoutY="81.0" mnemonicParsing="false" onAction="#handleAccuse" text="Accuse" />
+            <Button layoutX="135.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleMoveNorthAction" prefHeight="30.0" prefWidth="30.0" text="N" />
+            <Button layoutX="14.0" layoutY="12.0" mnemonicParsing="false" onAction="#handleSuggestion" text="Suggest" />
+            <Button layoutX="134.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveSecretAction" prefHeight="30.0" prefWidth="30.0" text="x" />
+            <Button layoutX="135.0" layoutY="81.0" mnemonicParsing="false" onAction="#handleMoveSouthAction" prefHeight="30.0" prefWidth="30.0" text="S" />
+            <Button layoutX="168.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveEastAction" prefHeight="30.0" prefWidth="30.0" text="E" />
+            <Button layoutX="89.0" layoutY="45.0" mnemonicParsing="false" onAction="#handleMoveWestAction" prefHeight="30.0" prefWidth="41.0" text="W" />
+            <Button layoutX="245.0" layoutY="78.0" mnemonicParsing="false" onAction="#handleDone" text="Done" />
+            <Button layoutX="237.0" layoutY="46.0" mnemonicParsing="false" onAction="#handleConfig" text="Config" />
+            <TextField fx:id="suspectField" layoutX="214.0" layoutY="12.0" prefHeight="27.0" prefWidth="80.0" style="-fx-background-color: white;" />
+         </children></Pane>
       <TextField fx:id="cliField" layoutX="10.0" layoutY="601.0" onAction="#handleCliAction" prefHeight="27.0" prefWidth="300.0" />
       <ListView fx:id="logList" layoutX="10.0" layoutY="468.0" prefHeight="115.0" prefWidth="300.0" />
       <Pane fx:id="boardPane" layoutX="336.0" layoutY="54.0" prefHeight="400.0" prefWidth="400.0" />
@@ -25,12 +33,6 @@
       <ImageView fx:id="boardOverlay" fitHeight="400.0" fitWidth="400.0" layoutX="336.0" layoutY="54.0" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="cluelessLogo" fitHeight="39.0" fitWidth="190.0" layoutX="455.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" />
       <TextArea fx:id="notesArea" layoutX="336.0" layoutY="468.0" prefHeight="161.0" prefWidth="180.0" text="Notes Go Here" />
-      <Button layoutX="148.0" layoutY="25.0" mnemonicParsing="false" onAction="#handleAccuse" text="Accuse" />
-      <Button layoutX="148.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleSuggestion" text="Suggest" />
-      <Button layoutX="148.0" layoutY="95.0" mnemonicParsing="false" onAction="#handleDone" text="Done" />
-      <Button layoutX="220.0" layoutY="25.0" mnemonicParsing="false" onAction="#handleConfig" text="Config" />
-      <Button layoutX="220.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleExit" text="Exit" />
-      <TextField fx:id="suspectField" layoutX="220.0" layoutY="95.0" prefWidth="80.0" prefHeight="27.0" style="-fx-background-color: white;" />
       <TextArea fx:id="asciiNotebook" editable="false" layoutX="527.0" layoutY="468.0" prefHeight="161.0" prefWidth="209.0" text="         SWGMPV           SWGMPV&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX" wrapText="true">
          <font>
             <Font name="Monospaced Regular" size="10.0" />
