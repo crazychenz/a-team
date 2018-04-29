@@ -18,6 +18,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.*;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -126,6 +127,10 @@ public class GooeyScene implements Initializable {
                     }
                 });
 
+        Bounds bounds = boardPane.localToScreen(boardPane.getBoundsInLocal());
+        dialog.setX(bounds.getMinX());
+        dialog.setY(bounds.getMinY());
+
         Optional<Suggestion> result = dialog.showAndWait();
         if (result.isPresent()) {
             Suggestion accusal = (Suggestion) result.get();
@@ -209,6 +214,10 @@ public class GooeyScene implements Initializable {
                         return null;
                     }
                 });
+		
+		Bounds bounds = boardPane.localToScreen(boardPane.getBoundsInLocal());
+        dialog.setX(bounds.getMinX());
+        dialog.setY(bounds.getMinY());
 
         Optional<Suggestion> result = dialog.showAndWait();
         if (result.isPresent()) {
