@@ -60,9 +60,10 @@ public class CLIEventHandler extends EventHandler {
                 break;
             case MESSAGE_SERVER_RESPONSE_SUGGEST:
                 logger.info(msg);
-                clientState.suggestResponse(
+                String resp = clientState.suggestResponse(
                         (Card) msg.getMessageData(),
                         msg.getToUuid().equals(client.uuid.toString()));
+                logger.info(resp);
                 break;
             default:
                 logger.info("Message: " + msg);

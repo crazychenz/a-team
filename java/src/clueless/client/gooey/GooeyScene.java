@@ -42,6 +42,7 @@ public class GooeyScene implements Initializable {
     @FXML private AnchorPane anchorPane;
     @FXML private ImageView cluelessLogo;
     @FXML private TextField cliField;
+    @FXML public TextField suspectField;
     @FXML private ListView<String> logList;
     @FXML private TextArea notesArea;
     @FXML private TextArea asciiNotebook;
@@ -447,6 +448,11 @@ public class GooeyScene implements Initializable {
         Label actionLabel = new Label("Actions");
         actionPane.getChildren().add(actionLabel);
 
+        suspectField.setEditable(false);
+        Tooltip ttp = new Tooltip();
+        ttp.setText("Your suspect");
+        suspectField.setTooltip(ttp);
+
         addToLogList("Type 'exit' or 'quit' to return to shell.\n" + "Type 'help' for more info.");
     }
 
@@ -527,7 +533,7 @@ public class GooeyScene implements Initializable {
         TextField usernameText = new TextField();
 
         ChoiceBox<SuspectCard> suspectChoice = new ChoiceBox<SuspectCard>();
-        for (SuspectCard card : SuspectCard.allCards) {
+        for (SuspectCard card : clientState.getAvailableSuspects().list) {
             suspectChoice.getItems().add(card);
         }
         suspectChoice.getSelectionModel().selectFirst();

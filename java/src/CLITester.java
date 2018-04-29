@@ -58,17 +58,17 @@ public class CLITester {
         mustard.startup();
 
         // Register Everyone
-        resp = CLI.handleCommand(plum, "config Plum\n");
+        resp = CLI.handleCommand(plum, "config Plum plumo\n");
         assert_null(resp, "Configure Player #1");
-        resp = CLI.handleCommand(peacock, "config Peacock\n");
+        resp = CLI.handleCommand(peacock, "config Peacock birdy\n");
         assert_null(resp, "Configure Player #2");
-        resp = CLI.handleCommand(scarlet, "config Scarlet\n");
+        resp = CLI.handleCommand(scarlet, "config Scarlet dragon\n");
         assert_null(resp, "Configure Player #3");
-        resp = CLI.handleCommand(white, "config White\n");
+        resp = CLI.handleCommand(white, "config White egg\n");
         assert_null(resp, "Configure Player #4");
-        resp = CLI.handleCommand(green, "config Green\n");
+        resp = CLI.handleCommand(green, "config Green clover\n");
         assert_null(resp, "Configure Player #5");
-        resp = CLI.handleCommand(mustard, "config Mustard\n");
+        resp = CLI.handleCommand(mustard, "config Mustard ketchup\n");
         assert_null(resp, "Configure Player #6");
 
         // Start the game

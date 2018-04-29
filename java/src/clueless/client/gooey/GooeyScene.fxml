@@ -30,6 +30,7 @@
       <Button layoutX="148.0" layoutY="95.0" mnemonicParsing="false" onAction="#handleDone" text="Done" />
       <Button layoutX="220.0" layoutY="25.0" mnemonicParsing="false" onAction="#handleConfig" text="Config" />
       <Button layoutX="220.0" layoutY="60.0" mnemonicParsing="false" onAction="#handleExit" text="Exit" />
+      <TextField fx:id="suspectField" layoutX="220.0" layoutY="95.0" prefWidth="80.0" prefHeight="27.0" style="-fx-background-color: white;" />
       <TextArea fx:id="asciiNotebook" editable="false" layoutX="527.0" layoutY="468.0" prefHeight="161.0" prefWidth="209.0" text="         SWGMPV           SWGMPV&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX  01234567 XXXXXX&#10;01234567 XXXXXX" wrapText="true">
          <font>
             <Font name="Monospaced Regular" size="10.0" />

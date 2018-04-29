@@ -175,6 +175,11 @@ public class GooeyEventHandler extends EventHandler {
                                         scene.addMyCard(card);
                                     }
                                 }
+
+                                if (clientState.isConfigured()) {
+                                    scene.suspectField.setText(
+                                            clientState.getMySuspect().getName());
+                                }
                             }
                         });
 
