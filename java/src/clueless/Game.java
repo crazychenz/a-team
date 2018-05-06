@@ -20,9 +20,10 @@ public class Game {
 
     Suggestion suggestion;
 
-    public Game(long seed) {
+    public Game(long seed, int difficulty) {
         gameStarted = false;
         prngSeed = seed;
+        this.difficulty = difficulty;
         players = new PlayerMgr();
         board = new GameBoard();
     }

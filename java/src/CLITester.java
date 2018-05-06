@@ -30,7 +30,7 @@ public class CLITester {
 
         logger.info("Initializing the server thread.");
         try {
-            Server server = new Server(1);
+            Server server = new Server(1, 0);
             Thread serverThread = new Thread(server);
             serverThread.start();
             Thread.sleep(1000);

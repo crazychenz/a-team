@@ -24,15 +24,16 @@ public class Server implements Runnable {
     Game gameState;
 
     public Server() {
-        this(System.currentTimeMillis());
+        // if no difficulty specified, start with easy (0)
+        this(System.currentTimeMillis(), 0);
     }
 
-    public Server(long seed) {
+    public Server(long seed, int difficulty) {
         // Grab a context object with one I/O thread.
         logger.info("Server running with seed: " + seed);
         zmqContext = ZMQ.context(1);
         socket = zmqContext.socket(ZMQ.ROUTER);
-        gameState = new Game(seed);
+        gameState = new Game(seed, difficulty);
     }
 
     public void sendMessage(Message msg) throws Exception {

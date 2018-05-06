@@ -25,6 +25,7 @@ public class EntryPoint {
         out.println("   --help           This help message.");
         out.println("   --enable-logger  Enable version logging.");
         out.println("   --seed           PRNG Seed (Server Only)");
+        out.println("   --difficulty     Game difficulty (Server Only)");
         out.println("\nMutually Exclusive Arguments:");
         out.println("   --server-only    Run this process as dedicated server.");
         out.println("   --cli-client     Start the CLI Client");
@@ -38,19 +39,31 @@ public class EntryPoint {
         Server server;
         Thread serverThread;
         Integer seed = null;
+        Integer difficulty = null;
         boolean hasSeed = false;
+        boolean hasDifficulty = false;
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--seed")) {
                 seed = new Integer(args[i + 1]);
                 hasSeed = true;
-                break;
+                // break;
+            }
+
+            if (args[i].equals("--difficulty")) {
+                difficulty = new Integer(args[i + 1]);
+                hasDifficulty = true;
+                // break;
             }
         }
 
         try {
-            if (hasSeed) {
-                server = new Server(seed);
+            if (hasSeed && hasDifficulty) {
+                server = new Server(seed, difficulty);
+            } else if (hasSeed) {
+                server = new Server(seed, 0);
+            } else if (hasDifficulty) {
+                server = new Server(System.currentTimeMillis(), difficulty);
             } else {
                 server = new Server();
             }

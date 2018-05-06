@@ -56,7 +56,7 @@ public class Dealer {
     }
 
     /**
-     * Helper to determine the numer of face up cards to display.
+     * Helper to determine the number of face up cards to display.
      *
      * @param numUsers Number of Players being dealt cards
      * @param difficulty 0 (easy), 1 (medium), 2 (hard) difficulty to specify how many face up cards
