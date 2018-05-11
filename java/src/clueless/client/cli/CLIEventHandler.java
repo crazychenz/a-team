@@ -1,15 +1,12 @@
 package clueless.client.cli;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import clueless.client.*;
-import clueless.io.*;
-
-// TODO: Fix leaky abstraction.
+import clueless.Card;
 import clueless.GameStatePulse;
 import clueless.Suggestion;
-import clueless.Card;
+import clueless.client.*;
+import clueless.io.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CLIEventHandler extends EventHandler {
 
@@ -21,7 +18,7 @@ public class CLIEventHandler extends EventHandler {
         clientState = state;
     }
 
-	@Override
+    @Override
     public void onMessageEvent(Client client, Message msg) {
         switch (msg.getMessageID()) {
             case MESSAGE_CHAT_FROM_SERVER:
@@ -32,9 +29,9 @@ public class CLIEventHandler extends EventHandler {
                 logger.trace("Got a watchdog pulse.");
                 GameStatePulse gameState = (GameStatePulse) msg.getMessageData();
                 String statusStr = clientState.setGameState(gameState);
-				if (statusStr != null) {
-					System.out.println(statusStr);
-				}
+                if (statusStr != null) {
+                    System.out.println(statusStr);
+                }
                 clientState.pulse();
                 break;
             case MESSAGE_SERVER_FAIL_CONFIG:
@@ -60,9 +57,10 @@ public class CLIEventHandler extends EventHandler {
                 break;
             case MESSAGE_SERVER_RESPONSE_SUGGEST:
                 logger.info(msg);
-                String resp = clientState.suggestResponse(
-                        (Card) msg.getMessageData(),
-                        msg.getToUuid().equals(client.uuid.toString()));
+                String resp =
+                        clientState.suggestResponse(
+                                (Card) msg.getMessageData(),
+                                msg.getToUuid().equals(client.uuid.toString()));
                 logger.info(resp);
                 break;
             default:

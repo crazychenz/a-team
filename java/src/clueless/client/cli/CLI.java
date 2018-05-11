@@ -120,8 +120,6 @@ public class CLI {
         HashMap<String, String> argMap = new HashMap<String, String>();
         argMap.put("addess", null);
         argMap.put("port", null);
-
-        label:
         while (args.length > index) {
             switch (args[index]) {
                 case "--address":
@@ -147,7 +145,6 @@ public class CLI {
                     break;
                 default:
                     index++;
-                    break label;
             }
         }
         return argMap;
